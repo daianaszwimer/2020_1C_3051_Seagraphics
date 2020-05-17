@@ -131,7 +131,7 @@ namespace TGC.Group.Model
             {
                 //Check for collisions
                 bool collided = false;
-                List<TGCBox> meshes = InteriorNave.Instance().obtenerMeshes();
+                List<TGCBox> meshes = InteriorNave.Instance().obtenerParedes();
                 foreach (var pared in meshes)
                 {
                     var result = TgcCollisionUtils.classifyBoxBox(mesh.BoundingBox, pared.BoundingBox);

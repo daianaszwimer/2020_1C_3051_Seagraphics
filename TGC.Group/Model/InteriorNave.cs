@@ -27,7 +27,7 @@ namespace TGC.Group.Model
             return _instance;
         }
 
-        public List<TGCBox> obtenerMeshes()
+        public List<TGCBox> obtenerParedes()
         {
             return paredes;
         }
