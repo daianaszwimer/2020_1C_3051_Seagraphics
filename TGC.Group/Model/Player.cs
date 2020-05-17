@@ -125,16 +125,18 @@ namespace TGC.Group.Model
         }
 
         private void Move(TGCVector3 movement) {
+            TGCVector3 lastPos = mesh.Position;
             mesh.Position += movement;
             if (estaEnNave)
             {
-                TGCVector3 lastPos = mesh.Position;
-
                 //Check for collisions
                 bool collided = false;
-                foreach (var pared in InteriorNave.Instance().obtenerMeshes())
+                List<TGCBox> meshes = InteriorNave.Instance().obtenerMeshes();
+                foreach (var pared in meshes)
                 {
-                    if (TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, pared.BoundingBox))
+                    var result = TgcCollisionUtils.classifyBoxBox(mesh.BoundingBox, pared.BoundingBox);
+                    if (result == TgcCollisionUtils.BoxBoxResult.Adentro ||
+                        result == TgcCollisionUtils.BoxBoxResult.Atravesando)
                     {
                         collided = true;
                         break;

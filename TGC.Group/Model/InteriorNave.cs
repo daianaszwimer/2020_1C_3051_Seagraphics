@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using TGC.Core.SceneLoader;
-using Microsoft.DirectX.Direct3D;
 using TGC.Core.Textures;
 using TGC.Core.Mathematica;
 using TGC.Core.Geometry;
+using TGC.Core.Direct3D;
 
 namespace TGC.Group.Model
 {
     class InteriorNave // es un singleton
     {
         private static InteriorNave _instance;
-        private List<TgcMesh> meshes;
+        private List<TGCBox> paredes;
+        private TGCBox piso, techo;
 
         protected InteriorNave()
         {
@@ -26,14 +27,22 @@ namespace TGC.Group.Model
             return _instance;
         }
 
-        public List<TgcMesh> obtenerMeshes()
+        public List<TGCBox> obtenerMeshes()
         {
-            return meshes;
+            return paredes;
         }
 
         public void Init(string MediaDir)
         {
+            paredes = new List<TGCBox>();
             var diffuseMap = TgcTexture.createTexture(MediaDir + "Textures//Lisas.bmp");
+
+            // todo: usar planos para piso y techo?
+            piso = TGCBox.fromExtremes(new TGCVector3(-200, -1, -200), new TGCVector3(200, 0, 200), diffuseMap);
+            piso.Transform = TGCMatrix.Translation(piso.Position);
+
+            techo = TGCBox.fromExtremes(new TGCVector3(-200, 100, -200), new TGCVector3(200, 101, 200), diffuseMap);
+            techo.Transform = TGCMatrix.Translation(techo.Position);
 
             var paredSur = TGCBox.fromExtremes(new TGCVector3(-200, 0, -210), new TGCVector3(200, 100, -200), diffuseMap);
             paredSur.Transform = TGCMatrix.Translation(paredSur.Position);
@@ -47,36 +56,10 @@ namespace TGC.Group.Model
             var paredEste = TGCBox.fromExtremes(new TGCVector3(200, 0, -200), new TGCVector3(210, 100, 200), diffuseMap);
             paredEste.Transform = TGCMatrix.Translation(paredEste.Position);
 
-            var piso = TGCBox.fromExtremes(new TGCVector3(-200, -1, -200), new TGCVector3(200, 0, 200), diffuseMap);
-            piso.Transform = TGCMatrix.Translation(piso.Position);
-
-            var techo = TGCBox.fromExtremes(new TGCVector3(-200, 100, -200), new TGCVector3(200, 101, 200), diffuseMap);
-            techo.Transform = TGCMatrix.Translation(techo.Position);
-
-            //Convertir TgcBox a TgcMesh
-            var m1 = paredSur.ToMesh("paredSur");
-            var m2 = paredOeste.ToMesh("paredOeste");
-            var m3 = paredEste.ToMesh("paredEste");
-            var m4 = piso.ToMesh("piso");
-            var m5 = techo.ToMesh("techo");
-            var m6 = paredNorte.ToMesh("paredNorte");
-
-            //Convertir TgcMesh a TgcMeshBumpMapping
-            meshes = new List<TgcMesh>();
-            meshes.Add(m1);
-            meshes.Add(m2);
-            meshes.Add(m3);
-            meshes.Add(m4);
-            meshes.Add(m5);
-            meshes.Add(m6);
-
-            //Borrar TgcMesh y TgcBox, ya no se usan
-            paredSur.Dispose();
-            paredOeste.Dispose();
-            paredEste.Dispose();
-            piso.Dispose();
-            techo.Dispose();
-            paredNorte.Dispose();
+            paredes.Add(paredSur);
+            paredes.Add(paredNorte);
+            paredes.Add(paredEste);
+            paredes.Add(paredOeste);
         }
 
         public void Update()
@@ -85,17 +68,21 @@ namespace TGC.Group.Model
         }
         public void Render()
         {
-            foreach (var mesh in meshes)
+            foreach (var mesh in paredes)
             {
                 mesh.Render();
             }
+            piso.Render();
+            techo.Render();
         }
         public void Dispose()
         {
-            foreach (var mesh in meshes)
+            foreach (var mesh in paredes)
             {
                 mesh.Dispose();
             }
+            piso.Dispose();
+            techo.Dispose();
         }
     }
 }
