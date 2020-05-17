@@ -35,6 +35,7 @@ namespace TGC.Group.Model
         private TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
         private TGCQuaternion rotation = TGCQuaternion.Identity;
+        private TGCVector3 posicionInteriorNave = new TGCVector3(0, 50, 0);
 
         //Config vars
         private float speed = 25f; //foward and horizontal speed
@@ -48,14 +49,17 @@ namespace TGC.Group.Model
         public TGCVector3 Position() { return mesh.Position; }
         public TgcBoundingAxisAlignBox BoundingBox() { return mesh.BoundingBox; }
 
-        public void InitMesh() { mesh = TGCBox.fromSize(size, null); }
+        public void InitMesh() {
+            mesh = TGCBox.fromSize(size, null);
+            mesh.Position = posicionInteriorNave;
+        }
 
         /// <summary>
         /// Update del jugador cuando esta FUERA de la nave.
         /// </summary>
-        public void Update(FPSCamara Camara, float ElapsedTime, bool _estaEnNave) {
+        public void Update(FPSCamara Camara, float ElapsedTime, ref bool _estaEnNave) {
             estaEnNave = _estaEnNave;
-            CheckInputs(Camara, ElapsedTime, null);
+            CheckInputs(Camara, ElapsedTime, ref _estaEnNave);
             GameplayUpdate(ElapsedTime);
             UpdateTransform();
         }
@@ -73,7 +77,7 @@ namespace TGC.Group.Model
 
         public void Render() { }
 
-        private void CheckInputs(FPSCamara Camara, float ElapsedTime, List<TgcMesh> Paredes)
+        private void CheckInputs(FPSCamara Camara, float ElapsedTime, ref bool estaEnNave_)
         {
             int w = Input.keyDown(Key.W) ? 1 : 0;
             int s = Input.keyDown(Key.S) ? 1 : 0;
@@ -81,6 +85,7 @@ namespace TGC.Group.Model
             int a = Input.keyDown(Key.A) ? 1 : 0;
             int space = Input.keyDown(Key.Space) ? 1 : 0;
             int ctrl = Input.keyDown(Key.LeftControl) ? 1 : 0;
+            int o = Input.keyDown(Key.O) ? 1 : 0;
 
             float fmov = w - s; //foward movement
             float hmov = a - d; //horizontal movement
@@ -102,6 +107,17 @@ namespace TGC.Group.Model
             movement *= ElapsedTime;
 
             Move(movement);
+
+            if (o == 1)
+            {
+                if (estaEnNave)
+                {
+                    // todo: guardar la posicionen la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
+                    // posiciono dentro de nave
+                    mesh.Position = posicionInteriorNave;
+                }
+                estaEnNave_ = !estaEnNave_;
+            }
 
             //Dev
             bool p = Input.keyDown(Key.P);

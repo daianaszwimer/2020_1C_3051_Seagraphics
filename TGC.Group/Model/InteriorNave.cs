@@ -38,6 +38,9 @@ namespace TGC.Group.Model
             var paredSur = TGCBox.fromExtremes(new TGCVector3(-200, 0, -210), new TGCVector3(200, 100, -200), diffuseMap);
             paredSur.Transform = TGCMatrix.Translation(paredSur.Position);
 
+            var paredNorte = TGCBox.fromExtremes(new TGCVector3(-200, 0, 200), new TGCVector3(200, 100, 210), diffuseMap);
+            paredNorte.Transform = TGCMatrix.Translation(paredNorte.Position);
+
             var paredOeste = TGCBox.fromExtremes(new TGCVector3(-210, 0, -200), new TGCVector3(-200, 100, 200), diffuseMap);
             paredOeste.Transform = TGCMatrix.Translation(paredOeste.Position);
 
@@ -47,11 +50,16 @@ namespace TGC.Group.Model
             var piso = TGCBox.fromExtremes(new TGCVector3(-200, -1, -200), new TGCVector3(200, 0, 200), diffuseMap);
             piso.Transform = TGCMatrix.Translation(piso.Position);
 
+            var techo = TGCBox.fromExtremes(new TGCVector3(-200, 100, -200), new TGCVector3(200, 101, 200), diffuseMap);
+            techo.Transform = TGCMatrix.Translation(techo.Position);
+
             //Convertir TgcBox a TgcMesh
             var m1 = paredSur.ToMesh("paredSur");
             var m2 = paredOeste.ToMesh("paredOeste");
             var m3 = paredEste.ToMesh("paredEste");
             var m4 = piso.ToMesh("piso");
+            var m5 = techo.ToMesh("techo");
+            var m6 = paredNorte.ToMesh("paredNorte");
 
             //Convertir TgcMesh a TgcMeshBumpMapping
             meshes = new List<TgcMesh>();
@@ -59,12 +67,16 @@ namespace TGC.Group.Model
             meshes.Add(m2);
             meshes.Add(m3);
             meshes.Add(m4);
+            meshes.Add(m5);
+            meshes.Add(m6);
 
             //Borrar TgcMesh y TgcBox, ya no se usan
             paredSur.Dispose();
             paredOeste.Dispose();
             paredEste.Dispose();
             piso.Dispose();
+            techo.Dispose();
+            paredNorte.Dispose();
         }
 
         public void Update()

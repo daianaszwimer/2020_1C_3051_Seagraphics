@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.DirectX.Direct3D;
-using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Fog;
-using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Core.Terrain;
-using TGC.Core.Textures;
 using TGC.Group.Model.Entidades;
 
 namespace TGC.Group.Model
@@ -45,10 +41,8 @@ namespace TGC.Group.Model
 
         DateTime timestamp;
 
-        bool estaEnNave;// = true;
-        //bool escenaEsNave;
+        bool estaEnNave = true;
 
-        //TgcScene interiorNave;
         Fondo oceano;
         TgcSimpleTerrain heightmap;
         Control focusWindows;
@@ -105,7 +99,6 @@ namespace TGC.Group.Model
             Player.InitMesh();
 
             FPSCamara = new FPSCamara(Camera, Input, Player);
-
 
             //Inicializar camara
             var cameraPosition = new TGCVector3(0, 100, 150);
@@ -174,27 +167,10 @@ namespace TGC.Group.Model
 
             if (estaEnNave)
             {
-                /*if (!escenaEsNave)
-                {
-                    var loader = new TgcSceneLoader();
-                    scene = loader.loadSceneFromFile(MediaDir + "MeshCreator\\Scenes\\Deposito\\Deposito-TgcScene.xml");
-                    // cargo la escena correspondiente
-                    escenaEsNave = true;
-                }*/
-
-                // update de elementos de nave
-                //List<TgcMesh> paredes = null;
                 interiorNave.Update();
 
             } else
             {
-                /*if (escenaEsNave)
-                {
-                    // cargo la escena correspondiente
-                    heightmap.loadHeightmap(MediaDir + marBnwDir, marScaleXZ, marScaleY, new TGCVector3(0, marOffsetY, 0));
-                    heightmap.loadTexture(MediaDir + marTexDir);
-                    escenaEsNave = false;
-                }*/
                 // update de elementos de agua
                 coral.Update(ElapsedTime);
                 oro.Update(ElapsedTime);
@@ -221,7 +197,7 @@ namespace TGC.Group.Model
             //Camara y jugador
             FPSCamara.Update(ElapsedTime);
 
-            Player.Update(FPSCamara, ElapsedTime, estaEnNave);
+            Player.Update(FPSCamara, ElapsedTime, ref estaEnNave);
 
             PostUpdate();
 
