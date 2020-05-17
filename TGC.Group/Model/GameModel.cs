@@ -263,7 +263,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Health: " + Player.Health(), 5, 70, Color.DarkSalmon);
             DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
             DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
-            
+            DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
+
             Player.Render();
 
             D3DDevice.Instance.Device.EndScene();
