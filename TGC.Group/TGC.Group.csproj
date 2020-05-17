@@ -102,10 +102,11 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Camara.cs" />
-    <Compile Include="Model\Crafting\Combination.cs" />
-    <Compile Include="Model\Crafting\Combinations.cs" />
+    <Compile Include="Model\Crafting\Crafting.cs" />
+    <Compile Include="Model\Crafting\Cuchillo.cs" />
     <Compile Include="Model\Crafting\Inventory.cs" />
     <Compile Include="Model\Crafting\Item.cs" />
+    <Compile Include="Model\Crafting\Recolectable.cs" />
     <Compile Include="Model\Entidades\Entity.cs" />
     <Compile Include="Model\Entidades\Entities.cs" />
     <Compile Include="Model\Entidades\Fish.cs" />
