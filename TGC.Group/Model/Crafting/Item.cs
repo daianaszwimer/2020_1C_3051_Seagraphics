@@ -40,5 +40,11 @@ namespace TGC.Group.Model
 
         // Indico que tipo de item soy
         public ElementoRecolectable tipoDeElemento() { return this.name; }
+
+        //Esto se borrara cuando el inventario pueda verse
+        public String mostrarItem()
+        {
+            return "item: " + name + ", amount: " + amount.ToString() + "\n";
+        }
     }
 }

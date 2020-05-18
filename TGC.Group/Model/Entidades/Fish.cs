@@ -1,16 +1,21 @@
-﻿using System;
+﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Crafting;
+using TGC.Core.Input;
 
 namespace TGC.Group.Model.Entidades
 {
     class Fish : Entity
     {
-        TgcMesh mesh;
+        static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
+
+        public Recolectable Recolectable { get; set; }
 
         //Config
         const float speed = 7.5f;
@@ -18,59 +23,38 @@ namespace TGC.Group.Model.Entidades
 
         //Internal vars
         TGCVector3 goalPos = TGCVector3.Empty;
-        TGCQuaternion rotation = TGCQuaternion.Identity;
 
-        protected override void InitEntity(string MediaDir)
+        public Fish(TgcMesh mesh) : base(mesh, meshLookDir) { }
+
+        protected override void InitEntity()
         {
-            var loader = new TgcSceneLoader();
-            var scene = loader.loadSceneFromFile(MediaDir + "yellow_fish-TgcScene.xml");
-            mesh = scene.Meshes[0];
             mesh.Scale = new TGCVector3(0.3f, 0.3f, 0.3f);
         }
 
         protected override void UpdateEntity(float ElapsedTime)
         {
             if (ArrivedGoalPos()) 
-                GetNewGoalPos();
+                SetRandomGoalPos();
 
-            TGCVector3 dir = TGCVector3.Normalize(goalPos - mesh.Position);
-            LookAt(dir);
-
-            TGCVector3 movement = dir * speed * ElapsedTime;
-            Move(movement);
-
-            UpdateTransform();
+            Move(goalPos, speed, ElapsedTime);
         }
 
-        protected override void RenderEntity()
+        protected override void InteractEntity()
         {
-            mesh.Render();
-            //mesh.BoundingBox.Render();
+            base.InteractEntity();
+            Recolectable.Recolectar(ElementoRecolectable.fish, 1);
         }
 
-        protected override void DisposeEntity() { mesh.Dispose(); }
-
-
-        protected override TgcMesh GetEntityMesh() { return mesh; }
-
-        //Transformation functions
-        private void UpdateTransform()
-        {
-            mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
+        protected override void RenderEntity() {
+            mesh.BoundingBox.Render();
         }
+
+        protected override void DisposeEntity() { }
+
 
         //Internal functions
-        private void Move(TGCVector3 movement) { mesh.Position += movement; }
 
-        private void LookAt(TGCVector3 lookDir)
-        {
-            var defaultLookDir = new TGCVector3(-1, 0, 0);
-            float angle = FastMath.Acos( TGCVector3.Dot(defaultLookDir, lookDir) );
-            TGCVector3 rotVector = TGCVector3.Cross(defaultLookDir, lookDir);
-            rotation = TGCQuaternion.RotationAxis(rotVector, angle);            
-        }
-
-        private void GetNewGoalPos()
+        private void SetRandomGoalPos()
         {
             Random r = new Random();
             var x = (float) r.NextDouble();

@@ -1,14 +1,16 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.DirectX.Direct3D;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Geometry;
+using TGC.Core.Fog;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Core.Shaders;
 using TGC.Core.Terrain;
-using TGC.Core.Textures;
 using TGC.Group.Model.Entidades;
+using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model
 {
@@ -33,22 +35,44 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
         }
 
+        // variable que indica si esta dentro o fuera de la nave, en base a esto se renderiza un escenario u otro
+        // comienza en la nave por lo tanto se inicializa en true
+        // cuando se cambia esta variable hay que ocultar todos los elemntos del escenario anterior y hacer un fade a negro
+        // como todavia no tenemos ese escenario, lo dejamos en false temporalmente
+
         DateTime timestamp;
+
+        bool estaEnNave = true;
 
         Fondo oceano;
         TgcSimpleTerrain heightmap;
         Control focusWindows;
         Point mousePosition;
-        // todo: probablemente deleguemos la generacion de peces en otra clase
-        // para la primer entrega lo dejamos asi
-        Pez pez;
-        Pez otroPez;
-        Tiburon tiburoncin;
 
+        //Entidades
         Fish fish;
+        Shark shark;
+        Coral coral;
+        Metal oro;
+
+        //Inventario
+        Inventory inventory;
 
         FPSCamara FPSCamara;
         Player Player;
+        Nave nave;
+        InteriorNave interiorNave;
+
+        //Shaders
+        TgcFog fog;
+        Effect e_fog;
+
+        // data de los heightmaps
+        string marBnwDir = "\\Heightmaps\\heightmap_bnw.jpg";
+        string marTexDir = "\\Heightmaps\\heightmap_tex.jpg";
+        float marScaleXZ = 10f;
+        float marScaleY = .5f;
+        float marOffsetY = -150f;
 
 
         /// <summary>
@@ -61,7 +85,12 @@ namespace TGC.Group.Model
         { 
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
-            
+
+            //Creo el inventario
+            inventory = new Inventory();
+            //Creo el manejador de recolectables
+            Recolectable recolectador = new Recolectable(inventory);
+
             timestamp = DateTime.Now;
 
             //Utilizando esta propiedad puedo activar el update/render a intervalos constantes.
@@ -69,40 +98,7 @@ namespace TGC.Group.Model
             //Se puede configurar el tiempo en estas propiedades TimeBetweenUpdates y TimeBetweenRenders, por defecto esta puedo en 1F / FPS_60 es a lo minimo que deberia correr el TP.
             //De no estar a gusto como se ejecuta el metodo Tick (el que maneja el GameLoop) el mismo es virtual con lo cual pueden sobrescribirlo.
 
-            //Inicializar camara
-            var cameraPosition = new TGCVector3(0, 0, 125);
-            var lookAt = TGCVector3.Empty;
-            Camera.SetCamera(cameraPosition, lookAt);
-
-            oceano = new Fondo(MediaDir, ShadersDir);
-            oceano.Init();
-            oceano.Camera = Camera;
-
-            var bnwDir = MediaDir + "\\Heightmaps\\heightmap_bnw.jpg";
-            var texDir = MediaDir + "\\Heightmaps\\heightmap_tex.jpg";
-            float scaleXZ = 10f;
-            float scaleY = .5f;
-            float offsetY = -150f;
-            heightmap = new TgcSimpleTerrain();
-            heightmap.loadHeightmap(bnwDir, scaleXZ, scaleY, new TGCVector3(0, offsetY, 0));
-            heightmap.loadTexture(texDir);
-
-            // Cargo un pez
-            pez = new Pez(MediaDir, ShadersDir);
-            pez.Init();
-            pez.actualizarPosicion(new TGCVector3(10, 0, 15));
-
-            otroPez = new Pez(MediaDir, ShadersDir);
-            otroPez.Init();
-            otroPez.actualizarPosicion(new TGCVector3(10, 10, 15));
-
-            tiburoncin = new Tiburon(MediaDir, ShadersDir);
-            tiburoncin.Init();
-
-            fish = new Fish();
-            fish.Init(MediaDir);
-
-            //Esconde cursor
+            //Esconder cursor
             focusWindows = d3dDevice.CreationParameters.FocusWindow;
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
@@ -112,6 +108,65 @@ namespace TGC.Group.Model
             Player.InitMesh();
 
             FPSCamara = new FPSCamara(Camera, Input, Player);
+
+            //Inicializar camara
+            var cameraPosition = new TGCVector3(0, 100, 150);
+            var lookAt = TGCVector3.Empty;
+            Camera.SetCamera(cameraPosition, lookAt);
+
+            oceano = new Fondo(MediaDir, ShadersDir);
+            oceano.Init();
+            oceano.Camera = Camera;
+
+            heightmap = new TgcSimpleTerrain();
+            heightmap.loadHeightmap(MediaDir + marBnwDir, marScaleXZ, marScaleY, new TGCVector3(0, marOffsetY, 0));
+            heightmap.loadTexture(MediaDir + marTexDir);
+
+            //Cargar entidades
+            var loader = new TgcSceneLoader();
+            var scene = loader.loadSceneFromFile(MediaDir + "yellow_fish-TgcScene.xml");
+            var mesh = scene.Meshes[0];
+
+            fish = new Fish(mesh);
+            fish.Init();
+            fish.Recolectable = recolectador;
+
+            scene = loader.loadSceneFromFile(MediaDir + "shark-TgcScene.xml");
+            mesh = scene.Meshes[0];
+
+            shark = new Shark(mesh, Player);
+            shark.Init();
+
+            scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            coral = new Coral(mesh);
+            coral.Init();
+            coral.Recolectable = recolectador;
+
+            scene = loader.loadSceneFromFile(MediaDir + "Oro-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            oro = new Metal(mesh);
+            oro.Init();
+            oro.Tipo = ElementoRecolectable.oro;
+            oro.Recolectable = recolectador;
+
+            scene = loader.loadSceneFromFile(MediaDir + "ship-TgcScene.xml");
+            nave = Nave.Instance();
+            nave.Init(scene);
+
+            //Cargar shaders
+            fog = new TgcFog();
+            fog.Color = Color.FromArgb(30, 144, 255);
+            fog.Density = 1;
+            fog.EndDistance = 1000;
+            fog.StartDistance = 1;
+            fog.Enabled = true;
+
+            e_fog = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
+
+            interiorNave = InteriorNave.Instance();
+            interiorNave.Init(MediaDir);
+
         }
 
         /// <summary>
@@ -123,29 +178,39 @@ namespace TGC.Group.Model
         { 
             PreUpdate();
 
-            oceano.Update();
-            pez.Update();
-            otroPez.Update();
-
-            DateTime actualTimestamp = DateTime.Now;
-            // Mostrar Tiburon cada X cantidad de tiempo
-            if (actualTimestamp.Subtract(timestamp).TotalSeconds > 15)
+            if (estaEnNave)
             {
-                tiburoncin.aparecer(Camera);
-                timestamp = actualTimestamp;
+                interiorNave.Update();
+
+            } else
+            {
+                // update de elementos de agua
+                coral.Update(ElapsedTime);
+                oro.Update(ElapsedTime);
+                nave.Update();
+                oceano.Update();
+
+                DateTime actualTimestamp = DateTime.Now;
+                // Mostrar Tiburon cada X cantidad de tiempo
+                if (actualTimestamp.Subtract(timestamp).TotalSeconds > 15)
+                {
+                    shark.Spawn();
+                    timestamp = actualTimestamp;
+                }
+                shark.Update(ElapsedTime);
+
+                fish.Update(ElapsedTime);
+
             }
-            tiburoncin.Update();
 
-
-            fish.Update(ElapsedTime);
-
+            // esto se hace siempre
             //Lockear mouse
             Cursor.Position = mousePosition;
 
             //Camara y jugador
             FPSCamara.Update(ElapsedTime);
-            Player.Update(FPSCamara, ElapsedTime);
-            
+
+            Player.Update(FPSCamara, ElapsedTime, ref estaEnNave);
 
             PostUpdate();
 
@@ -158,17 +223,52 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Render()
         {
-            //Inicio el render de la escena, para ejemplos simples. Cuando tenemos postprocesado o shaders es mejor realizar las operaciones según nuestra conveniencia.
-            PreRender();
+            ClearTextures();
+            D3DDevice.Instance.Device.BeginScene();
+            D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
-            oceano.Render();
-            heightmap.Render();
-            pez.Render();
-            otroPez.Render();
-            tiburoncin.Render();
+            fog.updateValues();
+            e_fog.SetValue("ColorFog", fog.Color.ToArgb());
+            e_fog.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+            e_fog.SetValue("StartFogDistance", fog.StartDistance);
+            e_fog.SetValue("EndFogDistance", fog.EndDistance);
+            e_fog.SetValue("Density", fog.Density);
 
+            if (estaEnNave)
+            {
+                interiorNave.Render();
+            } else
+            {
+                oceano.Effect(e_fog);
+                oceano.Technique("RenderScene");
+                oceano.Render();
+                
+                heightmap.Effect = e_fog;
+                heightmap.Technique = "RenderScene";
+                heightmap.Render();
 
-            fish.Render();
+                fish.Effect(e_fog);
+                fish.Technique("RenderScene");
+                fish.Render();
+
+                shark.Effect(e_fog);
+                shark.Technique("RenderScene");
+                shark.Render();
+
+                coral.Effect(e_fog);
+                coral.Technique("RenderScene");
+                coral.Render();
+
+                nave.Effect(e_fog);
+                nave.Technique("RenderScene");
+                nave.Render();
+
+                oro.Effect(e_fog);
+                oro.Technique("RenderScene");
+                oro.Render();
+
+            }
+            // esto se dibuja siempre
             //Dibuja un texto por pantalla
             DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
             DrawText.drawText("A,S,D,W para moverse, Ctrl y Espacio para subir o bajar.", 5, 35, Color.DarkKhaki);
@@ -176,11 +276,15 @@ namespace TGC.Group.Model
             DrawText.drawText("Health: " + Player.Health(), 5, 70, Color.DarkSalmon);
             DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
             DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
-            
+            DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
+            DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
+            DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
+
             Player.Render();
 
-            //Finaliza el render y presenta en pantalla, al igual que el preRender se debe para casos puntuales es mejor utilizar a mano las operaciones de EndScene y PresentScene
-            PostRender();
+            D3DDevice.Instance.Device.EndScene();
+            D3DDevice.Instance.Device.Present();
+
         }
 
         /// <summary>
@@ -193,11 +297,14 @@ namespace TGC.Group.Model
             Player.Dispose();
             oceano.Dispose();
             heightmap.Dispose();
-            pez.Dispose();
-            otroPez.Dispose();
-            tiburoncin.Dispose();
 
             fish.Dispose();
+            shark.Dispose();
+            oro.Dispose();
+            coral.Dispose();
+            nave.Dispose();
+
+            interiorNave.Dispose();
         }
     }
 }

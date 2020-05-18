@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,8 +60,41 @@ namespace TGC.Group.Model.Crafting
         {
             // Si el crafteo ya se puede llevar a cabo porque tengo las cantidades necesarias habilito el crafteo
             if (crafteo.PuedeCraftear(this))
+            {
                 crafteo.activarCrafteo();
+                cuchilloActivado = true;
+            }
             // Borrar crafteo de la lista para que no se pueda volver a craftear
+        }
+
+        // Este metodo no se usara cuando este el inventario visualmente
+        public String inventoryMostrarItemsRecolectados()
+        {
+            if(inventory.Count() == 0)
+            {
+                return "No posee items aun";
+            }
+            else
+            {
+                String itemsRecolectados = "Items recolectados:\n";
+                inventory.ForEach(item => itemsRecolectados += item.mostrarItem());
+                return itemsRecolectados;
+            }
+        }
+
+        //para probar creafteos despues borrarlo
+        private bool cuchilloActivado = false;
+
+        public String inventoryMostrarCrafteos()
+        {
+            if (!cuchilloActivado)
+            {
+                return "Cuchillo: no se puede utilizar";
+            }
+            else
+            {
+                return "Cuchillo: ya puede utilizarse";
+            }
         }
     }
 }

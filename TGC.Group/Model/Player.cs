@@ -1,10 +1,13 @@
 ﻿using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Camara;
+using TGC.Core.Collision;
 using TGC.Core.Geometry;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model
@@ -15,6 +18,7 @@ namespace TGC.Group.Model
         private Inventory inventory = new Inventory();
         private float oxygen = 100f;
         private float health = 100f;
+        private bool estaEnNave;
 
         private const float OXYGEN_LOSS_SPEED = 10f;
         private const float OXYGEN_RECOVER_SPEED = OXYGEN_LOSS_SPEED * 3.2f;
@@ -31,6 +35,7 @@ namespace TGC.Group.Model
         private TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
         private TGCQuaternion rotation = TGCQuaternion.Identity;
+        private TGCVector3 posicionInteriorNave = new TGCVector3(0, 50, 0);
 
         //Config vars
         private float speed = 25f; //foward and horizontal speed
@@ -42,50 +47,108 @@ namespace TGC.Group.Model
         //Tgc functions
 
         public TGCVector3 Position() { return mesh.Position; }
+        public TgcBoundingAxisAlignBox BoundingBox() { return mesh.BoundingBox; }
 
-        public void InitMesh() { mesh = TGCBox.fromSize(size, null); }
+        public void InitMesh() {
+            mesh = TGCBox.fromSize(size, null);
+            mesh.Position = posicionInteriorNave;
+        }
 
-        public void Update(FPSCamara Camara, float ElapsedTime) {
-            CheckInputs(Camara, ElapsedTime);
+        /// <summary>
+        /// Update del jugador cuando esta FUERA de la nave.
+        /// </summary>
+        public void Update(FPSCamara Camara, float ElapsedTime, ref bool _estaEnNave) {
+            estaEnNave = _estaEnNave;
+            CheckInputs(Camara, ElapsedTime, ref _estaEnNave);
             GameplayUpdate(ElapsedTime);
             UpdateTransform();
         }
 
+        /// <summary>
+        /// Update del jugador cuando esta DENTRO de la nave.
+        /// </summary>
+        /*public void Update(FPSCamara Camara, float ElapsedTime, List<TgcMesh> Paredes)
+        {
+            estaEnNave = true;
+            CheckInputs(Camara, ElapsedTime, Paredes);
+            GameplayUpdate(ElapsedTime);
+            UpdateTransform();
+        }*/
+
         public void Render() { }
 
-        private void CheckInputs(FPSCamara Camara, float ElapsedTime)
+        private void CheckInputs(FPSCamara Camara, float ElapsedTime, ref bool estaEnNave_)
         {
-            //Gameplay
             int w = Input.keyDown(Key.W) ? 1 : 0;
             int s = Input.keyDown(Key.S) ? 1 : 0;
             int d = Input.keyDown(Key.D) ? 1 : 0;
             int a = Input.keyDown(Key.A) ? 1 : 0;
             int space = Input.keyDown(Key.Space) ? 1 : 0;
             int ctrl = Input.keyDown(Key.LeftControl) ? 1 : 0;
+            int o = Input.keyDown(Key.O) ? 1 : 0;
 
             float fmov = w - s; //foward movement
             float hmov = a - d; //horizontal movement
             float vmov = space - ctrl; //vertical movement
 
-            TGCVector3 movement = Camara.LookDir() * fmov * speed + Camara.LeftDir() * hmov * speed + TGCVector3.Up * vmov * vspeed;
+            //Check for in-ship movement            
+            var LookDir = Camara.LookDir();
+            var LeftDir = Camara.LeftDir();
+
+            if (estaEnNave)
+            {
+                LookDir.Y = 0;
+                LeftDir.Y = 0;
+                vmov = 0;
+            }
+
+            //Move player
+            TGCVector3 movement = LookDir * fmov * speed + Camara.LeftDir() * hmov * speed + TGCVector3.Up * vmov * vspeed;
             movement *= ElapsedTime;
+
             Move(movement);
 
+            if (o == 1)
+            {
+                if (estaEnNave)
+                {
+                    // todo: guardar la posicionen la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
+                    // posiciono dentro de nave
+                    mesh.Position = posicionInteriorNave;
+                }
+                estaEnNave_ = !estaEnNave_;
+            }
+
             //Dev
-            bool p = Input.keyPressed(Key.P);
+            bool p = Input.keyDown(Key.P);
             if (p) { godmode = !godmode; GodMode(godmode); }
         }
 
-        private void Move(TGCVector3 movement) { mesh.Position += movement; }
+        private void Move(TGCVector3 movement) {
+            mesh.Position += movement;
+            if (estaEnNave)
+            {
+                TGCVector3 lastPos = mesh.Position;
+
+                //Check for collisions
+                bool collided = false;
+                foreach (var pared in InteriorNave.Instance().obtenerMeshes())
+                {
+                    if (TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, pared.BoundingBox))
+                    {
+                        collided = true;
+                        break;
+                    }
+                }
+                //If any collision then go to last position.
+                if (collided)
+                    mesh.Position = lastPos;
+            }
+        }
 
         public void Dispose() { mesh.Dispose(); }
 
-        public void UpdateTransform() { mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position); }
-
-        // Camera functions
-        
-
-        
+        public void UpdateTransform() { mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position); }   
 
 
         //Gameplay functions
@@ -102,10 +165,10 @@ namespace TGC.Group.Model
             if (oxygen == 0) GetDamage(OXYGEN_DAMAGE * ElapsedTime);
         }
 
-        private void GetHeal(float amount) { health = Math.Min(100f, health + amount); }
-        private void GetDamage(float amount) { health = Math.Max(0, health - amount); }
+        public void GetHeal(float amount) { health = Math.Min(100f, health + amount); }
+        public void GetDamage(float amount) { health = Math.Max(0, health - amount); }
         private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(100, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
-        private bool IsOutsideWater() { return mesh.Position.Y > WATER_LEVEL; }
+        private bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
 
         public float Oxygen() { return oxygen; }
         public float Health() { return health; }

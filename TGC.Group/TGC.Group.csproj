@@ -104,17 +104,20 @@
     <Compile Include="Model\Camara.cs" />
     <Compile Include="Model\Crafting\Crafting.cs" />
     <Compile Include="Model\Crafting\Cuchillo.cs" />
+    <Compile Include="Model\Entidades\Coral.cs" />
     <Compile Include="Model\Crafting\Inventory.cs" />
     <Compile Include="Model\Crafting\Item.cs" />
     <Compile Include="Model\Crafting\Recolectable.cs" />
     <Compile Include="Model\Entidades\Entity.cs" />
     <Compile Include="Model\Entidades\Entities.cs" />
     <Compile Include="Model\Entidades\Fish.cs" />
+    <Compile Include="Model\Entidades\Metal.cs" />
+    <Compile Include="Model\Entidades\Shark.cs" />
     <Compile Include="Model\Fondo.cs" />
     <Compile Include="Model\GameModel.cs" />
-    <Compile Include="Model\Pez.cs" />
+    <Compile Include="Model\InteriorNave.cs" />
+    <Compile Include="Model\Nave.cs" />
     <Compile Include="Model\Player.cs" />
-    <Compile Include="Model\Tiburon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -156,9 +159,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Shaders\TgcKeyFrameMeshShader.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Shaders\TgcMeshPhongShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -224,6 +224,10 @@
     <Content Include="bin\x86\Debug\TGC.Core.xml" />
     <Content Include="bin\x86\Debug\TGC.Group.exe" />
     <Content Include="bin\x86\Debug\TGC.Group.pdb" />
+    <Content Include="Media\coral-TgcScene.xml" />
+    <Content Include="Media\Oro-TgcScene.xml" />
+    <Content Include="Media\ship-TgcScene.xml" />
+    <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
     <Content Include="Media\cajaMadera4.jpg" />
     <Content Include="Media\shark-TgcScene.xml" />
     <Content Include="Media\Textures\12960_Shark_diff_v2.jpg" />
@@ -236,18 +240,30 @@
     <Content Include="Media\Mar\fondoMarLeft.jpg" />
     <Content Include="Media\Mar\fondoMarRight.jpg" />
     <Content Include="Media\Mar\fondoMarUp.PNG" />
+    <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
+    <Content Include="Media\Textures\Color_helice.png" />
+    <Content Include="Media\Textures\difuse_enganche.png" />
     <Content Include="Media\Textures\fish.jpg" />
     <Content Include="Media\LogoTGC-TgcScene.xml" />
+    <Content Include="Media\Textures\float_texColor_de_la_Superficie.png" />
+    <Content Include="Media\Textures\LAMP_UVS.png" />
+    <Content Include="Media\Textures\Lisas.bmp" />
+    <Content Include="Media\Textures\oro.jpg" />
     <Content Include="Media\yellow_fish-TgcScene.xml" />
     <Content Include="obj\x86\Debug\TempPE\Properties.Resources.Designer.cs.dll" />
     <Content Include="obj\x86\Debug\TGC.Group.csproj.FileListAbsolute.txt" />
     <Content Include="obj\x86\Debug\TGC.Group.exe" />
     <Content Include="obj\x86\Debug\TGC.Group.pdb" />
+    <Content Include="Shaders\e_fog.fx" />
+    <None Include="Shaders\TgcKeyFrameMeshShader.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
     <Folder Include="bin\Release\" />
     <Folder Include="bin\x86\Release\" />
+    <Folder Include="Model\Shaders\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

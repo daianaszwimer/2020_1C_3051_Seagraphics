@@ -25,8 +25,8 @@ namespace TGC.Group.Model.Crafting
         public Cuchillo()
         {
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
-            this.Composicion.Add(ElementoRecolectable.bronce, 5);
-            this.Composicion.Add(ElementoRecolectable.madera, 10);
+            this.Composicion.Add(ElementoRecolectable.coral,300);
+            this.Composicion.Add(ElementoRecolectable.oro,150);
         }
 
         // Se fija que el inventario tenga las cantidades y tipos de elementos suficientes para crear un cuchillo
