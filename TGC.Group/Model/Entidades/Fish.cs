@@ -6,12 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Crafting;
+using TGC.Core.Input;
 
 namespace TGC.Group.Model.Entidades
 {
     class Fish : Entity
     {
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
+
+        public Recolectable Recolectable { get; set; }
 
         //Config
         const float speed = 7.5f;
@@ -35,7 +39,15 @@ namespace TGC.Group.Model.Entidades
             Move(goalPos, speed, ElapsedTime);
         }
 
-        protected override void RenderEntity() { }
+        protected override void InteractEntity()
+        {
+            base.InteractEntity();
+            Recolectable.Recolectar(ElementoRecolectable.fish, 1);
+        }
+
+        protected override void RenderEntity() {
+            mesh.BoundingBox.Render();
+        }
 
         protected override void DisposeEntity() { }
 

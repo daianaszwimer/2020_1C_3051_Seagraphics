@@ -10,6 +10,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Core.Terrain;
 using TGC.Group.Model.Entidades;
+using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model
 {
@@ -54,6 +55,9 @@ namespace TGC.Group.Model
         Coral coral;
         Metal oro;
 
+        //Inventario
+        Inventory inventory;
+
         FPSCamara FPSCamara;
         Player Player;
         Nave nave;
@@ -81,7 +85,12 @@ namespace TGC.Group.Model
         { 
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
-            
+
+            //Creo el inventario
+            inventory = new Inventory();
+            //Creo el manejador de recolectables
+            Recolectable recolectador = new Recolectable(inventory);
+
             timestamp = DateTime.Now;
 
             //Utilizando esta propiedad puedo activar el update/render a intervalos constantes.
@@ -120,6 +129,7 @@ namespace TGC.Group.Model
 
             fish = new Fish(mesh);
             fish.Init();
+            fish.Recolectable = recolectador;
 
             scene = loader.loadSceneFromFile(MediaDir + "shark-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -131,11 +141,14 @@ namespace TGC.Group.Model
             mesh = scene.Meshes[0];
             coral = new Coral(mesh);
             coral.Init();
+            coral.Recolectable = recolectador;
 
             scene = loader.loadSceneFromFile(MediaDir + "Oro-TgcScene.xml");
             mesh = scene.Meshes[0];
             oro = new Metal(mesh);
             oro.Init();
+            oro.Tipo = ElementoRecolectable.oro;
+            oro.Recolectable = recolectador;
 
             scene = loader.loadSceneFromFile(MediaDir + "ship-TgcScene.xml");
             nave = Nave.Instance();
@@ -264,6 +277,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
             DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
             DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
+            DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
+            DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
 
             Player.Render();
 
