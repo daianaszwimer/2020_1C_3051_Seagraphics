@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -83,6 +84,8 @@ namespace TGC.Group.Model.Entidades
         {
             float angle = FastMath.Acos(TGCVector3.Dot(defaultLookDir, lookDir));
             TGCVector3 rotVector = TGCVector3.Cross(defaultLookDir, lookDir);
+            rotVector.Z = 0;
+
             rotation = TGCQuaternion.RotationAxis(rotVector, angle);
         }
     }

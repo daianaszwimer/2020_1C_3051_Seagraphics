@@ -60,6 +60,9 @@ namespace TGC.Group.Model.Entidades
             var x = (float) r.NextDouble();
             var y = (float) r.NextDouble();
             var z = (float) r.NextDouble();
+
+            y = FastMath.Min(y, 0.3f);
+
             goalPos = new TGCVector3(x, y, z) * distanceToMove;
         }
 
