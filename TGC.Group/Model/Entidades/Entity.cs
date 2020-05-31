@@ -71,7 +71,6 @@ namespace TGC.Group.Model.Entidades
 
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
-            //mesh.Rotation += rotation;
 
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }
@@ -84,6 +83,8 @@ namespace TGC.Group.Model.Entidades
         {
             float angle = FastMath.Acos(TGCVector3.Dot(defaultLookDir, lookDir));
             TGCVector3 rotVector = TGCVector3.Cross(defaultLookDir, lookDir);
+            rotVector.Z = 0;
+
             rotation = TGCQuaternion.RotationAxis(rotVector, angle);
         }
     }

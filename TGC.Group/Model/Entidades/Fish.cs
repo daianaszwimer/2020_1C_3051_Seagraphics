@@ -56,10 +56,13 @@ namespace TGC.Group.Model.Entidades
 
         private void SetRandomGoalPos()
         {
-            Random r = new Random();
+            int seed = DateTime.Now.Millisecond + Int32.Parse(mesh.Name);
+            Random r = new Random(seed);
             var x = (float) r.NextDouble();
             var y = (float) r.NextDouble();
             var z = (float) r.NextDouble();
+
+            y = FastMath.Min(y, 0.3f);
             goalPos = new TGCVector3(x, y, z) * distanceToMove;
         }
 
