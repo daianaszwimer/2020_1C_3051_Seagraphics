@@ -133,7 +133,7 @@ namespace TGC.Group.Model
             while (i < 20)
             {
                 Fish fish;
-                var meshName = i.ToString();
+                string meshName = i.ToString();
                 fish = new Fish(mesh.clone(meshName));
                 fish.Init();
                 fish.Recolectable = recolectador;
