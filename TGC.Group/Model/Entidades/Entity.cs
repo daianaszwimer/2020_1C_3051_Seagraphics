@@ -71,6 +71,7 @@ namespace TGC.Group.Model.Entidades
 
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
+            //mesh.Rotation += rotation;
 
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }
