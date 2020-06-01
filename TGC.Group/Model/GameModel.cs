@@ -11,6 +11,7 @@ using TGC.Core.Shaders;
 using TGC.Core.Terrain;
 using TGC.Group.Model.Entidades;
 using TGC.Group.Model.Crafting;
+using System.Collections.Generic;
 
 namespace TGC.Group.Model
 {
@@ -50,10 +51,10 @@ namespace TGC.Group.Model
         Point mousePosition;
 
         //Entidades
-        Fish fish;
         Shark shark;
         Coral coral;
         Metal oro;
+        List<Fish> peces;
 
         //Inventario
         Inventory inventory;
@@ -127,9 +128,18 @@ namespace TGC.Group.Model
             var scene = loader.loadSceneFromFile(MediaDir + "yellow_fish-TgcScene.xml");
             var mesh = scene.Meshes[0];
 
-            fish = new Fish(mesh);
-            fish.Init();
-            fish.Recolectable = recolectador;
+            peces = new List<Fish>();
+            int i = 0;
+            while (i < 20)
+            {
+                Fish fish;
+                string meshName = i.ToString();
+                fish = new Fish(mesh.clone(meshName));
+                fish.Init();
+                fish.Recolectable = recolectador;
+                peces.Add(fish);
+                i++;
+            }
 
             scene = loader.loadSceneFromFile(MediaDir + "shark-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -199,7 +209,10 @@ namespace TGC.Group.Model
                 }
                 shark.Update(ElapsedTime);
 
-                fish.Update(ElapsedTime);
+                foreach (var pez in peces)
+                {
+                    pez.Update(ElapsedTime);
+                }
 
             }
 
@@ -247,9 +260,13 @@ namespace TGC.Group.Model
                 heightmap.Technique = "RenderScene";
                 heightmap.Render();
 
-                fish.Effect(e_fog);
-                fish.Technique("RenderScene");
-                fish.Render();
+                foreach (var pez in peces)
+                {
+                    pez.Effect(e_fog);
+                    pez.Technique("RenderScene");
+                    pez.Render();
+                }
+
 
                 shark.Effect(e_fog);
                 shark.Technique("RenderScene");
@@ -298,7 +315,10 @@ namespace TGC.Group.Model
             oceano.Dispose();
             heightmap.Dispose();
 
-            fish.Dispose();
+            foreach (var pez in peces)
+            {
+                pez.Dispose();
+            }
             shark.Dispose();
             oro.Dispose();
             coral.Dispose();

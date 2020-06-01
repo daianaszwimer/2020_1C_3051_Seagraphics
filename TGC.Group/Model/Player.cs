@@ -85,7 +85,7 @@ namespace TGC.Group.Model
             int a = Input.keyDown(Key.A) ? 1 : 0;
             int space = Input.keyDown(Key.Space) ? 1 : 0;
             int ctrl = Input.keyDown(Key.LeftControl) ? 1 : 0;
-            int o = Input.keyDown(Key.O) ? 1 : 0;
+            int o = Input.keyDown(Key.O) ? 1 : 0; //todo: habria que usar keypressed pero no anda!
 
             float fmov = w - s; //foward movement
             float hmov = a - d; //horizontal movement

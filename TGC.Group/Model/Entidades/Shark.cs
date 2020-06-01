@@ -63,10 +63,11 @@ namespace TGC.Group.Model.Entidades
 
             //Position shark
             Random r = new Random();
-            var x = (float)r.NextDouble();
-            var z = (float)r.NextDouble();
             var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
-            mesh.Position = player.Position() + sign * new TGCVector3(x, 0, z) * 100f;
+            var x = (float)r.NextDouble() * sign;
+            var z = (float)r.NextDouble() * sign;
+            
+            mesh.Position = player.Position() + new TGCVector3(x, 0, z) * 100f;
         }
 
         //Internal functions

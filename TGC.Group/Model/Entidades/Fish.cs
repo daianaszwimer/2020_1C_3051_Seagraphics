@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Entidades
 
         //Config
         const float speed = 7.5f;
-        const float distanceToMove = 70f;
+        const float distanceToMove = 100f;
 
         //Internal vars
         TGCVector3 goalPos = TGCVector3.Empty;
@@ -56,10 +56,12 @@ namespace TGC.Group.Model.Entidades
 
         private void SetRandomGoalPos()
         {
-            Random r = new Random();
-            var x = (float) r.NextDouble();
+            int seed = DateTime.Now.Millisecond + Int32.Parse(mesh.Name);
+            Random r = new Random(seed);
+            var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
+            var x = (float) r.NextDouble() * sign;
             var y = (float) r.NextDouble();
-            var z = (float) r.NextDouble();
+            var z = (float) r.NextDouble() * sign;
 
             y = FastMath.Min(y, 0.3f);
 
