@@ -115,6 +115,10 @@
     <Compile Include="Model\Entidades\Shark.cs" />
     <Compile Include="Model\Fondo.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Model\Gui\CustomBitmap.cs" />
+    <Compile Include="Model\Gui\CustomSprite.cs" />
+    <Compile Include="Model\Gui\Drawer2D.cs" />
+    <Compile Include="Model\Gui\Hud.cs" />
     <Compile Include="Model\InteriorNave.cs" />
     <Compile Include="Model\Nave.cs" />
     <Compile Include="Model\Player.cs" />

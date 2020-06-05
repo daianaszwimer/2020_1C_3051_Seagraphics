@@ -12,6 +12,7 @@ using TGC.Core.Terrain;
 using TGC.Group.Model.Entidades;
 using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
+using TGC.Group.Model.Gui;
 
 namespace TGC.Group.Model
 {
@@ -104,6 +105,9 @@ namespace TGC.Group.Model
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
 
+            //Iniciar HUD
+            Hud.Init(MediaDir);
+
             //Settear jugador y camara
             Player = new Player(Input);
             Player.InitMesh();
@@ -188,6 +192,8 @@ namespace TGC.Group.Model
         { 
             PreUpdate();
 
+            Hud.Update(Input);
+
             if (estaEnNave)
             {
                 interiorNave.Update();
@@ -240,6 +246,8 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.BeginScene();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
+            Hud.Render();
+
             fog.updateValues();
             e_fog.SetValue("ColorFog", fog.Color.ToArgb());
             e_fog.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
@@ -285,8 +293,9 @@ namespace TGC.Group.Model
                 oro.Render();
 
             }
-            // esto se dibuja siempre
+
             //Dibuja un texto por pantalla
+            /*
             DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
             DrawText.drawText("A,S,D,W para moverse, Ctrl y Espacio para subir o bajar.", 5, 35, Color.DarkKhaki);
             DrawText.drawText("Player Ypos: " + Player.Position().Y, 5, 50, Color.DarkRed);
@@ -296,6 +305,7 @@ namespace TGC.Group.Model
             DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
             DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
             DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
+            */
 
             Player.Render();
 
@@ -325,6 +335,8 @@ namespace TGC.Group.Model
             nave.Dispose();
 
             interiorNave.Dispose();
+
+            Hud.Dispose();
         }
     }
 }

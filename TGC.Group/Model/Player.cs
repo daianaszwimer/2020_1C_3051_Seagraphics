@@ -9,6 +9,7 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
+using TGC.Group.Model.Gui;
 
 namespace TGC.Group.Model
 {
@@ -160,6 +161,11 @@ namespace TGC.Group.Model
             {
                 if (IsOutsideWater()) RecoverOxygen(ElapsedTime); else LoseOxygen(ElapsedTime);
             }
+
+            if (IsDead())
+            {
+                Hud.ChangeStatus(Hud.Status.GameOver);
+            }
         }
 
         private void LoseOxygen(float ElapsedTime) { 
@@ -169,6 +175,7 @@ namespace TGC.Group.Model
 
         public void GetHeal(float amount) { health = Math.Min(100f, health + amount); }
         public void GetDamage(float amount) { health = Math.Max(0, health - amount); }
+        public bool IsDead() { return health <= 0; }
         private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(100, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
         private bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
 
