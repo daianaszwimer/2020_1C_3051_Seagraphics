@@ -105,8 +105,7 @@ namespace TGC.Group.Model
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
 
-            //Iniciar HUD
-            Hud.Init(MediaDir);
+            
 
             //Settear jugador y camara
             Player = new Player(Input);
@@ -119,6 +118,11 @@ namespace TGC.Group.Model
             var lookAt = TGCVector3.Empty;
             Camera.SetCamera(cameraPosition, lookAt);
 
+            //Iniciar HUD
+            Hud.Init(MediaDir,inventory);
+            Hud.ChangeStatus(Hud.Status.None);
+
+            //Cargar enviroment
             oceano = new Fondo(MediaDir, ShadersDir);
             oceano.Init();
             oceano.Camera = Camera;
@@ -191,7 +195,6 @@ namespace TGC.Group.Model
         public override void Update()
         { 
             PreUpdate();
-
             Hud.Update(Input);
 
             if (estaEnNave)

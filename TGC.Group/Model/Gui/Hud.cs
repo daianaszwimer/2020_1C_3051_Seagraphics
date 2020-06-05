@@ -12,6 +12,8 @@ using TGC.Examples.Engine2D.Spaceship.Core;
 using TGC.Core.Input;
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Example;
+using TGC.Group.Model.Crafting;
+using System.Runtime.CompilerServices;
 
 namespace TGC.Group.Model.Gui
 {
@@ -27,14 +29,32 @@ namespace TGC.Group.Model.Gui
             None
         };
 
+        struct ItemSprite
+        {
+            public CustomSprite icon;
+            public CustomSprite background;
+            public TgcText2D amount;
+            public void Dispose() { 
+                background.Dispose();
+                amount.Dispose();
+                if (icon != null)
+                    icon.Dispose();
+            }
+        }
+
+        static Inventory Inventory;
+
         //Control vars
         static Status CurrentStatus = Status.MainMenu;
+        static Status LastStatus = Status.MainMenu;
+
         static TgcText2D SelectedText;
-        static CustomSprite SelectedSprite;
+        static int SelectedItemIndex;
 
         //"Consts"
         static int WIDTH;
         static int HEIGHT;
+        const int MAX_ITEM_SPRITES = 30; //Deberia ser multiplo de 10.
 
         //Drawing vars
         static Drawer2D drawer;
@@ -45,6 +65,9 @@ namespace TGC.Group.Model.Gui
         static CustomSprite Overlay; //Inventario y crafting comparten el mismo sprite para el fondo
         static CustomSprite Background;
 
+        static CustomSprite ItemBackgroundPreset;
+        static List<ItemSprite> ItemSprites;
+
         static TgcText2D GameOver;
 
         
@@ -52,10 +75,15 @@ namespace TGC.Group.Model.Gui
 
 
 
-        static public void Init(string MediaDir)
+        public static void Init(string MediaDir, Inventory inventory)
         {
             WIDTH = D3DDevice.Instance.Width;
             HEIGHT = D3DDevice.Instance.Height;
+
+            Inventory = inventory;
+
+            ItemSprites = new List<ItemSprite>();
+            SelectedItemIndex = 0;
 
             drawer = new Drawer2D();
             
@@ -97,8 +125,40 @@ namespace TGC.Group.Model.Gui
             //Inventory
             Overlay = new CustomSprite();
             Overlay.Bitmap = new CustomBitmap(MediaDir + "overlay_bck.png", D3DDevice.Instance.Device);
-            spriteSize = Background.Bitmap.Size;
+            spriteSize = Overlay.Bitmap.Size;
             Overlay.Position = new TGCVector2(WIDTH / 2 - spriteSize.Width / 2, HEIGHT / 2 - spriteSize.Height / 2);
+
+            //Load item background preset to be used on every item sprite
+            ItemBackgroundPreset = new CustomSprite();
+            ItemBackgroundPreset.Bitmap = new CustomBitmap(MediaDir + "item_placeholder.png", D3DDevice.Instance.Device);
+            spriteSize = ItemBackgroundPreset.Bitmap.Size;
+            //10 items per line
+            for (int j = 0; j <= MAX_ITEM_SPRITES / 10 - 1; j++)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    var item = new ItemSprite();
+
+                    item.background = new CustomSprite();
+                    item.background.Bitmap = ItemBackgroundPreset.Bitmap;
+                    var xoffset = 45 + i * spriteSize.Width * 1.5f;
+                    var yoffset = 25 + j * spriteSize.Height * 1.5f;
+                    item.background.Position = Overlay.Position + new TGCVector2(xoffset, yoffset);
+                    item.background.Color = Color.CadetBlue;
+
+                    item.amount = new TgcText2D();
+                    item.amount.Align = TgcText2D.TextAlign.LEFT;
+                    item.amount.Text = "";
+                    var xpos = Round(item.background.Position.X + spriteSize.Width / 3);
+                    var ypos = Round(item.background.Position.Y + spriteSize.Height / 2);
+                    item.amount.Position = new Point(xpos, ypos);
+                    item.amount.Size = new Size(25, 15);
+                    item.amount.changeFont(new Font("Calibri", 15, FontStyle.Bold));
+                    item.amount.Color = Color.White;
+
+                    ItemSprites.Add(item);
+                }
+            }
 
             //Crafting
             
@@ -115,12 +175,12 @@ namespace TGC.Group.Model.Gui
             
         }
 
-        static public void Update(TgcD3dInput Input)
+        public static void Update(TgcD3dInput Input)
         {
             bool up = Input.keyDown(Key.Up);
             bool down = Input.keyDown(Key.Down);
-            bool left = Input.keyPressed(Key.Left);
-            bool right = Input.keyPressed(Key.Right);
+            bool left = Input.keyDown(Key.Left);
+            bool right = Input.keyDown(Key.Right);
             bool anyKey = up || down || left || right;
 
             //Reset effect when any key is pressed
@@ -137,13 +197,36 @@ namespace TGC.Group.Model.Gui
                 else if (down)
                     SelectedText = Exit;
             }
+            else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
+            {
+                if(LastStatus != Status.Inventory && LastStatus != Status.Crafting)
+                    UpdateIconSprites();
+
+                ItemSprites[SelectedItemIndex].background.Color = Color.CadetBlue;
+
+                if (up)
+                    SelectedItemIndex -= 10;
+                else if (down)
+                    SelectedItemIndex += 10;
+                else if (left)
+                    SelectedItemIndex--;
+                else if (right)
+                    SelectedItemIndex++;
+
+                SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_ITEM_SPRITES - 1);
+                ItemSprites[SelectedItemIndex].background.Color = Color.Orange;
+            }
+
+            //Update last status so it doesn't UpdateIconSprites() multiple times
+            LastStatus = CurrentStatus;
         }
 
-        static public void Render()
+            public static void Render()
         {
             //If there's no HUD to be rendered then skip testing status
             if(CurrentStatus == Status.None) { return; }
 
+            //Main Menu
             if(CurrentStatus == Status.MainMenu)
             {
                 drawer.BeginDrawSprite();
@@ -155,27 +238,40 @@ namespace TGC.Group.Model.Gui
                 Start.render();
                 Exit.render();
             }
-            else if (CurrentStatus == Status.Inventory)
+            //Inventory + Crafting
+            else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
             {
+                //Draw sprites
                 drawer.BeginDrawSprite();
                 drawer.DrawSprite(Overlay);
+                
 
+                foreach (var item in ItemSprites)
+                {
+                    drawer.DrawSprite(item.background);
+                    if(item.icon != null)
+                        drawer.DrawSprite(item.icon);
+                }
                 drawer.EndDrawSprite();
-            }
-            else if (CurrentStatus == Status.Crafting)
-            {
-                drawer.BeginDrawSprite();
-                drawer.DrawSprite(Background);
 
-                drawer.EndDrawSprite();
+                //Draw text
+                foreach (var item in ItemSprites)
+                    item.amount.render();
+
+                //Show crafting + inventory
+                if (CurrentStatus == Status.Crafting)
+                {
+
+                }
             }
+            //GameOver
             else if (CurrentStatus == Status.GameOver)
             {
                 GameOver.render();
             }
         }
 
-        static public void Dispose()
+        public static void Dispose()
         {
             Start.Dispose();
             Exit.Dispose();
@@ -183,14 +279,26 @@ namespace TGC.Group.Model.Gui
             Logo.Dispose();
             Background.Dispose();
             Overlay.Dispose();
+            foreach (var item in ItemSprites)
+                item.Dispose();
         }
 
         //Interactive functions
-        static public void ChangeStatus(Status status) { CurrentStatus = status; }
-        
-
+        public static void ChangeStatus(Status status) { 
+            LastStatus = CurrentStatus; 
+            CurrentStatus = status; 
+        }
 
         //Internal functions
         private static int Round(float n) { return (int)Math.Round(n); }
+
+        private static void UpdateIconSprites()
+        {
+            List<Item> InventoryItems = Inventory.GetList();
+            for (int i=0;i < InventoryItems.Count;i++)
+            {
+                ItemSprites[i].amount.Text = InventoryItems[i].Amount().ToString();
+            }
+        }
     }
 }

@@ -67,6 +67,8 @@ namespace TGC.Group.Model.Crafting
             // Borrar crafteo de la lista para que no se pueda volver a craftear
         }
 
+        public List<Item> GetList() { return inventory; }
+
         // Este metodo no se usara cuando este el inventario visualmente
         public String inventoryMostrarItemsRecolectados()
         {
