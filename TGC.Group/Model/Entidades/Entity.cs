@@ -50,6 +50,10 @@ namespace TGC.Group.Model.Entidades
             InteractEntity();
         }
 
+        public void cambiarPosicion(TGCVector3 nuevaPosicion)
+        {
+            mesh.Position = nuevaPosicion;
+        }
 
         //Override functions
         protected virtual void InitEntity() { }

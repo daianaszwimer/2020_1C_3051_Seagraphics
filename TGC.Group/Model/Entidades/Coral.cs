@@ -7,7 +7,6 @@ namespace TGC.Group.Model.Entidades
 {
     class Coral : Entity
     {
-        private TGCMatrix escalaBase;
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
 
         public Recolectable Recolectable { get;  set; }
@@ -16,14 +15,13 @@ namespace TGC.Group.Model.Entidades
 
         protected override void InitEntity()
         {
-            escalaBase = TGCMatrix.Scaling(new TGCVector3(0.2f, 0.2f, 0.2f));
             mesh.Position = new TGCVector3(10, -15, 5);
             mesh.Scale = new TGCVector3(0.2f, 0.2f, 0.2f);
         }
 
         protected override void UpdateEntity(float ElapsedTime)
         {
-            mesh.Transform = escalaBase * TGCMatrix.Identity * TGCMatrix.Translation(mesh.Position);
+            mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Identity * TGCMatrix.Translation(mesh.Position);
         }
 
         protected override void InteractEntity()
