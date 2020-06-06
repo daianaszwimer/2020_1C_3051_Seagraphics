@@ -11,6 +11,7 @@ namespace TGC.Group.Model.Crafting
     {
         private List<Item> inventory; // Almaceno todo los elementos que va recolectando el Player
         private List<Crafting> Crafteos; // Almaceno los crafteos existentes
+
         public Inventory()
         {
             // El inventario comienza vacio
@@ -18,6 +19,7 @@ namespace TGC.Group.Model.Crafting
 
             // Defino todos los crafteos existentes para que el inventario sepa cuales son
             this.Crafteos = new List<Crafting>();
+
 
             // Agrego uno de los crafteos posibles el cuchillo
             Cuchillo cuchillo = new Cuchillo();

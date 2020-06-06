@@ -52,8 +52,8 @@ namespace TGC.Group.Model.Gui
         //"Consts"
         static int WIDTH;
         static int HEIGHT;
-        const int MAX_INVENTORY_ITEMS = 30; //Deberia ser multiplo de 10.
-        const int MAX_CRAFTING_ITEMS = 5;
+        const int MAX_INVENTORY_ITEMS = 20; //Deberia ser multiplo de 10.
+        const int MAX_CRAFTING_ITEMS = 10;
 
         //Drawing vars
         static Drawer2D drawer;
@@ -61,7 +61,8 @@ namespace TGC.Group.Model.Gui
         static TgcText2D Exit;
 
         static CustomSprite Logo;
-        static CustomSprite Overlay; //Inventario y crafting comparten el mismo sprite para el fondo
+        static CustomSprite OverlayInv; //Overlay de inventario
+        static CustomSprite OverlayCraft;
         static CustomSprite Background;
 
         static CustomSprite ItemBackgroundPreset;
@@ -127,18 +128,18 @@ namespace TGC.Group.Model.Gui
 
 
             //Inventory
-            Overlay = new CustomSprite();
-            Overlay.Bitmap = new CustomBitmap(MediaDir + "overlay_bck.png", D3DDevice.Instance.Device);
-            spriteSize = Overlay.Bitmap.Size;
-            Overlay.Position = new TGCVector2(WIDTH / 2 - spriteSize.Width / 2, HEIGHT / 2 - spriteSize.Height / 2);
+            OverlayInv = new CustomSprite();
+            OverlayInv.Bitmap = new CustomBitmap(MediaDir + "overlay_inv.png", D3DDevice.Instance.Device);
+            spriteSize = OverlayInv.Bitmap.Size;
+            OverlayInv.Position = new TGCVector2(WIDTH / 2 - spriteSize.Width / 2, HEIGHT / 2 - spriteSize.Height / 2);
 
             //Load item background preset to be used on every item sprite
             ItemBackgroundPreset = new CustomSprite();
-            ItemBackgroundPreset.Bitmap = new CustomBitmap(MediaDir + "item_placeholder.png", D3DDevice.Instance.Device);
+            ItemBackgroundPreset.Bitmap = new CustomBitmap(MediaDir + "item_placeholder2.png", D3DDevice.Instance.Device);
             spriteSize = ItemBackgroundPreset.Bitmap.Size;
 
             //10 items per line
-            for (int j = 0; j <= MAX_INVENTORY_ITEMS / 10 - 1; j++)
+            for (int j = 1; j <= MAX_INVENTORY_ITEMS / 10; j++)
             {
                 for (int i = 0; i <= 9; i++)
                 {
@@ -148,7 +149,7 @@ namespace TGC.Group.Model.Gui
                     item.background.Bitmap = ItemBackgroundPreset.Bitmap;
                     var xoffset = 45 + i * spriteSize.Width * 1.5f;
                     var yoffset = 25 + j * spriteSize.Height * 1.5f;
-                    item.background.Position = Overlay.Position + new TGCVector2(xoffset, yoffset);
+                    item.background.Position = OverlayInv.Position + new TGCVector2(xoffset, yoffset);
                     item.background.Color = Color.CadetBlue;
 
                     item.amount = new TgcText2D();
@@ -168,6 +169,10 @@ namespace TGC.Group.Model.Gui
             }
 
             //Crafting
+            OverlayCraft = new CustomSprite();
+            OverlayCraft.Bitmap = new CustomBitmap(MediaDir + "overlay_craft.png", D3DDevice.Instance.Device);
+            OverlayCraft.Position = OverlayInv.Position;
+
             for (int i = 0; i < MAX_CRAFTING_ITEMS; i++)
             {
                 var item = new ItemSprite();
@@ -175,9 +180,11 @@ namespace TGC.Group.Model.Gui
                 item.background = new CustomSprite();
                 item.background.Bitmap = ItemBackgroundPreset.Bitmap;
                 var xoffset = 45 + i * spriteSize.Width * 1.5f;
-                var yoffset = Round(Overlay.Bitmap.Size.Height * 0.8f);
-                item.background.Position = Overlay.Position + new TGCVector2(xoffset, yoffset);
+                var yoffset = Round(OverlayCraft.Bitmap.Size.Height * 0.8f);
+                item.background.Position = OverlayCraft.Position + new TGCVector2(xoffset, yoffset);
                 item.background.Color = Color.CadetBlue;
+
+                Console.WriteLine(item.background.Position);
 
                 item.amount = new TgcText2D();
                 item.amount.Text = "";
@@ -206,7 +213,8 @@ namespace TGC.Group.Model.Gui
             bool down = Input.keyDown(Key.Down);
             bool left = Input.keyDown(Key.Left);
             bool right = Input.keyDown(Key.Right);
-            bool anyKey = up || down || left || right;
+            bool enter = Input.keyDown(Key.Return);
+            bool anyKey = up || down || left || right || enter;
 
             //Reset effect when any key is pressed
             if (anyKey)
@@ -229,13 +237,24 @@ namespace TGC.Group.Model.Gui
 
                 CraftingItems[SelectedItemIndex].background.Color = Color.CadetBlue;
 
-                if (left)
-                    SelectedItemIndex--;
-                else if (right)
-                    SelectedItemIndex++;
+                if (CurrentStatus == Status.Crafting)
+                {
+                    //Change selected item
+                    if (left)
+                        SelectedItemIndex--;
+                    else if (right)
+                        SelectedItemIndex++;
 
-                SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_CRAFTING_ITEMS - 1);
-                CraftingItems[SelectedItemIndex].background.Color = Color.Orange;
+                    SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_CRAFTING_ITEMS - 1);
+                    CraftingItems[SelectedItemIndex].background.Color = Color.Orange;
+
+                    //Check for crafting
+                    if (enter)
+                    {
+                        //craftear
+                    }
+
+                }
             }
 
             //Update last status so it doesn't UpdateIconSprites() multiple times
@@ -262,10 +281,14 @@ namespace TGC.Group.Model.Gui
             //Inventory + Crafting
             else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
             {
-                //Draw sprites
                 drawer.BeginDrawSprite();
-                drawer.DrawSprite(Overlay);
-                
+
+                //Draw overlay
+                if (CurrentStatus == Status.Inventory)
+                    drawer.DrawSprite(OverlayInv);
+                else
+                    drawer.DrawSprite(OverlayCraft);
+
 
                 foreach (var item in InventoryItems)
                 {
@@ -305,7 +328,8 @@ namespace TGC.Group.Model.Gui
             GameOver.Dispose();
             Logo.Dispose();
             Background.Dispose();
-            Overlay.Dispose();
+            OverlayInv.Dispose();
+            OverlayCraft.Dispose();
             foreach (var item in InventoryItems)
                 item.Dispose();
             foreach (var item in CraftingItems)
@@ -329,7 +353,7 @@ namespace TGC.Group.Model.Gui
             for (int i = 0; i < InventoryItems.Count && i < ItemsInInventory.Count; i++)
             {
                 InventoryItems[i].amount.Text = ItemsInInventory[i].Amount().ToString();
-                InventoryItems[i].amount.Text = ItemsInInventory[i].obtenerImagen();
+                //InventoryItems[i].icon.Bitmap = ItemsInInventory[i].obtenerImagen();
             }
 
             var CraftsInInventory = Inventory.GetCraftings();
