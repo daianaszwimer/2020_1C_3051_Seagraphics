@@ -9,6 +9,8 @@ namespace TGC.Group.Model.Crafting
 {
     class Cuchillo : Crafting // Ejemplo de un crafteo posible
     {
+        private String Path;
+
         // Determino que elementos y la cantidad que se necesita para crear un cuchillo
         private Dictionary<ElementoRecolectable, int> Composicion;
 
@@ -17,13 +19,20 @@ namespace TGC.Group.Model.Crafting
 
         // Activa el uso del crafteo en la pantalla del inventario
         public void activarCrafteo()
-        { 
+        {
+            this.Path = "Harcodear_el_path_imagen_color";
             /*habilita el cuchillo en la pantalla para que el player pueda usarlo*/
+        }
+
+        public String obtenerImagen()
+        {
+            return this.Path;
         }
 
         // Defino lo necesario para crear un cuchillo
         public Cuchillo()
         {
+            this.Path = "harcodear_el_path_de_imagen_blanco_y_negro";
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
             this.Composicion.Add(ElementoRecolectable.coral,300);
             this.Composicion.Add(ElementoRecolectable.oro,150);
@@ -46,6 +55,11 @@ namespace TGC.Group.Model.Crafting
         public void AgregarMateriales(ElementoRecolectable elemento, int cantidad)
         {
             Composicion.Add(elemento, cantidad);
+        }
+
+        string Crafting.obtenerImagen()
+        {
+            throw new NotImplementedException();
         }
     }
 }

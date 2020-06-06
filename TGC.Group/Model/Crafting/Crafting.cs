@@ -25,6 +25,8 @@ namespace TGC.Group.Model.Crafting
         // ---
         void Craftear();
 
+        String obtenerImagen();
+
         /* Consiste en que en la pantalla del inventario el crafteo este "gris" como inhabilitado
            Una vez que se pueda craftear el elemento dejara de estar gris en la pantalla y podra 
            Ser utilizado por el Player */
