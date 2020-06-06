@@ -11,6 +11,12 @@ namespace TGC.Group.Model.Crafting
     {
         private string Path;
 
+        private int danioArma;
+
+        private bool estoyCrafteado = false;
+
+        public int danio() { return this.danioArma; }
+
         // Determino que elementos y la cantidad que se necesita para crear un cuchillo
         private Dictionary<ElementoRecolectable, int> Composicion;
 
@@ -21,6 +27,7 @@ namespace TGC.Group.Model.Crafting
         public void activarCrafteo()
         {
             this.Path = "\\Items\\cuchillo.png";
+            this.estoyCrafteado = true;
             /*habilita el cuchillo en la pantalla para que el player pueda usarlo*/
         }
 
@@ -36,12 +43,18 @@ namespace TGC.Group.Model.Crafting
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
             this.Composicion.Add(ElementoRecolectable.coral,300);
             this.Composicion.Add(ElementoRecolectable.oro,150);
+            this.danioArma = 10;
+        }
+
+        public void darHabilidadAPlayer(Player jugador)
+        {
+            jugador.enfrentarTiburon();
         }
 
         // Se fija que el inventario tenga las cantidades y tipos de elementos suficientes para crear un cuchillo
         public bool PuedeCraftear(Inventory inventory)
         {
-            return Composicion.All(Elemento => inventory.cuantosTenesDe(Elemento.Key) >= Elemento.Value);
+            return !estoyCrafteado && Composicion.All(Elemento => inventory.cuantosTenesDe(Elemento.Key) >= Elemento.Value);
         }
 
         public void Craftear()
@@ -57,5 +70,6 @@ namespace TGC.Group.Model.Crafting
             Composicion.Add(elemento, cantidad);
         }
 
+        public bool EstoyCrafteado() { return estoyCrafteado; }
     }
 }

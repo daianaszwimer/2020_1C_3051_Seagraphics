@@ -105,8 +105,6 @@ namespace TGC.Group.Model
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
 
-            
-
             //Settear jugador y camara
             Player = new Player(Input);
             Player.InitMesh();
@@ -118,8 +116,10 @@ namespace TGC.Group.Model
             var lookAt = TGCVector3.Empty;
             Camera.SetCamera(cameraPosition, lookAt);
 
+
+
             //Iniciar HUD
-            Hud.Init(MediaDir,inventory);
+            Hud.Init(MediaDir,inventory,Player);
             Hud.ChangeStatus(Hud.Status.None);
 
             //Cargar enviroment
@@ -154,6 +154,7 @@ namespace TGC.Group.Model
 
             shark = new Shark(mesh, Player);
             shark.Init();
+            
 
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -185,6 +186,8 @@ namespace TGC.Group.Model
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
 
+
+            
         }
 
         /// <summary>

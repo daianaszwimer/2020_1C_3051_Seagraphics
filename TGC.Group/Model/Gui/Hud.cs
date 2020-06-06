@@ -41,6 +41,7 @@ namespace TGC.Group.Model.Gui
         }
 
         static Inventory Inventory;
+        static Player Player;
 
         //Control vars
         static Status CurrentStatus = Status.MainMenu;
@@ -78,13 +79,14 @@ namespace TGC.Group.Model.Gui
 
 
 
-        public static void Init(string mediaDir, Inventory inventory)
+        public static void Init(string mediaDir, Inventory inventory, Player player)
         {
             WIDTH = D3DDevice.Instance.Width;
             HEIGHT = D3DDevice.Instance.Height;
 
             MediaDir = mediaDir;
             Inventory = inventory;
+            Player = player;
 
             InventoryItems = new List<ItemSprite>();
             CraftingItems = new List<ItemSprite>();
@@ -184,8 +186,6 @@ namespace TGC.Group.Model.Gui
                 item.background.Position = OverlayCraft.Position + new TGCVector2(xoffset, yoffset);
                 item.background.Color = Color.CadetBlue;
 
-                Console.WriteLine(item.background.Position);
-
                 item.amount = new TgcText2D();
                 item.amount.Text = "";
 
@@ -251,7 +251,9 @@ namespace TGC.Group.Model.Gui
                     //Check for crafting
                     if (enter)
                     {
-                        //craftear
+                        var SelectedItem = Inventory.GetCraftings()[SelectedItemIndex];
+                        if (SelectedItem != null &&  SelectedItem.EstoyCrafteado())
+                            SelectedItem.darHabilidadAPlayer(Player);
                     }
 
                 }

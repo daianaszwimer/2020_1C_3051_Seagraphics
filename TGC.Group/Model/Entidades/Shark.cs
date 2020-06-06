@@ -7,6 +7,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Collision;
 using TGC.Core.BoundingVolumes;
+using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -14,6 +15,25 @@ namespace TGC.Group.Model.Entidades
     {
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
         Player player;
+
+        private int vida;
+
+        //private Crafting conQueMeAtacan = null; 
+
+        private bool puedoSerAtacado = false;
+
+        public void puedenAtarcame() // puedenAtacarme(Crafting arma)
+        {
+            //conQueMeAtacan = arma
+            this.puedoSerAtacado = true;
+        }
+
+        private void reducirVidaEn(int cantidad)
+        {
+            this.vida -= cantidad;
+        }
+
+        public bool estoyVivo() { return this.vida > 0; }
 
         //Config
         const float DAMAGE = 30f;
@@ -28,6 +48,7 @@ namespace TGC.Group.Model.Entidades
         public Shark(TgcMesh mesh, Player player) : base(mesh, meshLookDir) 
         {
             this.player = player;
+            this.vida = 500;
         }
 
         //Entity functions
@@ -68,6 +89,17 @@ namespace TGC.Group.Model.Entidades
             var z = (float)r.NextDouble() * sign;
             
             mesh.Position = player.Position() + new TGCVector3(x, 0, z) * 100f;
+        }
+
+        protected override void InteractEntity()
+        {
+            base.InteractEntity();
+            if (player.puedoEnfrentarTiburon())
+            {
+                //reducirVidaEn(conQueMeAtacan.danio);
+                reducirVidaEn(10);
+                Console.WriteLine("Me ataco");
+            }
         }
 
         //Internal functions

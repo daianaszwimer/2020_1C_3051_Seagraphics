@@ -11,6 +11,7 @@ namespace TGC.Group.Model.Crafting
     {
         private List<Item> inventory; // Almaceno todo los elementos que va recolectando el Player
         private List<Crafting> Crafteos; // Almaceno los crafteos existentes
+        private List<Crafting> crafteosHabilitados; // Aca estaran los crafteos que se pueden realizar
 
         public Inventory()
         {
@@ -20,6 +21,10 @@ namespace TGC.Group.Model.Crafting
             // Defino todos los crafteos existentes para que el inventario sepa cuales son
             this.Crafteos = new List<Crafting>();
 
+
+            // Creo la lista vacia ya que todavia no se habilito ningun crafteo
+
+            this.crafteosHabilitados = new List<Crafting>();
 
             // Agrego uno de los crafteos posibles el cuchillo
             Cuchillo cuchillo = new Cuchillo();
@@ -64,11 +69,12 @@ namespace TGC.Group.Model.Crafting
             if (crafteo.PuedeCraftear(this))
             {
                 crafteo.activarCrafteo();
-                cuchilloActivado = true;
+                crafteosHabilitados.Add(crafteo);
             }
             // Borrar crafteo de la lista para que no se pueda volver a craftear
         }
 
+        public List<Crafting> GetCrafteosHabilitados() { return crafteosHabilitados; }
         public List<Item> GetItems() { return inventory; }
 
         public List<Crafting> GetCraftings() { return Crafteos; }

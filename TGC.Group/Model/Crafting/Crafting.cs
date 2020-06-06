@@ -27,11 +27,15 @@ namespace TGC.Group.Model.Crafting
 
         String obtenerImagen();
 
+        void darHabilidadAPlayer(Player jugador);
+
         /* Consiste en que en la pantalla del inventario el crafteo este "gris" como inhabilitado
            Una vez que se pueda craftear el elemento dejara de estar gris en la pantalla y podra 
            Ser utilizado por el Player */
         void activarCrafteo();
         void AgregarMateriales(ElementoRecolectable elemento, int cantidad);
+
+        bool EstoyCrafteado();
     }
 
     

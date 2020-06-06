@@ -10,6 +10,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 using TGC.Group.Model.Gui;
+using TGC.Group.Model.Entidades;
 
 namespace TGC.Group.Model
 {
@@ -29,6 +30,15 @@ namespace TGC.Group.Model
 
         //Dev vars
         private bool godmode = false;
+
+        private bool puedoEnfretarTiburon = false;
+
+        public bool puedoEnfrentarTiburon() { return puedoEnfretarTiburon; }
+
+        public void enfrentarTiburon()
+        {
+            puedoEnfretarTiburon = true;
+        }
 
         
         //Transformations vars
@@ -112,7 +122,7 @@ namespace TGC.Group.Model
 
             if (i)
             {
-                if (Hud.GetCurrentStatus() != Hud.Status.Inventory || Hud.GetCurrentStatus() != Hud.Status.Crafting)
+                if (Hud.GetCurrentStatus() != Hud.Status.Inventory && Hud.GetCurrentStatus() != Hud.Status.Crafting)
                     if (!estaEnNave)
                         Hud.ChangeStatus(Hud.Status.Inventory);
                     else
