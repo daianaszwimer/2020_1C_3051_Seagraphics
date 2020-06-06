@@ -21,8 +21,6 @@ namespace TGC.Group.Model.Gui
     {
         public enum Status { 
             MainMenu, //This state only works at the start of the game
-            Ship,
-            Water,
             Inventory,
             Crafting,
             GameOver, //Player changes to this state when IsDead();
@@ -54,7 +52,8 @@ namespace TGC.Group.Model.Gui
         //"Consts"
         static int WIDTH;
         static int HEIGHT;
-        const int MAX_ITEM_SPRITES = 30; //Deberia ser multiplo de 10.
+        const int MAX_INVENTORY_ITEMS = 30; //Deberia ser multiplo de 10.
+        const int MAX_CRAFTING_ITEMS = 5;
 
         //Drawing vars
         static Drawer2D drawer;
@@ -66,23 +65,28 @@ namespace TGC.Group.Model.Gui
         static CustomSprite Background;
 
         static CustomSprite ItemBackgroundPreset;
-        static List<ItemSprite> ItemSprites;
+        static List<ItemSprite> InventoryItems;
+        static List<ItemSprite> CraftingItems;
 
         static TgcText2D GameOver;
+
+        static string MediaDir;
 
         
 
 
 
 
-        public static void Init(string MediaDir, Inventory inventory)
+        public static void Init(string mediaDir, Inventory inventory)
         {
             WIDTH = D3DDevice.Instance.Width;
             HEIGHT = D3DDevice.Instance.Height;
 
+            MediaDir = mediaDir;
             Inventory = inventory;
 
-            ItemSprites = new List<ItemSprite>();
+            InventoryItems = new List<ItemSprite>();
+            CraftingItems = new List<ItemSprite>();
             SelectedItemIndex = 0;
 
             drawer = new Drawer2D();
@@ -132,8 +136,9 @@ namespace TGC.Group.Model.Gui
             ItemBackgroundPreset = new CustomSprite();
             ItemBackgroundPreset.Bitmap = new CustomBitmap(MediaDir + "item_placeholder.png", D3DDevice.Instance.Device);
             spriteSize = ItemBackgroundPreset.Bitmap.Size;
+
             //10 items per line
-            for (int j = 0; j <= MAX_ITEM_SPRITES / 10 - 1; j++)
+            for (int j = 0; j <= MAX_INVENTORY_ITEMS / 10 - 1; j++)
             {
                 for (int i = 0; i <= 9; i++)
                 {
@@ -152,16 +157,36 @@ namespace TGC.Group.Model.Gui
                     var xpos = Round(item.background.Position.X + spriteSize.Width / 3);
                     var ypos = Round(item.background.Position.Y + spriteSize.Height / 2);
                     item.amount.Position = new Point(xpos, ypos);
-                    item.amount.Size = new Size(25, 15);
+                    item.amount.Size = new Size(50, 15);
                     item.amount.changeFont(new Font("Calibri", 15, FontStyle.Bold));
                     item.amount.Color = Color.White;
 
-                    ItemSprites.Add(item);
+                    item.icon = new CustomSprite();
+
+                    InventoryItems.Add(item);
                 }
             }
 
             //Crafting
-            
+            for (int i = 0; i < MAX_CRAFTING_ITEMS; i++)
+            {
+                var item = new ItemSprite();
+
+                item.background = new CustomSprite();
+                item.background.Bitmap = ItemBackgroundPreset.Bitmap;
+                var xoffset = 45 + i * spriteSize.Width * 1.5f;
+                var yoffset = Round(Overlay.Bitmap.Size.Height * 0.8f);
+                item.background.Position = Overlay.Position + new TGCVector2(xoffset, yoffset);
+                item.background.Color = Color.CadetBlue;
+
+                item.amount = new TgcText2D();
+                item.amount.Text = "";
+
+                item.icon = new CustomSprite();
+                item.icon.Position = item.background.Position;
+
+                CraftingItems.Add(item);
+            }
 
 
             //GameOver
@@ -202,19 +227,15 @@ namespace TGC.Group.Model.Gui
                 if(LastStatus != Status.Inventory && LastStatus != Status.Crafting)
                     UpdateIconSprites();
 
-                ItemSprites[SelectedItemIndex].background.Color = Color.CadetBlue;
+                CraftingItems[SelectedItemIndex].background.Color = Color.CadetBlue;
 
-                if (up)
-                    SelectedItemIndex -= 10;
-                else if (down)
-                    SelectedItemIndex += 10;
-                else if (left)
+                if (left)
                     SelectedItemIndex--;
                 else if (right)
                     SelectedItemIndex++;
 
-                SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_ITEM_SPRITES - 1);
-                ItemSprites[SelectedItemIndex].background.Color = Color.Orange;
+                SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_CRAFTING_ITEMS - 1);
+                CraftingItems[SelectedItemIndex].background.Color = Color.Orange;
             }
 
             //Update last status so it doesn't UpdateIconSprites() multiple times
@@ -246,23 +267,29 @@ namespace TGC.Group.Model.Gui
                 drawer.DrawSprite(Overlay);
                 
 
-                foreach (var item in ItemSprites)
+                foreach (var item in InventoryItems)
                 {
                     drawer.DrawSprite(item.background);
-                    if(item.icon != null)
+                    if(item.icon.Bitmap != null)
                         drawer.DrawSprite(item.icon);
                 }
+
+                //Show crafting as an extra
+                if (CurrentStatus == Status.Crafting)
+                {
+                    foreach (var item in CraftingItems)
+                    {
+                        drawer.DrawSprite(item.background);
+                        if (item.icon.Bitmap != null)
+                            drawer.DrawSprite(item.icon);
+                    }
+                }
+
                 drawer.EndDrawSprite();
 
                 //Draw text
-                foreach (var item in ItemSprites)
+                foreach (var item in InventoryItems)
                     item.amount.render();
-
-                //Show crafting + inventory
-                if (CurrentStatus == Status.Crafting)
-                {
-
-                }
             }
             //GameOver
             else if (CurrentStatus == Status.GameOver)
@@ -279,7 +306,9 @@ namespace TGC.Group.Model.Gui
             Logo.Dispose();
             Background.Dispose();
             Overlay.Dispose();
-            foreach (var item in ItemSprites)
+            foreach (var item in InventoryItems)
+                item.Dispose();
+            foreach (var item in CraftingItems)
                 item.Dispose();
         }
 
@@ -289,15 +318,26 @@ namespace TGC.Group.Model.Gui
             CurrentStatus = status; 
         }
 
+        public static Status GetCurrentStatus() { return CurrentStatus; }
+
         //Internal functions
         private static int Round(float n) { return (int)Math.Round(n); }
 
         private static void UpdateIconSprites()
         {
-            List<Item> InventoryItems = Inventory.GetList();
-            for (int i=0;i < InventoryItems.Count;i++)
+            List<Item> ItemsInInventory = Inventory.GetItems();
+            for (int i = 0; i < InventoryItems.Count && i < ItemsInInventory.Count; i++)
             {
-                ItemSprites[i].amount.Text = InventoryItems[i].Amount().ToString();
+                InventoryItems[i].amount.Text = ItemsInInventory[i].Amount().ToString();
+                InventoryItems[i].amount.Text = ItemsInInventory[i].obtenerImagen();
+            }
+
+            var CraftsInInventory = Inventory.GetCraftings();
+            for (int i = 0; i < CraftingItems.Count && i < CraftsInInventory.Count; i++)
+            {
+                var craft = CraftsInInventory[i];
+                string path = MediaDir + CraftsInInventory[i].obtenerImagen();
+                CraftingItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
             }
         }
     }

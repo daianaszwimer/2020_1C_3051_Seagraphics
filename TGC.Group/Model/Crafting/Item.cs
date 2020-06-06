@@ -15,6 +15,9 @@ namespace TGC.Group.Model
         // Indico la cantidad que recolecte de ese tipo
         private int amount;
 
+        private string Path;
+        public string obtenerImagen() { return Path; }
+
         // Creo un nuevo item cada vez que recolecte un elemento (lo hace el player)
         public Item(ElementoRecolectable name, int amount) { this.name = name; this.amount = amount; }
 

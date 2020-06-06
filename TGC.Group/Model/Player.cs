@@ -112,7 +112,13 @@ namespace TGC.Group.Model
 
             if (i)
             {
-                Hud.ChangeStatus(Hud.Status.Inventory);
+                if (Hud.GetCurrentStatus() != Hud.Status.Inventory || Hud.GetCurrentStatus() != Hud.Status.Crafting)
+                    if (!estaEnNave)
+                        Hud.ChangeStatus(Hud.Status.Inventory);
+                    else
+                        Hud.ChangeStatus(Hud.Status.Crafting);
+                else
+                    Hud.ChangeStatus(Hud.Status.None);
             }
 
             if (o)
