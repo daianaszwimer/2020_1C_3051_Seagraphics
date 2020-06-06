@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace TGC.Group.Model.Crafting
 {
     // Para definir que pueden hacer todos los elementos que podran ser recolectados por el Player
     class Recolectable
     {
         Inventory inventory;
+        private static Recolectable _instance;
 
-        public Recolectable(Inventory inventory)
+        protected Recolectable()
         {
-            this.inventory = inventory;
+            this.inventory = Inventory.Instance();
         }
+
+        public static Recolectable Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Recolectable();
+            }
+
+            return _instance;
+        }
+
 
         public void Recolectar(ElementoRecolectable name, int amount)
         {

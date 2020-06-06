@@ -9,8 +9,6 @@ namespace TGC.Group.Model.Entidades
     {
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
 
-        public Recolectable Recolectable { get;  set; }
-
         public Coral(TgcMesh mesh) : base(mesh, meshLookDir) { }
 
         protected override void InitEntity()

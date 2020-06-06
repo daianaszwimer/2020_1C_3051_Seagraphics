@@ -56,9 +56,6 @@ namespace TGC.Group.Model
         List<Coral> corales;
         List<Fish> peces;
 
-        //Inventario
-        Inventory inventory;
-
         FPSCamara FPSCamara;
         Player Player;
         Nave nave;
@@ -100,11 +97,6 @@ namespace TGC.Group.Model
         { 
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
-
-            //Creo el inventario
-            inventory = new Inventory();
-            //Creo el manejador de recolectables
-            Recolectable recolectador = new Recolectable(inventory);
 
             timestamp = DateTime.Now;
 
@@ -150,7 +142,6 @@ namespace TGC.Group.Model
                 string meshName = i.ToString();
                 fish = new Fish(mesh.clone(meshName));
                 fish = (Fish)setearMeshParaLista(fish, i);
-                fish.Recolectable = recolectador;
                 peces.Add(fish);
                 i++;
             }
@@ -173,7 +164,6 @@ namespace TGC.Group.Model
                 string meshName = i.ToString();
                 coral = new Coral(mesh.clone(meshName));
                 coral = (Coral)setearMeshParaLista(coral, i * 4, -20);
-                coral.Recolectable = recolectador;
                 corales.Add(coral);
                 i++;
             }
@@ -188,7 +178,6 @@ namespace TGC.Group.Model
                 string meshName = i.ToString();
                 oro = new Metal(mesh.clone(meshName));
                 oro = (Metal)setearMeshParaLista(oro, i * 8, -20);
-                oro.Recolectable = recolectador;
                 oro.Tipo = ElementoRecolectable.oro;
                 metalesOro.Add(oro);
                 i++;
@@ -338,8 +327,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
             DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
             DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
-            DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
-            DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
+            DrawText.drawText("Inventario: \n" + Inventory.Instance().inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
+            DrawText.drawText("Crafteos disponibles: \n" + Inventory.Instance().inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
 
             Player.Render();
 

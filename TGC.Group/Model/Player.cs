@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using TGC.Core.BoundingVolumes;
-using TGC.Core.Camara;
 using TGC.Core.Collision;
 using TGC.Core.Geometry;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model
@@ -15,7 +13,7 @@ namespace TGC.Group.Model
     class Player
     {
         //Gameplay vars
-        private Inventory inventory = new Inventory();
+        private Inventory inventory = Inventory.Instance();
         private float oxygen = 100f;
         private float health = 100f;
         private bool estaEnNave;
