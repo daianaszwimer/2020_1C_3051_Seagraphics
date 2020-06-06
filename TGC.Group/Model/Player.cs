@@ -10,6 +10,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 using TGC.Group.Model.Gui;
+using TGC.Group.Model.Entidades;
 
 namespace TGC.Group.Model
 {
@@ -29,6 +30,21 @@ namespace TGC.Group.Model
 
         //Dev vars
         private bool godmode = false;
+
+        private bool puedoEnfretarTiburon = false;
+
+        public bool puedoEnfrentarTiburon() { return puedoEnfretarTiburon; }
+
+        public void enfrentarTiburon()
+        {
+            this.puedoEnfretarTiburon = true;
+        }
+
+        public void atacarATiburon(Shark tiburon)
+        {
+            //tiburon.puedenAtacarme(arma);
+            tiburon.puedenAtarcame();
+        }
 
         
         //Transformations vars
