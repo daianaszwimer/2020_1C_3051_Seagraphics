@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model.Crafting
 {
@@ -46,9 +42,9 @@ namespace TGC.Group.Model.Crafting
             this.danioArma = 10;
         }
 
-        public void darHabilidadAPlayer(Player jugador)
+        public void darHabilidadAPlayer()
         {
-            jugador.enfrentarTiburon();
+            Player.Instance().enfrentarTiburon();
         }
 
         // Se fija que el inventario tenga las cantidades y tipos de elementos suficientes para crear un cuchillo

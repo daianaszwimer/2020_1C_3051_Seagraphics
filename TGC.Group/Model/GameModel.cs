@@ -112,10 +112,11 @@ namespace TGC.Group.Model
             //Cursor.Hide();
 
             //Settear jugador y camara
-            Player = new Player(Input);
+            Player = Player.Instance();
+            Player.SetInput(Input);
             Player.InitMesh();
 
-            FPSCamara = new FPSCamara(Camera, Input, Player);
+            FPSCamara = new FPSCamara(Camera, Input);
 
             //Inicializar camara
             var cameraPosition = new TGCVector3(0, 100, 150);
@@ -125,7 +126,7 @@ namespace TGC.Group.Model
 
 
             //Iniciar HUD
-            Hud.Init(MediaDir,Player);
+            Hud.Init(MediaDir);
             Hud.ChangeStatus(Hud.Status.Gameplay);
 
             //Cargar enviroment
@@ -157,10 +158,9 @@ namespace TGC.Group.Model
             scene = loader.loadSceneFromFile(MediaDir + "shark-TgcScene.xml");
             mesh = scene.Meshes[0];
 
-            shark = new Shark(mesh, Player);
+            shark = new Shark(mesh);
             shark.Init();
             
-
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
             

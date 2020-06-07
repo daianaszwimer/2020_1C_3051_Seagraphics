@@ -1,14 +1,6 @@
-﻿using BulletSharp;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.BoundingVolumes;
+﻿using System.Collections.Generic;
 using TGC.Core.Camara;
 using TGC.Core.Collision;
-using TGC.Core.Example;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -19,7 +11,7 @@ namespace TGC.Group.Model
     class FPSCamara
     {
         private TgcCamera Camara;
-        private Player Player;
+        private Player Player = Player.Instance();
         private TgcD3dInput Input;
 
         
@@ -33,10 +25,9 @@ namespace TGC.Group.Model
         private const float CAMERA_MAX_X_ANGLE = 1.5f;
         private float sensitivity = 10f;
 
-        public FPSCamara(TgcCamera Camara, TgcD3dInput Input, Player Player)
+        public FPSCamara(TgcCamera Camara, TgcD3dInput Input)
         {
             this.Camara = Camara;
-            this.Player = Player;
             this.Input = Input;
 
             this.ray = new TgcPickingRay(Input);

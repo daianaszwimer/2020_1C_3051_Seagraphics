@@ -8,7 +8,6 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Crafting;
 using TGC.Group.Model.Gui;
-using TGC.Group.Model.Entidades;
 
 namespace TGC.Group.Model
 {
@@ -34,14 +33,7 @@ namespace TGC.Group.Model
 
         private bool puedoEnfretarTiburon = false;
 
-        public bool puedoEnfrentarTiburon() { return puedoEnfretarTiburon; }
 
-        public void enfrentarTiburon()
-        {
-            puedoEnfretarTiburon = true;
-        }
-
-        
         //Transformations vars
         private TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
@@ -52,8 +44,33 @@ namespace TGC.Group.Model
         private float speed = 25f; //foward and horizontal speed
         private float vspeed = 10f; //vertical speed
 
+        private static Player _instance;
 
-        public Player(TgcD3dInput Input) { this.Input = Input; }
+        protected Player()
+        {
+        }
+
+        public static Player Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Player();
+            }
+
+            return _instance;
+        }
+
+        public void SetInput(TgcD3dInput Input)
+        {
+            this.Input = Input;
+        }
+
+        public bool puedoEnfrentarTiburon() { return puedoEnfretarTiburon; }
+
+        public void enfrentarTiburon()
+        {
+            puedoEnfretarTiburon = true;
+        }
 
         //Tgc functions
 

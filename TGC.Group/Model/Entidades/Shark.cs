@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Collision;
-using TGC.Core.BoundingVolumes;
-using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model.Entidades
 {
     class Shark : Entity
     {
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
-        Player player;
 
         private int vida;
 
@@ -45,9 +38,8 @@ namespace TGC.Group.Model.Entidades
 
         bool canDealDamage = true;
 
-        public Shark(TgcMesh mesh, Player player) : base(mesh, meshLookDir) 
+        public Shark(TgcMesh mesh) : base(mesh, meshLookDir) 
         {
-            this.player = player;
             this.vida = 500;
             necesitaArmaParaInteractuar = true;
         }
@@ -89,13 +81,13 @@ namespace TGC.Group.Model.Entidades
             var x = (float)r.NextDouble() * sign;
             var z = (float)r.NextDouble() * sign;
             
-            mesh.Position = player.Position() + new TGCVector3(x, 0, z) * 100f;
+            mesh.Position = Player.Instance().Position() + new TGCVector3(x, 0, z) * 100f;
         }
 
         protected override void InteractEntity()
         {
             base.InteractEntity();
-            if (player.puedoEnfrentarTiburon())
+            if (Player.Instance().puedoEnfrentarTiburon())
             {
                 //reducirVidaEn(conQueMeAtacan.danio);
                 reducirVidaEn(10);
@@ -105,7 +97,7 @@ namespace TGC.Group.Model.Entidades
 
         //Internal functions
 
-        private void SetPlayerGoalPos() { goalPos = player.Position(); }
+        private void SetPlayerGoalPos() { goalPos = Player.Instance().Position(); }
 
         private void SetEscapeGoalPos()
         {
@@ -120,10 +112,10 @@ namespace TGC.Group.Model.Entidades
         private void Attack()
         {
             //Chequear colisiones
-            var hitPlayer = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, player.BoundingBox());
+            var hitPlayer = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, Player.Instance().BoundingBox());
             if (hitPlayer)
             {
-                player.GetDamage(DAMAGE);
+                Player.Instance().GetDamage(DAMAGE);
                 canDealDamage = false;
             }
         }

@@ -1,6 +1,4 @@
-﻿using System.IO;
-using TGC.Core.Example;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 
@@ -8,8 +6,6 @@ namespace TGC.Group.Model.Entidades
 {
     class Coral : Entity
     {
-        private TGCMatrix escalaBase;
-
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
 
         public Coral(TgcMesh mesh) : base(mesh, meshLookDir) { }

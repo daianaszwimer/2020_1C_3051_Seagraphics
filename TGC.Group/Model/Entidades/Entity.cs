@@ -60,7 +60,7 @@ namespace TGC.Group.Model.Entidades
         public virtual void Interact() {
             if (!estaOculto)
             {
-                if (!necesitaArmaParaInteractuar || (necesitaArmaParaInteractuar && false))
+                if (!necesitaArmaParaInteractuar || (necesitaArmaParaInteractuar && Player.Instance().puedoEnfrentarTiburon()))
                 {
                     estaOculto = true;
                     InteractEntity();

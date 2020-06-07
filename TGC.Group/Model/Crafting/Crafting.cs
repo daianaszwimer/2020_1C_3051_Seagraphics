@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model.Crafting
 {
@@ -27,7 +22,7 @@ namespace TGC.Group.Model.Crafting
 
         String obtenerImagen();
 
-        void darHabilidadAPlayer(Player jugador);
+        void darHabilidadAPlayer();
 
         /* Consiste en que en la pantalla del inventario el crafteo este "gris" como inhabilitado
            Una vez que se pueda craftear el elemento dejara de estar gris en la pantalla y podra 

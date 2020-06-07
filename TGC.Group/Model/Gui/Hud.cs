@@ -1,19 +1,13 @@
 ﻿using TGC.Core.Direct3D;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using TGC.Core.Text;
 using TGC.Core.Mathematica;
 using TGC.Examples.Engine2D.Spaceship.Core;
 using TGC.Core.Input;
 using Microsoft.DirectX.DirectInput;
-using TGC.Core.Example;
 using TGC.Group.Model.Crafting;
-using System.Runtime.CompilerServices;
 
 namespace TGC.Group.Model.Gui
 {
@@ -41,7 +35,7 @@ namespace TGC.Group.Model.Gui
         }
 
         static Inventory Inventory;
-        static Player Player;
+        static Player Player = Player.Instance();
 
         //Control vars
         static Status CurrentStatus = Status.Gameplay;
@@ -76,19 +70,13 @@ namespace TGC.Group.Model.Gui
 
         static string MediaDir;
 
-
-
-
-
-
-        public static void Init(string mediaDir, Player player)
+        public static void Init(string mediaDir)
         {
             WIDTH = D3DDevice.Instance.Width;
             HEIGHT = D3DDevice.Instance.Height;
 
             MediaDir = mediaDir;
-            Inventory = player.GetInventory();
-            Player = player;
+            Inventory = Player.GetInventory();
 
             InventoryItems = new List<ItemSprite>();
             CraftingItems = new List<ItemSprite>();
@@ -276,9 +264,8 @@ namespace TGC.Group.Model.Gui
                     {
                         var SelectedItem = Inventory.GetCraftings()[SelectedItemIndex];
                         if (SelectedItem != null &&  SelectedItem.EstoyCrafteado())
-                            SelectedItem.darHabilidadAPlayer(Player);
+                            SelectedItem.darHabilidadAPlayer();
                     }
-
                 }
             }
 
