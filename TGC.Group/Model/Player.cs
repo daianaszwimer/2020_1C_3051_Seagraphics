@@ -22,7 +22,9 @@ namespace TGC.Group.Model
 
         private const float OXYGEN_LOSS_SPEED = 10f;
         private const float OXYGEN_RECOVER_SPEED = OXYGEN_LOSS_SPEED * 3.2f;
+        private const float OXYGEN_MAX = 100f;
         private const float OXYGEN_DAMAGE = 5f;
+        private const float HEALTH_MAX = 100f;
         private const float WATER_LEVEL = 10f; //When players reaches a position above this level, then recovers oxygen.
 
         TgcD3dInput Input;
@@ -199,11 +201,13 @@ namespace TGC.Group.Model
         public void GetHeal(float amount) { health = Math.Min(100f, health + amount); }
         public void GetDamage(float amount) { health = Math.Max(0, health - amount); }
         public bool IsDead() { return health <= 0; }
-        private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(100, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
+        private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(OXYGEN_MAX, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
         private bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
 
         public float Oxygen() { return oxygen; }
+        public float MaxOxygen() { return OXYGEN_MAX; }
         public float Health() { return health; }
+        public float MaxHealth() { return HEALTH_MAX; }
 
         public Inventory GetInventory() { return inventory; }
 

@@ -65,6 +65,8 @@ namespace TGC.Group.Model.Gui
         static CustomSprite OverlayInv; //Overlay de inventario
         static CustomSprite OverlayCraft;
         static CustomSprite Background;
+        static CustomSprite HealthBar;
+        static CustomSprite OxygenBar;
 
         static CustomSprite ItemBackgroundPreset;
         static List<ItemSprite> InventoryItems;
@@ -74,7 +76,7 @@ namespace TGC.Group.Model.Gui
 
         static string MediaDir;
 
-        
+
 
 
 
@@ -93,7 +95,7 @@ namespace TGC.Group.Model.Gui
             SelectedItemIndex = 0;
 
             drawer = new Drawer2D();
-            
+
             //Main Menu
             Logo = new CustomSprite();
             Logo.Bitmap = new CustomBitmap(MediaDir + "logo_subnautica.png", D3DDevice.Instance.Device);
@@ -103,7 +105,7 @@ namespace TGC.Group.Model.Gui
             Background = new CustomSprite();
             Background.Bitmap = new CustomBitmap(MediaDir + "background_subnautica.jpg", D3DDevice.Instance.Device);
             spriteSize = Background.Bitmap.Size;
-            Background.Position = new TGCVector2(0,0);
+            Background.Position = new TGCVector2(0, 0);
 
 
             Start = new TgcText2D();
@@ -126,7 +128,15 @@ namespace TGC.Group.Model.Gui
 
 
             //Gameplay
-            
+            HealthBar = new CustomSprite();
+            HealthBar.Bitmap = new CustomBitmap(MediaDir + "bar_health.png", D3DDevice.Instance.Device);
+            spriteSize = HealthBar.Bitmap.Size;
+            HealthBar.Position = new TGCVector2(WIDTH / 2 - spriteSize.Width / 2, Round(HEIGHT * 0.85f));
+
+            OxygenBar = new CustomSprite();
+            OxygenBar.Bitmap = new CustomBitmap(MediaDir + "bar_oxygen.png", D3DDevice.Instance.Device);
+            OxygenBar.Position = HealthBar.Position + new TGCVector2(0, 25 + spriteSize.Height);
+
 
 
             //Inventory
@@ -224,7 +234,17 @@ namespace TGC.Group.Model.Gui
             }
 
             //Update selection var
-            if (CurrentStatus == Status.MainMenu)
+            if (CurrentStatus == Status.Gameplay)
+            {
+                var health = Player.Health();
+                var maxHealth = Player.MaxHealth();
+                var oxygen = Player.Oxygen();
+                var maxOxygen = Player.MaxOxygen();
+
+                HealthBar.Scaling = new TGCVector2(health / maxHealth, 1);
+                OxygenBar.Scaling = new TGCVector2(oxygen / maxOxygen, 1);
+            }
+            else if (CurrentStatus == Status.MainMenu)
             {
                 if (up)
                     SelectedText = Start;
@@ -268,11 +288,15 @@ namespace TGC.Group.Model.Gui
 
             public static void Render()
         {
-            //If there's no HUD to be rendered then skip testing status
-            if(CurrentStatus == Status.Gameplay) { return; }
-
+            //Gameplay
+            if(CurrentStatus == Status.Gameplay) {
+                drawer.BeginDrawSprite();
+                drawer.DrawSprite(HealthBar);
+                drawer.DrawSprite(OxygenBar);
+                drawer.EndDrawSprite();
+            }
             //Main Menu
-            if(CurrentStatus == Status.MainMenu)
+            else if(CurrentStatus == Status.MainMenu)
             {
                 drawer.BeginDrawSprite();
                 drawer.DrawSprite(Background);
@@ -335,6 +359,8 @@ namespace TGC.Group.Model.Gui
             Background.Dispose();
             OverlayInv.Dispose();
             OverlayCraft.Dispose();
+            HealthBar.Dispose();
+            OxygenBar.Dispose();
             foreach (var item in InventoryItems)
                 item.Dispose();
             foreach (var item in CraftingItems)
