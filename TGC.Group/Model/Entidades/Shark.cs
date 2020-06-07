@@ -49,6 +49,7 @@ namespace TGC.Group.Model.Entidades
         {
             this.player = player;
             this.vida = 500;
+            necesitaArmaParaInteractuar = true;
         }
 
         //Entity functions

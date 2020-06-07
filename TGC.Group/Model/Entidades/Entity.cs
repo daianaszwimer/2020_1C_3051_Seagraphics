@@ -11,6 +11,12 @@ namespace TGC.Group.Model.Entidades
         protected TGCVector3 defaultLookDir; //direccion a la que esta mirando el mesh al meterlo en escena
         protected TGCQuaternion rotation;
         public Recolectable Recolectable { get; } = Recolectable.Instance();
+        // todos los elementos inicialmente se muestran
+        // cuando se clickean se pasa a true y despues se reutiliza y se muestra el elemento en otro lado
+        // y el valor nuevamente pasa a false
+        public bool estaOculto { get; set; } = false;
+        // solo el tiburon lo tiene en true
+        public bool necesitaArmaParaInteractuar { get; set; } = false;
 
         public Entity(TgcMesh mesh, TGCVector3 defaultLookDir) { 
             this.mesh = mesh;
@@ -24,11 +30,15 @@ namespace TGC.Group.Model.Entidades
         }
 
         public void Update(float ElapsedTime) {
+            // si esta oculto, mostrarlo en un lugar donde no este mirando el player
             UpdateEntity(ElapsedTime);
         }
-        public void Render() { 
-            mesh.Render(); 
-            RenderEntity(); 
+        public void Render() {
+            if (!estaOculto)
+            {
+                mesh.Render();
+                RenderEntity();
+            }
         }
 
         public void Effect(Effect effect)
@@ -48,7 +58,14 @@ namespace TGC.Group.Model.Entidades
         }
 
         public virtual void Interact() {
-            InteractEntity();
+            if (!estaOculto)
+            {
+                if (!necesitaArmaParaInteractuar || (necesitaArmaParaInteractuar && false))
+                {
+                    estaOculto = true;
+                    InteractEntity();
+                }
+            }
         }
 
         public void cambiarPosicion(TGCVector3 nuevaPosicion)
@@ -77,7 +94,6 @@ namespace TGC.Group.Model.Entidades
 
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
-
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }
 

@@ -348,8 +348,7 @@ namespace TGC.Group.Model
 
             Player.Render();
 
-            D3DDevice.Instance.Device.EndScene();
-            D3DDevice.Instance.Device.Present();
+            PostRender();
 
         }
 

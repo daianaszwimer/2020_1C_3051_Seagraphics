@@ -28,7 +28,7 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             base.InteractEntity();
-            Recolectable.Recolectar(ElementoRecolectable.coral, 1);    
+            Recolectable.Recolectar(ElementoRecolectable.coral, 1);
             
         }
 
