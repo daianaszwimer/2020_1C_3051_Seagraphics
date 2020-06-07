@@ -1,7 +1,6 @@
 ﻿using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
-using TGC.Core.Input;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -9,8 +8,6 @@ namespace TGC.Group.Model.Entidades
     {
         private TGCMatrix escalaBase;
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
-
-        public Recolectable Recolectable { get; set; }
 
         public ElementoRecolectable Tipo { get; set; }
 

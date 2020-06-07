@@ -1,21 +1,13 @@
-﻿using Microsoft.DirectX.Direct3D;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
-using TGC.Core.Input;
 
 namespace TGC.Group.Model.Entidades
 {
     class Fish : Entity
     {
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
-
-        public Recolectable Recolectable { get; set; }
 
         //Config
         const float speed = 7.5f;

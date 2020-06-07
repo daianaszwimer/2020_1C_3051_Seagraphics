@@ -44,7 +44,7 @@ namespace TGC.Group.Model
 
         DateTime timestamp;
 
-        bool estaEnNave = true;
+        bool estaEnNave = false;
 
         Fondo oceano;
         TgcSimpleTerrain heightmap;
@@ -53,12 +53,9 @@ namespace TGC.Group.Model
 
         //Entidades
         Shark shark;
-        Coral coral;
-        Metal oro;
+        List<Metal> metalesOro;
+        List<Coral> corales;
         List<Fish> peces;
-
-        //Inventario
-        Inventory inventory;
 
         FPSCamara FPSCamara;
         Player Player;
@@ -76,6 +73,20 @@ namespace TGC.Group.Model
         float marScaleY = .5f;
         float marOffsetY = -150f;
 
+        private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
+        {
+            elemento.Init();
+            //todo: descomentar cuando recolectable se mueva a entity
+            //elemento.Recolectable = recolectador;
+            int seed = DateTime.Now.Millisecond + i;
+            Random random = new Random(seed);
+            float y = posicionY == 0 ? i/10 : posicionY;
+            TGCVector3 posicion = new TGCVector3((i * (random.Next(0, 5) * (float)Math.Sin(i)) * 2), y, i * 2 * (float)Math.Cos(i) * random.Next(0, 5));
+            // todo: fixear corales y oro que se superponen
+            // todo: nave se superpone con cosas del piso, si la ponemos arriba en el limite con el agua no pasaria mas
+            elemento.cambiarPosicion(posicion);
+            return elemento;
+        }
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -87,11 +98,6 @@ namespace TGC.Group.Model
         { 
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
-
-            //Creo el inventario
-            inventory = new Inventory();
-            //Creo el manejador de recolectables
-            Recolectable recolectador = new Recolectable(inventory);
 
             timestamp = DateTime.Now;
 
@@ -119,7 +125,7 @@ namespace TGC.Group.Model
 
 
             //Iniciar HUD
-            Hud.Init(MediaDir,inventory,Player);
+            Hud.Init(MediaDir,Player);
             Hud.ChangeStatus(Hud.Status.Gameplay);
 
             //Cargar enviroment
@@ -143,8 +149,7 @@ namespace TGC.Group.Model
                 Fish fish;
                 string meshName = i.ToString();
                 fish = new Fish(mesh.clone(meshName));
-                fish.Init();
-                fish.Recolectable = recolectador;
+                fish = (Fish)setearMeshParaLista(fish, i);
                 peces.Add(fish);
                 i++;
             }
@@ -158,16 +163,34 @@ namespace TGC.Group.Model
 
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
-            coral = new Coral(mesh);
-            coral.Init();
-            coral.Recolectable = recolectador;
+            
+
+            corales = new List<Coral>();
+            i = 0;
+            while (i < 25)
+            {
+                Coral coral;
+                string meshName = i.ToString();
+                coral = new Coral(mesh.clone(meshName));
+                coral = (Coral)setearMeshParaLista(coral, i * 4, -20);
+                corales.Add(coral);
+                i++;
+            }
 
             scene = loader.loadSceneFromFile(MediaDir + "Oro-TgcScene.xml");
             mesh = scene.Meshes[0];
-            oro = new Metal(mesh);
-            oro.Init();
-            oro.Tipo = ElementoRecolectable.oro;
-            oro.Recolectable = recolectador;
+            metalesOro = new List<Metal>();
+            i = 0;
+            while (i < 10)
+            {
+                Metal oro;
+                string meshName = i.ToString();
+                oro = new Metal(mesh.clone(meshName));
+                oro = (Metal)setearMeshParaLista(oro, i * 8, -20);
+                oro.Tipo = ElementoRecolectable.oro;
+                metalesOro.Add(oro);
+                i++;
+            }
 
             scene = loader.loadSceneFromFile(MediaDir + "ship-TgcScene.xml");
             nave = Nave.Instance();
@@ -207,8 +230,6 @@ namespace TGC.Group.Model
             } else
             {
                 // update de elementos de agua
-                coral.Update(ElapsedTime);
-                oro.Update(ElapsedTime);
                 nave.Update();
                 oceano.Update();
 
@@ -224,6 +245,14 @@ namespace TGC.Group.Model
                 foreach (var pez in peces)
                 {
                     pez.Update(ElapsedTime);
+                }
+                foreach (var coral in corales)
+                {
+                    coral.Update(ElapsedTime);
+                }
+                foreach (var oro in metalesOro)
+                {
+                    oro.Update(ElapsedTime);
                 }
 
             }
@@ -280,24 +309,28 @@ namespace TGC.Group.Model
                     pez.Technique("RenderScene");
                     pez.Render();
                 }
+                foreach (var coral in corales)
+                {
+                    coral.Effect(e_fog);
+                    coral.Technique("RenderScene");
+                    coral.Render();
+                }
 
 
                 shark.Effect(e_fog);
                 shark.Technique("RenderScene");
                 shark.Render();
 
-                coral.Effect(e_fog);
-                coral.Technique("RenderScene");
-                coral.Render();
-
                 nave.Effect(e_fog);
                 nave.Technique("RenderScene");
                 nave.Render();
 
-                oro.Effect(e_fog);
-                oro.Technique("RenderScene");
-                oro.Render();
-
+                foreach (var oro in metalesOro)
+                {
+                    oro.Effect(e_fog);
+                    oro.Technique("RenderScene");
+                    oro.Render();
+                }
             }
 
             //Dibuja un texto por pantalla
@@ -335,9 +368,15 @@ namespace TGC.Group.Model
             {
                 pez.Dispose();
             }
+            foreach (var coral in corales)
+            {
+                coral.Dispose();
+            }
+            foreach (var oro in metalesOro)
+            {
+                oro.Dispose();
+            }
             shark.Dispose();
-            oro.Dispose();
-            coral.Dispose();
             nave.Dispose();
 
             interiorNave.Dispose();

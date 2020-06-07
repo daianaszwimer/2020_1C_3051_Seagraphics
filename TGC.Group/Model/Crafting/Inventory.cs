@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TGC.Group.Model.Crafting
 {
@@ -13,7 +10,10 @@ namespace TGC.Group.Model.Crafting
         private List<Crafting> Crafteos; // Almaceno los crafteos existentes
         private List<Crafting> crafteosHabilitados; // Aca estaran los crafteos que se pueden realizar
 
-        public Inventory()
+        private static Inventory _instance;
+
+        protected Inventory()
+
         {
             // El inventario comienza vacio
             this.inventory = new List<Item>();
@@ -32,6 +32,17 @@ namespace TGC.Group.Model.Crafting
 
             //Faltan crear mas crafteos
         }
+
+        public static Inventory Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Inventory();
+            }
+
+            return _instance;
+        }
+
 
         public void Add(Item item)
         {

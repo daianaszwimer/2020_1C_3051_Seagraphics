@@ -1,7 +1,7 @@
 ﻿using Microsoft.DirectX.Direct3D;
-using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Crafting;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -10,6 +10,7 @@ namespace TGC.Group.Model.Entidades
         protected TgcMesh mesh;
         protected TGCVector3 defaultLookDir; //direccion a la que esta mirando el mesh al meterlo en escena
         protected TGCQuaternion rotation;
+        public Recolectable Recolectable { get; } = Recolectable.Instance();
 
         public Entity(TgcMesh mesh, TGCVector3 defaultLookDir) { 
             this.mesh = mesh;
@@ -50,6 +51,10 @@ namespace TGC.Group.Model.Entidades
             InteractEntity();
         }
 
+        public void cambiarPosicion(TGCVector3 nuevaPosicion)
+        {
+            mesh.Position = nuevaPosicion;
+        }
 
         //Override functions
         protected virtual void InitEntity() { }

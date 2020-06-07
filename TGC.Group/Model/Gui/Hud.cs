@@ -79,13 +79,13 @@ namespace TGC.Group.Model.Gui
 
 
 
-        public static void Init(string mediaDir, Inventory inventory, Player player)
+        public static void Init(string mediaDir, Player player)
         {
             WIDTH = D3DDevice.Instance.Width;
             HEIGHT = D3DDevice.Instance.Height;
 
             MediaDir = mediaDir;
-            Inventory = inventory;
+            Inventory = player.GetInventory();
             Player = player;
 
             InventoryItems = new List<ItemSprite>();
