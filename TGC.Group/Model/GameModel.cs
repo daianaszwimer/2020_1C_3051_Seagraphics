@@ -120,7 +120,7 @@ namespace TGC.Group.Model
 
             //Iniciar HUD
             Hud.Init(MediaDir,inventory,Player);
-            Hud.ChangeStatus(Hud.Status.None);
+            Hud.ChangeStatus(Hud.Status.Gameplay);
 
             //Cargar enviroment
             oceano = new Fondo(MediaDir, ShadersDir);

@@ -128,7 +128,7 @@ namespace TGC.Group.Model
                     else
                         Hud.ChangeStatus(Hud.Status.Crafting);
                 else
-                    Hud.ChangeStatus(Hud.Status.None);
+                    Hud.ChangeStatus(Hud.Status.Gameplay);
             }
 
             if (o)
@@ -140,6 +140,8 @@ namespace TGC.Group.Model
                     mesh.Position = posicionInteriorNave;
                 }
                 estaEnNave_ = !estaEnNave_;
+
+                Hud.ChangeStatus(Hud.Status.Gameplay);
             }
 
             //Dev

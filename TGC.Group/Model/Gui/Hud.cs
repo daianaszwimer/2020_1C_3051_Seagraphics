@@ -24,7 +24,7 @@ namespace TGC.Group.Model.Gui
             Inventory,
             Crafting,
             GameOver, //Player changes to this state when IsDead();
-            None
+            Gameplay
         };
 
         struct ItemSprite
@@ -44,8 +44,8 @@ namespace TGC.Group.Model.Gui
         static Player Player;
 
         //Control vars
-        static Status CurrentStatus = Status.MainMenu;
-        static Status LastStatus = Status.MainMenu;
+        static Status CurrentStatus = Status.Gameplay;
+        static Status LastStatus = Status.Gameplay;
 
         static TgcText2D SelectedText;
         static int SelectedItemIndex;
@@ -165,6 +165,7 @@ namespace TGC.Group.Model.Gui
                     item.amount.Color = Color.White;
 
                     item.icon = new CustomSprite();
+                    item.icon.Position = item.background.Position;
 
                     InventoryItems.Add(item);
                 }
@@ -229,6 +230,8 @@ namespace TGC.Group.Model.Gui
                     SelectedText = Start;
                 else if (down)
                     SelectedText = Exit;
+                else if (enter && SelectedText == Start)
+                    ChangeStatus(Status.Gameplay);
             }
             else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
             {
@@ -266,7 +269,7 @@ namespace TGC.Group.Model.Gui
             public static void Render()
         {
             //If there's no HUD to be rendered then skip testing status
-            if(CurrentStatus == Status.None) { return; }
+            if(CurrentStatus == Status.Gameplay) { return; }
 
             //Main Menu
             if(CurrentStatus == Status.MainMenu)
@@ -355,13 +358,14 @@ namespace TGC.Group.Model.Gui
             for (int i = 0; i < InventoryItems.Count && i < ItemsInInventory.Count; i++)
             {
                 InventoryItems[i].amount.Text = ItemsInInventory[i].Amount().ToString();
-                //InventoryItems[i].icon.Bitmap = ItemsInInventory[i].obtenerImagen();
+                string path = MediaDir + ItemsInInventory[i].obtenerImagen();
+                Console.WriteLine(path);
+                InventoryItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
             }
 
             var CraftsInInventory = Inventory.GetCraftings();
             for (int i = 0; i < CraftingItems.Count && i < CraftsInInventory.Count; i++)
             {
-                var craft = CraftsInInventory[i];
                 string path = MediaDir + CraftsInInventory[i].obtenerImagen();
                 CraftingItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
             }
