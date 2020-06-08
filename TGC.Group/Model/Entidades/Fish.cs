@@ -40,6 +40,11 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             base.InteractEntity();
+            if (estaOculto)
+            {
+                cambiarPosicion();
+                estaOculto = false;
+            }
             Recolectable.Recolectar(ElementoRecolectable.fish, 1);
         }
 
@@ -61,9 +66,10 @@ namespace TGC.Group.Model.Entidades
             var y = (float) r.NextDouble();
             var z = (float) r.NextDouble() * sign;
 
-            y = FastMath.Min(y, 0.3f);
+            y = FastMath.Min(y, 0.25f);
 
             goalPos = new TGCVector3(x, y, z) * distanceToMove;
+            goalPos.Y = FastMath.Max(goalPos.Y, 10); //para que nade por encima del suelo
         }
 
         private void SetEscapeGoalPos()

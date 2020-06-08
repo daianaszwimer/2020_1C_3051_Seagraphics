@@ -112,11 +112,11 @@ namespace TGC.Group.Model
             //Cursor.Hide();
 
             //Settear jugador y camara
+            FPSCamara = new FPSCamara(Camera, Input);
+
             Player = Player.Instance();
             Player.SetInput(Input);
-            Player.InitMesh();
-
-            FPSCamara = new FPSCamara(Camera, Input);
+            Player.Init(FPSCamara);
 
             //Inicializar camara
             var cameraPosition = new TGCVector3(0, 100, 150);
@@ -268,7 +268,7 @@ namespace TGC.Group.Model
             //Camara y jugador
             FPSCamara.Update(ElapsedTime);
 
-            Player.Update(FPSCamara, ElapsedTime, ref estaEnNave);
+            Player.Update(ElapsedTime, ref estaEnNave);
 
             PostUpdate();
 

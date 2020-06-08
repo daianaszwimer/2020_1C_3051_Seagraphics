@@ -15,6 +15,8 @@ namespace TGC.Group.Model
     {
         //Gameplay vars
         private Inventory inventory = Inventory.Instance();
+        private FPSCamara Camara;
+
         private float oxygen = 100f;
         private float health = 100f;
         private bool estaEnNave;
@@ -79,17 +81,18 @@ namespace TGC.Group.Model
         public TGCVector3 Position() { return mesh.Position; }
         public TgcBoundingAxisAlignBox BoundingBox() { return mesh.BoundingBox; }
 
-        public void InitMesh() {
+        public void Init(FPSCamara Camara) {
             mesh = TGCBox.fromSize(size, null);
             mesh.Position = posicionInteriorNave;
+            this.Camara = Camara;
         }
 
         /// <summary>
         /// Update del jugador cuando esta FUERA de la nave.
         /// </summary>
-        public void Update(FPSCamara Camara, float ElapsedTime, ref bool _estaEnNave) {
+        public void Update(float ElapsedTime, ref bool _estaEnNave) {
             estaEnNave = _estaEnNave;
-            CheckInputs(Camara, ElapsedTime, ref _estaEnNave);
+            CheckInputs(ElapsedTime, ref _estaEnNave);
             GameplayUpdate(ElapsedTime);
             UpdateTransform();
         }
@@ -107,7 +110,7 @@ namespace TGC.Group.Model
 
         public void Render() { }
 
-        private void CheckInputs(FPSCamara Camara, float ElapsedTime, ref bool estaEnNave_)
+        private void CheckInputs(float ElapsedTime, ref bool estaEnNave_)
         {
             int w = Input.keyDown(Key.W) ? 1 : 0;
             int s = Input.keyDown(Key.S) ? 1 : 0;
@@ -230,6 +233,7 @@ namespace TGC.Group.Model
         public float MaxHealth() { return HEALTH_MAX; }
 
         public Inventory GetInventory() { return inventory; }
+        public TGCVector3 GetLookDir() { return Camara.LookDir(); }
 
         //Dev functions
         private void GodMode(bool enabled)

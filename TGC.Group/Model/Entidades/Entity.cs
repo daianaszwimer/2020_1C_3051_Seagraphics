@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
@@ -14,7 +15,7 @@ namespace TGC.Group.Model.Entidades
         // todos los elementos inicialmente se muestran
         // cuando se clickean se pasa a true y despues se reutiliza y se muestra el elemento en otro lado
         // y el valor nuevamente pasa a false
-        public bool estaOculto { get; set; } = false;
+        protected bool estaOculto { get; set; } = false;
         // solo el tiburon lo tiene en true
         public bool necesitaArmaParaInteractuar { get; set; } = false;
 
@@ -30,7 +31,6 @@ namespace TGC.Group.Model.Entidades
         }
 
         public void Update(float ElapsedTime) {
-            // si esta oculto, mostrarlo en un lugar donde no este mirando el player
             UpdateEntity(ElapsedTime);
         }
         public void Render() {
@@ -71,6 +71,28 @@ namespace TGC.Group.Model.Entidades
         public void cambiarPosicion(TGCVector3 nuevaPosicion)
         {
             mesh.Position = nuevaPosicion;
+        }
+
+        /// <summary>
+        /// Se cambia la posicion a una random dados unos parametros opcionales
+        /// </summary>
+        public void cambiarPosicion(float yPos = -1f, int maxDistance = 75, int maxOffset = 60)
+        {
+            var seed = DateTime.Now.Millisecond;
+            Random r = new Random(seed);
+            var distance = r.Next(50, maxDistance);
+            var offset = r.Next(0, maxOffset);
+
+            //Randomizar posicion
+            var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
+            TGCVector3 nuevaPosicion = -Player.Instance().GetLookDir() * distance;
+            nuevaPosicion.X += sign * offset;
+            sign = r.Next(-1, 1) >= 0 ? 1 : -1;
+            offset = r.Next(0, maxOffset);
+            nuevaPosicion.Z += sign * offset;
+            nuevaPosicion.Y = yPos < 0 ? yPos : nuevaPosicion.Y;
+
+            cambiarPosicion(nuevaPosicion);
         }
 
         //Override functions

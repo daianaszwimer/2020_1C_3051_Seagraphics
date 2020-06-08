@@ -24,6 +24,11 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             base.InteractEntity();
+            if (estaOculto)
+            {
+                cambiarPosicion(mesh.Position.Y, 300, 100);
+                estaOculto = false;
+            }
             Recolectable.Recolectar(ElementoRecolectable.coral, 1);
             
         }
