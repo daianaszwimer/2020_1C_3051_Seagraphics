@@ -37,8 +37,8 @@ namespace TGC.Group.Model.Crafting
         {
             this.Path = "\\Items\\cuchillo_bnw.png";
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
-            this.Composicion.Add(ElementoRecolectable.coral,300);
-            this.Composicion.Add(ElementoRecolectable.oro,150);
+            this.Composicion.Add(ElementoRecolectable.coral,1);
+            this.Composicion.Add(ElementoRecolectable.oro,1);
             this.danioArma = 10;
         }
 
