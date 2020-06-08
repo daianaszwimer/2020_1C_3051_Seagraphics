@@ -54,7 +54,7 @@ namespace TGC.Group.Model
                     var selected = TgcCollisionUtils.intersectRayAABB(ray.Ray, aabb, out collisionPoint);
                     if (selected)
                     {
-                        Nave.Instance().Interact();
+                            Nave.Instance().Interact();
                         break;
                     }
                 }
@@ -67,7 +67,9 @@ namespace TGC.Group.Model
                     var selected = TgcCollisionUtils.intersectRayAABB(ray.Ray, aabb, out collisionPoint);
                     if (selected)
                     {
-                        entity.Interact();
+                        var distance = TGCVector3.Length(entity.Position() - Camara.Position);
+                        if (distance <= entity.GetMaxClickDistance())
+                            entity.Interact();
                         break;
                     }
                 }

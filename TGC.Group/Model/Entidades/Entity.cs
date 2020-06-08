@@ -11,6 +11,7 @@ namespace TGC.Group.Model.Entidades
         protected TgcMesh mesh;
         protected TGCVector3 defaultLookDir; //direccion a la que esta mirando el mesh al meterlo en escena
         protected TGCQuaternion rotation;
+        protected float MAX_CLICK_DISTANCE = 35f;
         public Recolectable Recolectable { get; } = Recolectable.Instance();
         // todos los elementos inicialmente se muestran
         // cuando se clickean se pasa a true y despues se reutiliza y se muestra el elemento en otro lado
@@ -104,8 +105,8 @@ namespace TGC.Group.Model.Entidades
 
         //Getters
         public TgcMesh GetMesh() { return mesh; }
-
-
+        public TGCVector3 Position() { return mesh.Position; }
+        public float GetMaxClickDistance() { return MAX_CLICK_DISTANCE; }
         //Common functinos
         /// <param name="goalPos">Posicion en el mundo a la que se quiere llegar</param>
         /// <param name="speed">Velocidad a la que la entidad se mueve</param>
