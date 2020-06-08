@@ -101,10 +101,10 @@ namespace TGC.Group.Model.Entidades
 
         private void SetEscapeGoalPos()
         {
-            Random r = new Random();
-            var x = (float)r.NextDouble();
-            var z = (float)r.NextDouble();
-            goalPos = new TGCVector3(x, 0, z) * distanceToEscape;
+            TGCVector3 dir = mesh.Position - Player.Instance().Position();
+            dir = TGCVector3.Normalize(dir);
+            dir.Y = 0;
+            goalPos = dir * distanceToEscape;
       }
 
         private bool ArrivedGoalPos() { return Math.Abs((goalPos - mesh.Position).Length()) < 0.1f; }
@@ -117,6 +117,7 @@ namespace TGC.Group.Model.Entidades
             {
                 Player.Instance().GetDamage(DAMAGE);
                 canDealDamage = false;
+                SetEscapeGoalPos();
             }
         }
     }
