@@ -67,11 +67,11 @@ namespace TGC.Group.Model
         Effect e_fog;
 
         // data de los heightmaps
-        string marBnwDir = "\\Heightmaps\\heightmap_bnw.jpg";
+        string marBnwDir = "\\Heightmaps\\heightmap_bnw2.jpg";
         string marTexDir = "\\Heightmaps\\heightmap_tex.jpg";
         float marScaleXZ = 10f;
-        float marScaleY = .5f;
-        float marOffsetY = -150f;
+        float marScaleY = .35f;
+        float marOffsetY = -100f;
 
         private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
         {

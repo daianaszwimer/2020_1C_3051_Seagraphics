@@ -26,6 +26,8 @@ namespace TGC.Group.Model
         private const float HEALTH_MAX = 100f;
         private const float WATER_LEVEL = 10f; //When players reaches a position above this level, then recovers oxygen.
 
+        private const float MIN_Y_POS = -10f; //nivel del piso
+
         TgcD3dInput Input;
 
         //Dev vars
@@ -135,6 +137,7 @@ namespace TGC.Group.Model
             //Move player
             TGCVector3 movement = LookDir * fmov * speed + Camara.LeftDir() * hmov * speed + TGCVector3.Up * vmov * vspeed;
             movement *= ElapsedTime;
+            movement.Y = mesh.Position.Y + movement.Y < MIN_Y_POS ? 0 : movement.Y;
 
             Move(movement);
 
