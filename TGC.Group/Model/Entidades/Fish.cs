@@ -1,4 +1,5 @@
 ﻿using System;
+using TGC.Core.Collision;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
@@ -27,6 +28,11 @@ namespace TGC.Group.Model.Entidades
         {
             if (ArrivedGoalPos()) 
                 SetRandomGoalPos();
+
+            //Chequear colisiones (que escape si toca al jugador)
+            var hitPlayer = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, Player.Instance().BoundingBox());
+            if (hitPlayer)
+                SetEscapeGoalPos();
 
             Move(goalPos, speed, ElapsedTime);
         }
@@ -58,6 +64,14 @@ namespace TGC.Group.Model.Entidades
             y = FastMath.Min(y, 0.3f);
 
             goalPos = new TGCVector3(x, y, z) * distanceToMove;
+        }
+
+        private void SetEscapeGoalPos()
+        {
+            TGCVector3 dir = mesh.Position - Player.Instance().Position();
+            dir = TGCVector3.Normalize(dir);
+            dir.Y = 0;
+            goalPos = dir * distanceToMove;
         }
 
         private bool ArrivedGoalPos() { return Math.Abs( (goalPos - mesh.Position).Length() ) < 0.1f; }
