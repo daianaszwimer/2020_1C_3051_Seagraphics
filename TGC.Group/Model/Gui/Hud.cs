@@ -8,6 +8,7 @@ using TGC.Examples.Engine2D.Spaceship.Core;
 using TGC.Core.Input;
 using Microsoft.DirectX.DirectInput;
 using TGC.Group.Model.Crafting;
+using System.Windows.Forms;
 
 namespace TGC.Group.Model.Gui
 {
@@ -238,8 +239,11 @@ namespace TGC.Group.Model.Gui
                     SelectedText = Start;
                 else if (down)
                     SelectedText = Exit;
-                else if (enter && SelectedText == Start)
-                    ChangeStatus(Status.Gameplay);
+                else if (enter)
+                    if (SelectedText == Start)
+                        ChangeStatus(Status.Gameplay);
+                    else if (SelectedText == Exit)
+                        Application.Exit();
             }
             else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
             {
@@ -267,6 +271,11 @@ namespace TGC.Group.Model.Gui
                             SelectedItem.darHabilidadAPlayer();
                     }
                 }
+            }
+            else if (CurrentStatus == Status.GameOver)
+            {
+                if (enter)
+                    Application.Exit();
             }
 
             //Update last status so it doesn't UpdateIconSprites() multiple times

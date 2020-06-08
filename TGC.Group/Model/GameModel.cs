@@ -127,7 +127,7 @@ namespace TGC.Group.Model
 
             //Iniciar HUD
             Hud.Init(MediaDir);
-            Hud.ChangeStatus(Hud.Status.Gameplay);
+            Hud.ChangeStatus(Hud.Status.MainMenu);
 
             //Cargar enviroment
             oceano = new Fondo(MediaDir, ShadersDir);
@@ -222,6 +222,10 @@ namespace TGC.Group.Model
         { 
             PreUpdate();
             Hud.Update(Input);
+
+            //Que no se pueda hacer nada si estas en game over salvo dar enter
+            if (Hud.GetCurrentStatus() == Hud.Status.GameOver)
+                return;
 
             if (estaEnNave)
             {
