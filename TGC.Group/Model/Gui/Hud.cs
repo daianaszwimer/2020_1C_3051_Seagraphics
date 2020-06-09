@@ -35,7 +35,6 @@ namespace TGC.Group.Model.Gui
             }
         }
 
-        static Inventory Inventory;
         static Player Player = Player.Instance();
 
         //Control vars
@@ -77,7 +76,6 @@ namespace TGC.Group.Model.Gui
             HEIGHT = D3DDevice.Instance.Height;
 
             MediaDir = mediaDir;
-            Inventory = Player.GetInventory();
 
             InventoryItems = new List<ItemSprite>();
             CraftingItems = new List<ItemSprite>();
@@ -266,10 +264,15 @@ namespace TGC.Group.Model.Gui
                     //Check for crafting
                     if (enter)
                     {
-                        var SelectedItem = Inventory.GetCraftings()[SelectedItemIndex];
-                        if (SelectedItem != null &&  SelectedItem.EstoyCrafteado())
+                        bool SelectedItemExists = SelectedItemIndex < Inventory.Instance().GetCraftings().Count;
+                        if (SelectedItemExists)
                         {
-                            SelectedItem.Craftear();
+                            var SelectedItem = Inventory.Instance().GetCraftings()[SelectedItemIndex];
+                            if (SelectedItem.EstoyHabilitado())
+                            {
+                                SelectedItem.Craftear();
+                                UpdateIconSprites();
+                            }
                         }
                     }
                 }
@@ -378,20 +381,35 @@ namespace TGC.Group.Model.Gui
 
         private static void UpdateIconSprites()
         {
-            List<Item> ItemsInInventory = Inventory.GetItems();
-            for (int i = 0; i < InventoryItems.Count && i < ItemsInInventory.Count; i++)
+            List<Item> ItemsInInventory = Inventory.Instance().GetItems();
+            for (int i = 0; i < InventoryItems.Count; i++)
             {
-                InventoryItems[i].amount.Text = ItemsInInventory[i].Amount().ToString();
-                string path = MediaDir + ItemsInInventory[i].obtenerImagen();
-                Console.WriteLine(path);
-                InventoryItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
+                
+                
+                if (i < ItemsInInventory.Count)
+                {
+                    string path = MediaDir + ItemsInInventory[i].obtenerImagen();
+                    InventoryItems[i].amount.Text = ItemsInInventory[i].Amount().ToString();
+                    InventoryItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
+                }
+                else
+                {
+                    InventoryItems[i].amount.Text = "";
+                    InventoryItems[i].icon.Bitmap = null;
+                }
             }
 
-            var CraftsInInventory = Inventory.GetCraftings();
-            for (int i = 0; i < CraftingItems.Count && i < CraftsInInventory.Count; i++)
+            var CraftsInInventory = Inventory.Instance().GetCraftings();
+            for (int i = 0; i < CraftingItems.Count; i++)
             {
-                string path = MediaDir + CraftsInInventory[i].ObtenerIcono();
-                CraftingItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
+                
+                if (i < CraftsInInventory.Count)
+                {
+                    string path = MediaDir + CraftsInInventory[i].ObtenerIcono();
+                    CraftingItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
+                }
+                else
+                    CraftingItems[i].icon.Bitmap = null;
             }
         }
     }

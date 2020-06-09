@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TGC.Group.Model.Crafting
@@ -21,7 +22,7 @@ namespace TGC.Group.Model.Crafting
             this.Composicion.Add(ElementoRecolectable.coral, 3);
             this.Composicion.Add(ElementoRecolectable.oro, 2);
             this.danio = 10;
-            this.reutilizable = true;
+            this.reutilizable = false;
             this.estoyHabilitado = false;
             this.estoyCrafteado = false;
         }
@@ -51,10 +52,12 @@ namespace TGC.Group.Model.Crafting
         {
             if (!estoyCrafteado && estoyHabilitado)
             {
+                Console.WriteLine("\n\nCrafteado!");
                 estoyCrafteado = true;
                 Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 3);
                 Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.oro, 2);
                 Inventory.Instance().UsarCrafteo(this);
+                Console.WriteLine(estoyCrafteado);
             }
         }
 
@@ -75,9 +78,8 @@ namespace TGC.Group.Model.Crafting
 
         public void Reutilizar()
         {
-            this.estoyHabilitado = false;
+            Deshabilitar();
             this.estoyCrafteado = false;
-            this.path = "\\Items\\cuchillo_bnw.png";
         }
 
         public string ObtenerIcono()
@@ -93,6 +95,7 @@ namespace TGC.Group.Model.Crafting
         public void Deshabilitar()
         {
             this.estoyHabilitado = false;
+            this.path = "\\Items\\cuchillo_bnw.png";
         }
     }
 }
