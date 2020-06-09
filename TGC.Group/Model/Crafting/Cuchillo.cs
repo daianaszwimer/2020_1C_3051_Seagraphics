@@ -5,67 +5,94 @@ namespace TGC.Group.Model.Crafting
 {
     class Cuchillo : Crafting // Ejemplo de un crafteo posible
     {
-        private string Path;
 
-        private int danioArma;
-
-        private bool estoyCrafteado = false;
-
-        public int danio() { return this.danioArma; }
-
-        // Determino que elementos y la cantidad que se necesita para crear un cuchillo
         private Dictionary<ElementoRecolectable, int> Composicion;
 
-        // Me indica que es lo que voy a craftear
-        public ElementoCraftreable Tipo() { return ElementoCraftreable.cuchilllo; }
+        private bool estoyHabilitado;
+        private bool estoyCrafteado;
+        private string path;
+        private bool reutilizable;
+        private int danio;
 
-        // Activa el uso del crafteo en la pantalla del inventario
-        public void activarCrafteo()
-        {
-            this.Path = "\\Items\\cuchillo.png";
-            this.estoyCrafteado = true;
-            /*habilita el cuchillo en la pantalla para que el player pueda usarlo*/
-        }
-
-        public string obtenerImagen()
-        {
-            return this.Path;
-        }
-
-        // Defino lo necesario para crear un cuchillo
         public Cuchillo()
         {
-            this.Path = "\\Items\\cuchillo_bnw.png";
+            this.path = "\\Items\\cuchillo_bnw.png";
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
-            this.Composicion.Add(ElementoRecolectable.coral,1);
-            this.Composicion.Add(ElementoRecolectable.oro,1);
-            this.danioArma = 10;
+            this.Composicion.Add(ElementoRecolectable.coral, 3);
+            this.Composicion.Add(ElementoRecolectable.oro, 2);
+            this.danio = 10;
+            this.reutilizable = true;
+            this.estoyHabilitado = false;
+            this.estoyCrafteado = false;
         }
 
-        public void darHabilidadAPlayer()
+        public ElementoCraftreable Tipo()
         {
-            Player.Instance().enfrentarTiburon();
+            return ElementoCraftreable.cuchilllo;
         }
 
-        // Se fija que el inventario tenga las cantidades y tipos de elementos suficientes para crear un cuchillo
-        public bool PuedeCraftear(Inventory inventory)
+        public bool PuedeCraftear()
         {
-            return !estoyCrafteado && Composicion.All(Elemento => inventory.cuantosTenesDe(Elemento.Key) >= Elemento.Value);
+            return !estoyHabilitado && Composicion.All(Elemento => Inventory.Instance().cuantosTenesDe(Elemento.Key) >= Elemento.Value);
+        }
+
+        public bool EstoyHabilitado()
+        {
+            return this.estoyHabilitado;
+        }
+
+        public void ActivarCrafteo()
+        {
+            this.path = "\\Items\\cuchillo.png";
+            this.estoyHabilitado = true;
         }
 
         public void Craftear()
         {
-            /*sacarle al inventario los items consumidos
-             desactivar el crafteo para que no pueda craftear un cuchillo nuevamente
-             */
+            if (!estoyCrafteado && estoyHabilitado)
+            {
+                estoyCrafteado = true;
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 3);
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.oro, 2);
+                Inventory.Instance().UsarCrafteo(this);
+            }
         }
 
-        // Sirve para agregarle elementos y cantidades al crafteo
-        public void AgregarMateriales(ElementoRecolectable elemento, int cantidad)
+        public bool EstoyCrafteado()
         {
-            Composicion.Add(elemento, cantidad);
+            return this.estoyCrafteado;
         }
 
-        public bool EstoyCrafteado() { return estoyCrafteado; }
+        public void DarHabilidadAPlayer()
+        {
+            Player.Instance().enfrentarTiburon();
+        }
+
+        public bool SoyReutilizable()
+        {
+            return reutilizable;
+        }
+
+        public void Reutilizar()
+        {
+            this.estoyHabilitado = false;
+            this.estoyCrafteado = false;
+            this.path = "\\Items\\cuchillo_bnw.png";
+        }
+
+        public string ObtenerIcono()
+        {
+            return path;
+        }
+
+        public int cuantoDanioHago()
+        {
+            return danio;
+        }
+
+        public void Deshabilitar()
+        {
+            this.estoyHabilitado = false;
+        }
     }
 }

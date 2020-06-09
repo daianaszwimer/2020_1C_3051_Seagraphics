@@ -87,7 +87,7 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             base.InteractEntity();
-            if (Player.Instance().puedoEnfrentarTiburon())
+            if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())
             {
                 //reducirVidaEn(conQueMeAtacan.danio);
                 reducirVidaEn(10);

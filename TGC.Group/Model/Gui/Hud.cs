@@ -268,7 +268,9 @@ namespace TGC.Group.Model.Gui
                     {
                         var SelectedItem = Inventory.GetCraftings()[SelectedItemIndex];
                         if (SelectedItem != null &&  SelectedItem.EstoyCrafteado())
-                            SelectedItem.darHabilidadAPlayer();
+                        {
+                            SelectedItem.Craftear();
+                        }
                     }
                 }
             }
@@ -388,7 +390,7 @@ namespace TGC.Group.Model.Gui
             var CraftsInInventory = Inventory.GetCraftings();
             for (int i = 0; i < CraftingItems.Count && i < CraftsInInventory.Count; i++)
             {
-                string path = MediaDir + CraftsInInventory[i].obtenerImagen();
+                string path = MediaDir + CraftsInInventory[i].ObtenerIcono();
                 CraftingItems[i].icon.Bitmap = new CustomBitmap(path, D3DDevice.Instance.Device);
             }
         }
