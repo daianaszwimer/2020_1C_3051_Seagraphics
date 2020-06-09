@@ -45,8 +45,8 @@ namespace TGC.Group.Model
             if (click)
             {
                 ray.updateRay();
-                // me fijo si hubo colision con nave
-                List<TgcMesh> meshesNave = Nave.Instance().obtenerMeshes();
+                // me fijo si hubo colision con nave ---> NO SE ESTA USANDO
+                /*List<TgcMesh> meshesNave = Nave.Instance().obtenerMeshes();
                 foreach (TgcMesh mesh in meshesNave)
                 {
                     var aabb = mesh.BoundingBox;
@@ -57,7 +57,7 @@ namespace TGC.Group.Model
                             Nave.Instance().Interact();
                         break;
                     }
-                }
+                }*/
 
                 List<Entity> entities = Entities.GetEntities();
                 foreach (Entity entity in entities)

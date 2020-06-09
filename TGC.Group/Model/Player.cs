@@ -8,6 +8,8 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Crafting;
 using TGC.Group.Model.Gui;
+using TGC.Group.Model.Entidades;
+using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model
 {
@@ -194,6 +196,44 @@ namespace TGC.Group.Model
                 //If any collision then go to last position.
                 if (collided)
                     mesh.Position = lastPos;
+            } else
+            {
+                // todo: manejamos que la colision de la nave haga que el player entre y sacamos lo del press en la "o"?
+                bool collided = false;
+                List<TgcMesh> meshes = Nave.Instance().obtenerMeshes();
+                foreach (var meshNave in meshes)
+                {
+                    var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, meshNave.BoundingBox);
+                    if (result)
+                    {
+                        collided = true;
+                        break;
+                    }
+                }
+                //If any collision then go to last position.
+                if (collided)
+                {
+                    mesh.Position = lastPos;
+                    return;
+                }
+
+                List<Entity> entities = Entities.GetEntities();
+                foreach (var entity in entities)
+                {
+                    var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, entity.GetMesh().BoundingBox);
+                    if (result)
+                    {
+                        collided = true;
+                        break;
+                    }
+                }
+                //If any collision then go to last position.
+                if (collided)
+                {
+                    mesh.Position = lastPos;
+                    return;
+                }
+                // colisiones contra elementos del mar
             }
         }
 
