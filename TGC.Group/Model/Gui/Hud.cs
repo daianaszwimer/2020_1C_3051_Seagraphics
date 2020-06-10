@@ -71,6 +71,12 @@ namespace TGC.Group.Model.Gui
 
         static string MediaDir;
 
+        static private bool presionoUp = false;
+        static private bool presionoDown = false;
+        static private bool presionoLeft = false;
+        static private bool presionoRight = false;
+        static private bool presionoEnter = false;
+
         public static void Init(string mediaDir)
         {
             WIDTH = D3DDevice.Instance.Width;
@@ -214,7 +220,79 @@ namespace TGC.Group.Model.Gui
             bool left = Input.keyDown(Key.Left);
             bool right = Input.keyDown(Key.Right);
             bool enter = Input.keyDown(Key.Return);
+            if (up)
+            {
+                up = false;
+                presionoUp = true;
+            }
+            else
+            {
+                if (presionoUp)
+                {
+                    up = true;
+                    presionoUp = false;
+                }
+            }
+
+            if (down)
+            {
+                down = false;
+                presionoDown = true;
+            }
+            else
+            {
+                if (presionoDown)
+                {
+                    down = true;
+                    presionoDown = false;
+                }
+            }
+
+            if (left)
+            {
+                left = false;
+                presionoLeft = true;
+            }
+            else
+            {
+                if (presionoLeft)
+                {
+                    left = true;
+                    presionoLeft = false;
+                }
+            }
+
+            if (right)
+            {
+                right = false;
+                presionoRight = true;
+            }
+            else
+            {
+                if (presionoRight)
+                {
+                    right = true;
+                    presionoRight = false;
+                }
+            }
+
+            if (enter)
+            {
+                enter = false;
+                presionoEnter = true;
+            }
+            else
+            {
+                if (presionoEnter)
+                {
+                    enter = true;
+                    presionoEnter = false;
+                }
+            }
+
+
             bool anyKey = up || down || left || right || enter;
+
 
             //Reset effect when any key is pressed
             if (anyKey)

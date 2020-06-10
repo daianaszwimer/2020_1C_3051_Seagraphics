@@ -50,6 +50,10 @@ namespace TGC.Group.Model
         private float speed = 25f; //foward and horizontal speed
         private float vspeed = 10f; //vertical speed
 
+        // como no anda el keypressed, lo hacemos a mano con estas variables:
+        private bool presionoO = false;
+        private bool presionoI = false;
+
         private static Player _instance;
 
         protected Player()
@@ -120,9 +124,37 @@ namespace TGC.Group.Model
             int a = Input.keyDown(Key.A) ? 1 : 0;
             int space = Input.keyDown(Key.Space) ? 1 : 0;
             int ctrl = Input.keyDown(Key.LeftControl) ? 1 : 0;
-            bool o = Input.keyDown(Key.O); //todo: habria que usar keypressed pero no anda!
-
+            bool o = Input.keyDown(Key.O);
             bool i = Input.keyDown(Key.I);
+
+            // nuestra "implementacion" del key pressed (porque nos da false todo el tiempo el de TGC)
+            if (o)
+            {
+                o = false;
+                presionoO = true;
+            }
+            else
+            {
+                if (presionoO)
+                {
+                    o = true;
+                    presionoO = false;
+                }
+            }
+
+            if (i)
+            {
+                i = false;
+                presionoI = true;
+            }
+            else
+            {
+                if (presionoI)
+                {
+                    i = true;
+                    presionoI = false;
+                }
+            }
 
             float fmov = w - s; //foward movement
             float hmov = a - d; //horizontal movement
@@ -159,13 +191,13 @@ namespace TGC.Group.Model
 
             if (o)
             {
-                if (estaEnNave)
+                estaEnNave_ = !estaEnNave_;
+                if (estaEnNave_)
                 {
-                    // todo: guardar la posicionen la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
+                    // todo: guardar la posicion en la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
                     // posiciono dentro de nave
                     mesh.Position = posicionInteriorNave;
                 }
-                estaEnNave_ = !estaEnNave_;
 
                 Hud.ChangeStatus(Hud.Status.Gameplay);
             }
