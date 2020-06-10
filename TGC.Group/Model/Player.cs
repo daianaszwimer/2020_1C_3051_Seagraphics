@@ -316,5 +316,10 @@ namespace TGC.Group.Model
                 oxygen = 100f;
             }
         }
+
+        public void Curarme()
+        {
+            health = 100f;
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace TGC.Group.Model
         //Esto se borrara cuando el inventario pueda verse
         public String mostrarItem()
         {
-            return "item: " + name + ", amount: " + amount.ToString() + "\n";
+            return "item: " + name + ", amount: " + amount.ToString();
         }
     }
 }

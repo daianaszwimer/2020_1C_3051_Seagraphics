@@ -102,6 +102,7 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Camara.cs" />
+    <Compile Include="Model\Crafting\Botiquin.cs" />
     <Compile Include="Model\Crafting\Crafting.cs" />
     <Compile Include="Model\Crafting\Cuchillo.cs" />
     <Compile Include="Model\Entidades\Coral.cs" />

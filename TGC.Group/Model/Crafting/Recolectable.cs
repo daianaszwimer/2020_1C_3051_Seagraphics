@@ -4,12 +4,10 @@ namespace TGC.Group.Model.Crafting
     // Para definir que pueden hacer todos los elementos que podran ser recolectados por el Player
     class Recolectable
     {
-        Inventory inventory;
         private static Recolectable _instance;
 
         protected Recolectable()
         {
-            this.inventory = Inventory.Instance();
         }
 
         public static Recolectable Instance()
@@ -25,8 +23,8 @@ namespace TGC.Group.Model.Crafting
 
         public void Recolectar(ElementoRecolectable name, int amount)
         {
-            Item item = new Item(name,amount);
-            inventory.Add(item);
+            Item item = new Item(name, amount);
+            Inventory.Instance().Add(item);
         }
 
     }
