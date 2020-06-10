@@ -44,7 +44,7 @@ namespace TGC.Group.Model
 
         DateTime timestamp;
 
-        bool estaEnNave = false;
+        bool estaEnNave = true;
 
         Fondo oceano;
         TgcSimpleTerrain heightmap;
