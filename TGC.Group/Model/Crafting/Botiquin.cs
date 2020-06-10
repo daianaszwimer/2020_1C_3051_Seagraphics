@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace TGC.Group.Model.Crafting
 {
-    class Cuchillo : Crafting // Ejemplo de un crafteo posible
+    class Botiquin : Crafting // Ejemplo de un crafteo posible
     {
 
         private Dictionary<ElementoRecolectable, int> Composicion;
@@ -13,23 +13,21 @@ namespace TGC.Group.Model.Crafting
         private bool estoyCrafteado;
         private string path;
         private bool reutilizable;
-        private int danio;
-
-        public Cuchillo()
+        public Botiquin()
         {
-            this.path = "\\Items\\cuchillo_bnw.png";
+            this.path = "\\Items\\botiquin_bnw.png";
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
-            this.Composicion.Add(ElementoRecolectable.coral, 3);
-            this.Composicion.Add(ElementoRecolectable.oro, 2);
-            this.danio = 10;
-            this.reutilizable = false;
+            this.Composicion.Add(ElementoRecolectable.fish, 5);
+            this.Composicion.Add(ElementoRecolectable.coral,4);
+            
+            this.reutilizable = true;
             this.estoyHabilitado = false;
             this.estoyCrafteado = false;
         }
 
         public ElementoCraftreable Tipo()
         {
-            return ElementoCraftreable.cuchilllo;
+            return ElementoCraftreable.botiquin;
         }
 
         public bool PuedeCraftear()
@@ -44,7 +42,7 @@ namespace TGC.Group.Model.Crafting
 
         public void ActivarCrafteo()
         {
-            this.path = "\\Items\\cuchillo.png";
+            this.path = "\\Items\\botiquin.png";
             this.estoyHabilitado = true;
         }
 
@@ -54,8 +52,8 @@ namespace TGC.Group.Model.Crafting
             {
                 Console.WriteLine("\n\nCrafteado!");
                 estoyCrafteado = true;
-                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 3);
-                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.oro, 2);
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.fish, 5);
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 4);
                 Inventory.Instance().UsarCrafteo(this);
                 Console.WriteLine(estoyCrafteado);
             }
@@ -68,7 +66,7 @@ namespace TGC.Group.Model.Crafting
 
         public void DarHabilidadAPlayer()
         {
-            Player.Instance().enfrentarTiburon();
+            Player.Instance().Curarme();
         }
 
         public bool SoyReutilizable()
@@ -86,16 +84,10 @@ namespace TGC.Group.Model.Crafting
         {
             return path;
         }
-
-        public int cuantoDanioHago()
-        {
-            return danio;
-        }
-
         public void Deshabilitar()
         {
             this.estoyHabilitado = false;
-            this.path = "\\Items\\cuchillo_bnw.png";
+            this.path = "\\Items\\botiquin_bnw.png";
         }
     }
 }

@@ -7,7 +7,7 @@ namespace TGC.Group.Model.Crafting
     {
         cuchilllo,
         oxigeno,
-        medicina
+        botiquin
     }
     interface Crafting // Defino la interface que deberan utilizar todos los crafteos creados
     {

@@ -24,6 +24,8 @@ namespace TGC.Group.Model.Crafting
             //Faltan crear mas crafteos
             Cuchillo cuchillo = new Cuchillo();
             PosiblesCrafteos.Add(cuchillo);
+            Botiquin botiquin = new Botiquin();
+            PosiblesCrafteos.Add(botiquin);
 
         }
 
@@ -61,10 +63,23 @@ namespace TGC.Group.Model.Crafting
         private void HabilitarCrafteos(Crafting crafteo)
         {
             // Si el crafteo ya se puede llevar a cabo porque tengo las cantidades necesarias habilito el crafteo
-            if (crafteo.PuedeCraftear() && !crafteo.EstoyCrafteado())
+            /*if (crafteo.PuedeCraftear() && !crafteo.EstoyCrafteado())
             {
                 crafteo.ActivarCrafteo();
+            }*/
+
+            if (!crafteo.EstoyCrafteado())
+            {
+                if (crafteo.PuedeCraftear())
+                {
+                    crafteo.ActivarCrafteo();
+                }
+                else
+                {
+                    crafteo.Deshabilitar();
+                }
             }
+
         }
 
         //Permite eliminar un item del inventario o disminuir la cantidad de unidades del mismo
