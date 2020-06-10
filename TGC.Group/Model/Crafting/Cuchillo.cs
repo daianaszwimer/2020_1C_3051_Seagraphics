@@ -52,12 +52,10 @@ namespace TGC.Group.Model.Crafting
         {
             if (!estoyCrafteado && estoyHabilitado)
             {
-                Console.WriteLine("\n\nCrafteado!");
                 estoyCrafteado = true;
                 Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 3);
                 Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.oro, 2);
                 Inventory.Instance().UsarCrafteo(this);
-                Console.WriteLine(estoyCrafteado);
             }
         }
 
