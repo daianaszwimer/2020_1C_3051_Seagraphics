@@ -27,6 +27,12 @@ float StartFogDistance;
 float EndFogDistance;
 float Density;
 
+//Specular
+float3 lightPos = float3(10, 100, 10);
+float3 eyePos;
+float kS;
+float shininess;
+
 //Input del Vertex Shader
 struct VS_INPUT_VERTEX
 {
@@ -38,6 +44,8 @@ struct VS_INPUT_VERTEX
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
+    float4 Normal : POSITION1;
+    float4 WorldPosition : POSITION2;
     float2 Texture : TEXCOORD0;
     float4 PosView : COLOR0;
 };
@@ -49,31 +57,37 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
 
 	//Proyectar posicion
     output.Position = mul(input.Position, matWorldViewProj);
+    output.Normal = normalize(mul(input.Position, matInverseTransposeWorld));
+    output.WorldPosition = mul(input.Position, matWorld);
     output.Texture = input.Texture;
     output.PosView = mul(input.Position, matWorldView);
     return output;
 }
 
-//Input del Pixel Shader
-struct PS_INPUT_PIXEL
-{
-    float2 Texture : TEXCOORD0;
-    float1 Fog : FOG;
-};
-
 //Pixel Shader
 float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
 {
+    float4 color = tex2D(diffuseMap, input.Texture);
+    
+    //SPECULAR
+    if(kS > 0)
+    {
+        float3 L = normalize(lightPos - input.WorldPosition.xyz);
+        float3 V = normalize(eyePos - input.WorldPosition.xyz);
+        float3 H = normalize(L + V);
+        float3 NdotH = dot(input.Normal.xyz, H);
+        float3 light = kS * float3(1, 1, 1) * pow(max(0.0, NdotH), shininess);
+        color += float4(light, 1);
+    }
+    
+    //FOG
     float zn = StartFogDistance;
     float zf = EndFogDistance;
 
-    float4 fvBaseColor = tex2D(diffuseMap, input.Texture);
-    if (input.PosView.z < zn)
-        return fvBaseColor;
-    else if (input.PosView.z > zf)
+    
+    if (input.PosView.z > zf)
     {
-        fvBaseColor = ColorFog;
-        return fvBaseColor;
+        color = ColorFog;
     }
     else
     {
@@ -82,14 +96,15 @@ float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
         float1 resto = input.PosView.z - zn;
         float1 proporcion = resto / total;
         
-        float1 r = lerp(fvBaseColor.r, ColorFog.r, proporcion);
-        float1 g = lerp(fvBaseColor.g, ColorFog.g, proporcion);
-        float1 b = lerp(fvBaseColor.b, ColorFog.b, proporcion);
-        float1 a = lerp(fvBaseColor.a, ColorFog.a, proporcion);
+        float1 r = lerp(color.r, ColorFog.r, proporcion);
+        float1 g = lerp(color.g, ColorFog.g, proporcion);
+        float1 b = lerp(color.b, ColorFog.b, proporcion);
+        float1 a = 1;
         
-        fvBaseColor = float4(r, g, b, a);
-        return fvBaseColor;
+        color = float4(r, g, b, a);
     }
+    
+    return color;
 }
 
 // ------------------------------------------------------------------

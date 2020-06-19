@@ -64,7 +64,7 @@ namespace TGC.Group.Model
 
         //Shaders
         TgcFog fog;
-        Effect e_fog;
+        Effect effect;
 
         // data de los heightmaps
         string marBnwDir = "\\Heightmaps\\heightmap_bnw2.jpg";
@@ -204,7 +204,7 @@ namespace TGC.Group.Model
             fog.StartDistance = 1;
             fog.Enabled = true;
 
-            e_fog = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
+            effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
 
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
@@ -288,50 +288,58 @@ namespace TGC.Group.Model
             Hud.Render();
 
             fog.updateValues();
-            e_fog.SetValue("ColorFog", fog.Color.ToArgb());
-            e_fog.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-            e_fog.SetValue("StartFogDistance", fog.StartDistance);
-            e_fog.SetValue("EndFogDistance", fog.EndDistance);
-            e_fog.SetValue("Density", fog.Density);
+            effect.SetValue("ColorFog", fog.Color.ToArgb());
+            effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+            effect.SetValue("StartFogDistance", fog.StartDistance);
+            effect.SetValue("EndFogDistance", fog.EndDistance);
+            effect.SetValue("Density", fog.Density);
+            effect.SetValue("kS", 0);
+            effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
+            
 
             if (estaEnNave)
             {
                 interiorNave.Render();
             } else
             {
-                oceano.Effect(e_fog);
+                oceano.Effect(effect);
                 oceano.Technique("RenderScene");
                 oceano.Render();
                 
-                heightmap.Effect = e_fog;
+                heightmap.Effect = effect;
                 heightmap.Technique = "RenderScene";
                 heightmap.Render();
 
                 foreach (var pez in peces)
                 {
-                    pez.Effect(e_fog);
+                    pez.Effect(effect);
                     pez.Technique("RenderScene");
                     pez.Render();
                 }
                 foreach (var coral in corales)
                 {
-                    coral.Effect(e_fog);
+                    coral.Effect(effect);
                     coral.Technique("RenderScene");
                     coral.Render();
                 }
 
 
-                shark.Effect(e_fog);
+                shark.Effect(effect);
                 shark.Technique("RenderScene");
                 shark.Render();
 
-                nave.Effect(e_fog);
+                //Efecto metalico
+                effect.SetValue("kS", 0.9f);
+                effect.SetValue("shininess", 30f);
+
+                nave.Effect(effect);
                 nave.Technique("RenderScene");
                 nave.Render();
 
+                effect.SetValue("shininess", 2f);
                 foreach (var oro in metalesOro)
                 {
-                    oro.Effect(e_fog);
+                    oro.Effect(effect);
                     oro.Technique("RenderScene");
                     oro.Render();
                 }
