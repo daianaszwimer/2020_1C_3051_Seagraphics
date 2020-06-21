@@ -287,21 +287,19 @@ namespace TGC.Group.Model
 
             Hud.Render();
 
-            fog.updateValues();
-            effect.SetValue("ColorFog", fog.Color.ToArgb());
-            effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-            effect.SetValue("StartFogDistance", fog.StartDistance);
-            effect.SetValue("EndFogDistance", fog.EndDistance);
-            effect.SetValue("Density", fog.Density);
-            effect.SetValue("kS", 0);
-            effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
-            
-
             if (estaEnNave)
             {
                 interiorNave.Render();
             } else
             {
+                fog.updateValues();
+                effect.SetValue("ColorFog", fog.Color.ToArgb());
+                effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+                effect.SetValue("StartFogDistance", fog.StartDistance);
+                effect.SetValue("EndFogDistance", fog.EndDistance);
+                effect.SetValue("Density", fog.Density);
+                effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
+
                 oceano.Effect(effect);
                 oceano.Technique("RenderScene");
                 oceano.Render();
@@ -323,24 +321,22 @@ namespace TGC.Group.Model
                     coral.Render();
                 }
 
-
                 shark.Effect(effect);
                 shark.Technique("RenderScene");
                 shark.Render();
 
                 //Efecto metalico
-                effect.SetValue("kS", 0.9f);
                 effect.SetValue("shininess", 30f);
 
                 nave.Effect(effect);
-                nave.Technique("RenderScene");
+                nave.Technique("RenderSceneLight");
                 nave.Render();
 
                 effect.SetValue("shininess", 2f);
                 foreach (var oro in metalesOro)
                 {
                     oro.Effect(effect);
-                    oro.Technique("RenderScene");
+                    oro.Technique("RenderSceneLight");
                     oro.Render();
                 }
             }

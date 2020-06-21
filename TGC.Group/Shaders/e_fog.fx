@@ -30,7 +30,7 @@ float Density;
 //Specular
 float3 lightPos = float3(10, 100, 10);
 float3 eyePos;
-float kS;
+float kS = 0.5;
 float shininess;
 
 //Input del Vertex Shader
@@ -44,8 +44,24 @@ struct VS_INPUT_VERTEX
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
-    float4 Normal : POSITION1;
-    float4 WorldPosition : POSITION2;
+    float2 Texture : TEXCOORD0;
+    float4 PosView : COLOR0;
+};
+//Input del Vertex Shader
+struct VS_INPUT_VERTEX_LIGHT
+{
+    float4 Position : POSITION0;
+    float3 Normal : NORMAL0;
+    float4 Color : COLOR;
+    float2 Texture : TEXCOORD0;
+};
+
+//Output del Vertex Shader
+struct VS_OUTPUT_VERTEX_LIGHT
+{
+    float4 Position : POSITION0;
+    float3 WorldNormal : TEXCOORD1;
+    float3 WorldPosition : TEXCOORD2;
     float2 Texture : TEXCOORD0;
     float4 PosView : COLOR0;
 };
@@ -55,56 +71,83 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
 {
     VS_OUTPUT_VERTEX output;
 
-	//Proyectar posicion
     output.Position = mul(input.Position, matWorldViewProj);
-    output.Normal = normalize(mul(input.Position, matInverseTransposeWorld));
-    output.WorldPosition = mul(input.Position, matWorld);
     output.Texture = input.Texture;
     output.PosView = mul(input.Position, matWorldView);
     return output;
 }
 
-//Pixel Shader
-float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
+//Vertex Shader
+VS_OUTPUT_VERTEX_LIGHT vs_main_light(VS_INPUT_VERTEX_LIGHT input)
 {
-    float4 color = tex2D(diffuseMap, input.Texture);
+    VS_OUTPUT_VERTEX_LIGHT output;
     
-    //SPECULAR
-    if(kS > 0)
-    {
-        float3 L = normalize(lightPos - input.WorldPosition.xyz);
-        float3 V = normalize(eyePos - input.WorldPosition.xyz);
-        float3 H = normalize(L + V);
-        float3 NdotH = dot(input.Normal.xyz, H);
-        float3 light = kS * float3(1, 1, 1) * pow(max(0.0, NdotH), shininess);
-        color += float4(light, 1);
-    }
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texture;
+    output.PosView = mul(input.Position, matWorldView);
     
-    //FOG
+    output.WorldNormal = mul(input.Normal, matInverseTransposeWorld).xyz;
+
+    output.WorldPosition = mul(input.Position, matWorld);
+
+    return output;
+}
+
+float4 fogEffect(float positionViewZ, float4 fvBaseColor)
+{
     float zn = StartFogDistance;
     float zf = EndFogDistance;
 
-    
-    if (input.PosView.z > zf)
+    if (positionViewZ < zn)
+        return fvBaseColor;
+    else if (positionViewZ > zf)
     {
-        color = ColorFog;
+        fvBaseColor = ColorFog;
+        return fvBaseColor;
     }
     else
     {
 		// combino fog y textura
         float1 total = zf - zn;
-        float1 resto = input.PosView.z - zn;
+        float1 resto = positionViewZ - zn;
         float1 proporcion = resto / total;
-        
-        float1 r = lerp(color.r, ColorFog.r, proporcion);
-        float1 g = lerp(color.g, ColorFog.g, proporcion);
-        float1 b = lerp(color.b, ColorFog.b, proporcion);
+        float1 r = lerp(fvBaseColor.r, ColorFog.r, proporcion);
+        float1 g = lerp(fvBaseColor.g, ColorFog.g, proporcion);
+        float1 b = lerp(fvBaseColor.b, ColorFog.b, proporcion);
         float1 a = 1;
-        
-        color = float4(r, g, b, a);
+        return float4(r, g, b, a);
     }
+}
+
+//Pixel Shader
+float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    float4 fvBaseColor = tex2D(diffuseMap, input.Texture);
+    return fogEffect(input.PosView.z, fvBaseColor);
+
+}
+
+//Pixel Shader
+float4 ps_main_light(VS_OUTPUT_VERTEX_LIGHT input) : COLOR0
+{
+    input.WorldNormal = normalize(input.WorldNormal);
+
+    float3 lightDirection = normalize(lightPos - input.WorldPosition);
+    float3 viewDirection = normalize(eyePos - input.WorldPosition);
+    float3 halfVector = normalize(lightDirection + viewDirection);
+
+	// Obtener texel de la textura
+    float4 color = tex2D(diffuseMap, input.Texture);
+
+	//Componente Diffuse: N dot L
+    float3 NdotL = dot(input.WorldNormal, lightDirection);
+
+	//Componente Specular: (N dot H)^shininess
+    float3 NdotH = dot(input.WorldNormal, halfVector);
+    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : kS) * pow(max(0.0, NdotH), shininess);
+    color += float4(specularLight, 1.0);
     
-    return color;
+    return fogEffect(input.PosView.z, color);
 }
 
 // ------------------------------------------------------------------
@@ -114,5 +157,13 @@ technique RenderScene
     {
         VertexShader = compile vs_3_0 vs_main();
         PixelShader = compile ps_3_0 ps_main();
+    }
+}
+technique RenderSceneLight
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_light();
+        PixelShader = compile ps_3_0 ps_main_light();
     }
 }
