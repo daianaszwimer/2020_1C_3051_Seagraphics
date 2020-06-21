@@ -10,6 +10,8 @@ using TGC.Group.Model.Crafting;
 using TGC.Group.Model.Gui;
 using TGC.Group.Model.Entidades;
 using TGC.Core.SceneLoader;
+using TGC.Core.Sound;
+using TGC.Group.Model.Sounds;
 
 namespace TGC.Group.Model
 {
@@ -41,7 +43,7 @@ namespace TGC.Group.Model
 
 
         //Transformations vars
-        private TGCBox mesh { get; set; }
+        public TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
         private TGCQuaternion rotation = TGCQuaternion.Identity;
         private TGCVector3 posicionInteriorNave = new TGCVector3(0, 50, 0);
@@ -54,10 +56,22 @@ namespace TGC.Group.Model
         private bool presionoO = false;
         private bool presionoI = false;
 
+        // sonidos
+        private TgcStaticSound colision;
+        private TgcStaticSound caminarDerecha;
+        private TgcStaticSound caminarIzq;
+        private float ultimoCaminar = 0;
+
         private static Player _instance;
 
         protected Player()
         {
+            caminarDerecha = new TgcStaticSound();
+            caminarDerecha.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\caminar-d.wav", SoundsManager.Instance().sound);
+            caminarIzq = new TgcStaticSound();
+            caminarIzq.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\caminar-i.wav", SoundsManager.Instance().sound);
+            colision = new TgcStaticSound();
+            colision.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\colision.wav", SoundsManager.Instance().sound);
         }
 
         public static Player Instance()
@@ -176,7 +190,7 @@ namespace TGC.Group.Model
             movement *= ElapsedTime;
             movement.Y = mesh.Position.Y + movement.Y < MIN_Y_POS ? 0 : movement.Y;
 
-            Move(movement);
+            Move(movement, ElapsedTime);
 
             if (i)
             {
@@ -191,6 +205,7 @@ namespace TGC.Group.Model
 
             if (o)
             {
+                ultimoCaminar = 0;
                 estaEnNave_ = !estaEnNave_;
                 if (estaEnNave_)
                 {
@@ -207,11 +222,13 @@ namespace TGC.Group.Model
             if (p) { godmode = !godmode; GodMode(godmode); }
         }
 
-        private void Move(TGCVector3 movement) {
+        private void Move(TGCVector3 movement, float ElapsedTime) {
             TGCVector3 lastPos = mesh.Position;
             mesh.Position += movement;
+            colision.stop();
             if (estaEnNave)
             {
+                ultimoCaminar += ElapsedTime;
                 //Check for collisions
                 bool collided = false;
                 List<TGCBox> meshes = InteriorNave.Instance().obtenerParedes();
@@ -227,7 +244,22 @@ namespace TGC.Group.Model
                 }
                 //If any collision then go to last position.
                 if (collided)
+                {
                     mesh.Position = lastPos;
+                    colision.play(true);
+                }
+                if (mesh.Position != lastPos)
+                {
+                    if (ultimoCaminar < 0.5)
+                    {
+                        caminarDerecha.play(false);
+                        ultimoCaminar = 0.5f;
+                    } else if (ultimoCaminar > 1.0)
+                    {
+                        caminarIzq.play(false);
+                        ultimoCaminar = 0;
+                    }
+                }
             } else
             {
                 // todo: manejamos que la colision de la nave haga que el player entre y sacamos lo del press en la "o"?
@@ -246,6 +278,7 @@ namespace TGC.Group.Model
                 if (collided)
                 {
                     mesh.Position = lastPos;
+                    colision.play(true);
                     return;
                 }
 
@@ -263,13 +296,19 @@ namespace TGC.Group.Model
                 if (collided)
                 {
                     mesh.Position = lastPos;
+                    colision.play(true);
                     return;
                 }
                 // colisiones contra elementos del mar
             }
         }
 
-        public void Dispose() { mesh.Dispose(); }
+        public void Dispose() { 
+            mesh.Dispose();
+            colision.dispose();
+            caminarDerecha.dispose();
+            caminarIzq.dispose();
+        }
 
         public void UpdateTransform() { mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position); }   
 

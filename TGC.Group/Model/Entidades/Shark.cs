@@ -2,6 +2,8 @@
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Collision;
+using TGC.Core.Sound;
+using TGC.Group.Model.Sounds;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -12,6 +14,7 @@ namespace TGC.Group.Model.Entidades
         private int vida;
 
         //private Crafting conQueMeAtacan = null; 
+        private Tgc3dSound sound;
 
         private bool puedoSerAtacado = false;
 
@@ -42,6 +45,9 @@ namespace TGC.Group.Model.Entidades
         {
             this.vida = 500;
             necesitaArmaParaInteractuar = true;
+            // todo: poner otro efecto tipo arma o algo asi
+            agarrarEfecto = new TgcStaticSound();
+            agarrarEfecto.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\grab.wav", SoundsManager.Instance().sound);
         }
 
         //Entity functions
@@ -58,15 +64,22 @@ namespace TGC.Group.Model.Entidades
             if (canDealDamage)
                 Attack();
             
-
             Move(goalPos, speed, ElapsedTime);
+
+            sound.Position = mesh.Position;
+            if(!estaOculto)
+            {
+                sound.play(true);
+            }
         }
 
         protected override void RenderEntity() { 
             mesh.BoundingBox.Render();
         }
 
-        protected override void DisposeEntity() { }
+        protected override void DisposeEntity() {
+            sound.dispose();
+        }
 
         //Gamemodel functions
         public void Spawn()
@@ -86,13 +99,19 @@ namespace TGC.Group.Model.Entidades
 
         protected override void InteractEntity()
         {
-            base.InteractEntity();
             if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())
             {
+                sound.stop();
                 //reducirVidaEn(conQueMeAtacan.danio);
                 reducirVidaEn(10);
                 Console.WriteLine("Me ataco");
             }
+        }
+
+        public void setearSonido(Tgc3dSound _sound)
+        {
+            sound = _sound;
+            sound.MinDistance = 20f;
         }
 
         //Internal functions

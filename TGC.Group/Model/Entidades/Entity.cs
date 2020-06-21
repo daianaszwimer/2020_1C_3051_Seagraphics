@@ -3,6 +3,8 @@ using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
+using TGC.Core.Sound;
+using TGC.Group.Model.Sounds;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -19,8 +21,14 @@ namespace TGC.Group.Model.Entidades
         protected bool estaOculto { get; set; } = false;
         // solo el tiburon lo tiene en true
         public bool necesitaArmaParaInteractuar { get; set; } = false;
+        public TgcStaticSound agarrarEfecto;
 
-        public Entity(TgcMesh mesh, TGCVector3 defaultLookDir) { 
+        public Entity(TgcMesh mesh, TGCVector3 defaultLookDir) {
+            if (!necesitaArmaParaInteractuar)
+            {
+                agarrarEfecto = new TgcStaticSound();
+                agarrarEfecto.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\grab.wav", SoundsManager.Instance().sound);
+            }
             this.mesh = mesh;
             this.defaultLookDir = defaultLookDir;
         }
@@ -55,6 +63,7 @@ namespace TGC.Group.Model.Entidades
         public void Dispose() { 
             Entities.Remove(this);
             mesh.Dispose();
+            agarrarEfecto.dispose();
             DisposeEntity();
         }
 
@@ -63,6 +72,7 @@ namespace TGC.Group.Model.Entidades
             {
                 if (!necesitaArmaParaInteractuar || (necesitaArmaParaInteractuar && Player.Instance().puedoEnfrentarTiburon()))
                 {
+                    agarrarEfecto.play(false);
                     estaOculto = true;
                     InteractEntity();
                 }

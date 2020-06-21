@@ -13,7 +13,7 @@ using TGC.Group.Model.Entidades;
 using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
 using TGC.Group.Model.Gui;
-using TGC.Group.Model.Sounds;
+using TGC.Core.Sound;
 
 namespace TGC.Group.Model
 {
@@ -65,10 +65,10 @@ namespace TGC.Group.Model
 
         //Shaders
         TgcFog fog;
-        Effect effect;
+        Microsoft.DirectX.Direct3D.Effect effect;
 
-        private MP3Sound sonidoUnderwater;
-
+        private TgcStaticSound sonidoUnderwater;
+        Tgc3dSound sharkSound;
         // data de los heightmaps
         string marBnwDir = "\\Heightmaps\\heightmap_bnw2.jpg";
         string marTexDir = "\\Heightmaps\\heightmap_tex.jpg";
@@ -114,7 +114,8 @@ namespace TGC.Group.Model
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
 
-            //Tgc3dSound sound;
+            Sounds.SoundsManager.Instance().sound = DirectSound.DsDevice;
+            Sounds.SoundsManager.Instance().mediaDir = MediaDir;
 
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
@@ -128,7 +129,8 @@ namespace TGC.Group.Model
             var lookAt = TGCVector3.Empty;
             Camera.SetCamera(cameraPosition, lookAt);
 
-            sonidoUnderwater = new MP3Sound(MediaDir + "Sounds\\underwater.mp3");
+            sonidoUnderwater = new TgcStaticSound();
+            sonidoUnderwater.loadSound(MediaDir + "Sounds\\mar.wav", DirectSound.DsDevice);
 
             //Iniciar HUD
             Hud.Init(MediaDir);
@@ -165,6 +167,8 @@ namespace TGC.Group.Model
 
             shark = new Shark(mesh);
             shark.Init();
+            sharkSound = new Tgc3dSound(MediaDir + "Sounds\\shark.wav", shark.GetMesh().Position, DirectSound.DsDevice);
+            shark.setearSonido(sharkSound);
             
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -214,8 +218,7 @@ namespace TGC.Group.Model
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
 
-
-            
+            DirectSound.ListenerTracking = Player.Instance().mesh;
         }
 
         /// <summary>
@@ -235,10 +238,11 @@ namespace TGC.Group.Model
             if (estaEnNave)
             {
                 interiorNave.Update();
-
+                sharkSound.stop();
+                sonidoUnderwater.stop();
             } else
             {
-                sonidoUnderwater.play();
+                sonidoUnderwater.play(true);
                 // update de elementos de agua
                 nave.Update();
                 oceano.Update();
@@ -376,7 +380,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
-            sonidoUnderwater.Dispose();
+            sonidoUnderwater.dispose();
             Player.Dispose();
             oceano.Dispose();
             heightmap.Dispose();

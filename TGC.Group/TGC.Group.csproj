@@ -81,6 +81,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectInput.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -123,8 +124,7 @@
     <Compile Include="Model\InteriorNave.cs" />
     <Compile Include="Model\Nave.cs" />
     <Compile Include="Model\Player.cs" />
-    <Compile Include="Model\Sounds\3DSound.cs" />
-    <Compile Include="Model\Sounds\MP3Sound.cs" />
+    <Compile Include="Model\Sounds\SoundsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
