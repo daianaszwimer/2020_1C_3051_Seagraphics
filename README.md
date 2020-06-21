@@ -15,7 +15,6 @@ Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técn
 
 ## Integrantes ##
 
-* Cristian Martinez, Alexander
 * Gonzalez Martin, Ivan  
 * Szwimer, Daiana Kalanit
 
