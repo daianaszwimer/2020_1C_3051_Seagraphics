@@ -123,6 +123,8 @@
     <Compile Include="Model\InteriorNave.cs" />
     <Compile Include="Model\Nave.cs" />
     <Compile Include="Model\Player.cs" />
+    <Compile Include="Model\Sounds\3DSound.cs" />
+    <Compile Include="Model\Sounds\MP3Sound.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -268,7 +270,7 @@
     <Folder Include="bin\Debug\" />
     <Folder Include="bin\Release\" />
     <Folder Include="bin\x86\Release\" />
-    <Folder Include="Model\Shaders\" />
+    <Folder Include="Media\Sounds\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

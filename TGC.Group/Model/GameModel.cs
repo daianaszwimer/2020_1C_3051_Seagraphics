@@ -13,6 +13,7 @@ using TGC.Group.Model.Entidades;
 using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
 using TGC.Group.Model.Gui;
+using TGC.Group.Model.Sounds;
 
 namespace TGC.Group.Model
 {
@@ -66,6 +67,8 @@ namespace TGC.Group.Model
         TgcFog fog;
         Effect effect;
 
+        private MP3Sound sonidoUnderwater;
+
         // data de los heightmaps
         string marBnwDir = "\\Heightmaps\\heightmap_bnw2.jpg";
         string marTexDir = "\\Heightmaps\\heightmap_tex.jpg";
@@ -111,6 +114,8 @@ namespace TGC.Group.Model
             mousePosition = focusWindows.PointToScreen(new Point(focusWindows.Width / 2, focusWindows.Height / 2));
             //Cursor.Hide();
 
+            //Tgc3dSound sound;
+
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
 
@@ -123,7 +128,7 @@ namespace TGC.Group.Model
             var lookAt = TGCVector3.Empty;
             Camera.SetCamera(cameraPosition, lookAt);
 
-
+            sonidoUnderwater = new MP3Sound(MediaDir + "Sounds\\underwater.mp3");
 
             //Iniciar HUD
             Hud.Init(MediaDir);
@@ -233,6 +238,7 @@ namespace TGC.Group.Model
 
             } else
             {
+                sonidoUnderwater.play();
                 // update de elementos de agua
                 nave.Update();
                 oceano.Update();
@@ -370,6 +376,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
+            sonidoUnderwater.Dispose();
             Player.Dispose();
             oceano.Dispose();
             heightmap.Dispose();
