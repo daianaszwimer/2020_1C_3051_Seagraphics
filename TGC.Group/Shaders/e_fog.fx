@@ -27,11 +27,16 @@ float StartFogDistance;
 float EndFogDistance;
 float Density;
 
-//Specular
+//Luz
 float3 lightPos = float3(10, 100, 10);
 float3 eyePos;
-float kS = 0.5;
+float KSpecular = 0.5;
 float shininess;
+float3 ambientColor; //Color RGB para Ambient de la luz
+float3 diffuseColor; //Color RGB para Diffuse de la luz
+float3 specularColor; //Color RGB para Specular de la luz
+float KAmbient = 1.0; // Coeficiente de Ambient
+float KDiffuse = 0.5; // Coeficiente de Diffuse
 
 //Input del Vertex Shader
 struct VS_INPUT_VERTEX
@@ -141,11 +146,13 @@ float4 ps_main_light(VS_OUTPUT_VERTEX_LIGHT input) : COLOR0
 
 	//Componente Diffuse: N dot L
     float3 NdotL = dot(input.WorldNormal, lightDirection);
+    float3 diffuseLight = KDiffuse * diffuseColor * max(0.0, NdotL);
 
 	//Componente Specular: (N dot H)^shininess
     float3 NdotH = dot(input.WorldNormal, halfVector);
-    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : kS) * pow(max(0.0, NdotH), shininess);
-    color += float4(specularLight, 1.0);
+    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : KSpecular) * specularColor * pow(max(0.0, NdotH), shininess);
+
+    color = float4(saturate(ambientColor * KAmbient + diffuseLight) * color + specularLight, color.a);
     
     return fogEffect(input.PosView.z, color);
 }

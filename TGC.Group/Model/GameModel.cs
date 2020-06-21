@@ -258,7 +258,10 @@ namespace TGC.Group.Model
                 {
                     oro.Update(ElapsedTime);
                 }
-
+                
+                effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
+                effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
+                effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
             }
 
             // esto se hace siempre
