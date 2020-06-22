@@ -58,18 +58,15 @@ namespace TGC.Group.Model
 
         // sonidos
         private TgcStaticSound colision;
-        private TgcStaticSound caminarDerecha;
-        private TgcStaticSound caminarIzq;
+        private TgcStaticSound walking;
         private float ultimoCaminar = 0;
 
         private static Player _instance;
 
         protected Player()
         {
-            caminarDerecha = new TgcStaticSound();
-            caminarDerecha.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\caminar-d.wav", SoundsManager.Instance().sound);
-            caminarIzq = new TgcStaticSound();
-            caminarIzq.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\caminar-i.wav", SoundsManager.Instance().sound);
+            walking = new TgcStaticSound();
+            walking.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\walking.wav", SoundsManager.Instance().sound);
             colision = new TgcStaticSound();
             colision.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\colision.wav", SoundsManager.Instance().sound);
         }
@@ -249,17 +246,9 @@ namespace TGC.Group.Model
                     colision.play(true);
                 }
                 if (mesh.Position != lastPos)
-                {
-                    if (ultimoCaminar < 0.5)
-                    {
-                        caminarDerecha.play(false);
-                        ultimoCaminar = 0.5f;
-                    } else if (ultimoCaminar > 1.0)
-                    {
-                        caminarIzq.play(false);
-                        ultimoCaminar = 0;
-                    }
-                }
+                    walking.play(true);
+                else
+                    walking.stop();
             } else
             {
                 // todo: manejamos que la colision de la nave haga que el player entre y sacamos lo del press en la "o"?
@@ -306,8 +295,7 @@ namespace TGC.Group.Model
         public void Dispose() { 
             mesh.Dispose();
             colision.dispose();
-            caminarDerecha.dispose();
-            caminarIzq.dispose();
+            walking.dispose();
         }
 
         public void UpdateTransform() { mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position); }   
