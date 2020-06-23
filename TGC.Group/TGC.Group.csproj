@@ -123,6 +123,7 @@
     <Compile Include="Model\Gui\Hud.cs" />
     <Compile Include="Model\InteriorNave.cs" />
     <Compile Include="Model\Nave.cs" />
+    <Compile Include="Model\Particulas.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Sounds\SoundsManager.cs" />
     <Compile Include="Program.cs" />

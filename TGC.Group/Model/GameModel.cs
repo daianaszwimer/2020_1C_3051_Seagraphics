@@ -45,6 +45,8 @@ namespace TGC.Group.Model
 
         DateTime timestamp;
 
+        float time;
+
         bool estaEnNave = true;
 
         Fondo oceano;
@@ -117,6 +119,11 @@ namespace TGC.Group.Model
             Sounds.SoundsManager.Instance().sound = DirectSound.DsDevice;
             Sounds.SoundsManager.Instance().mediaDir = MediaDir;
 
+            //Burbujas
+            D3DDevice.Instance.ParticlesEnabled = true;
+            D3DDevice.Instance.EnableParticles();
+            Particulas.Init(MediaDir,20);
+
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
 
@@ -180,7 +187,7 @@ namespace TGC.Group.Model
             {
                 Coral coral;
                 string meshName = i.ToString();
-                coral = new Coral(mesh.clone(meshName));
+                coral = new Coral(mesh.createMeshInstance(meshName));
                 coral = (Coral)setearMeshParaLista(coral, i * 4, -20);
                 corales.Add(coral);
                 i++;
@@ -194,7 +201,7 @@ namespace TGC.Group.Model
             {
                 Metal oro;
                 string meshName = i.ToString();
-                oro = new Metal(mesh.clone(meshName));
+                oro = new Metal(mesh.createMeshInstance(meshName));
                 oro = (Metal)setearMeshParaLista(oro, i * 8, -20);
                 oro.Tipo = ElementoRecolectable.oro;
                 metalesOro.Add(oro);
@@ -229,6 +236,9 @@ namespace TGC.Group.Model
         public override void Update()
         { 
             PreUpdate();
+
+            time += ElapsedTime;
+
             Hud.Update(Input);
 
             //Que no se pueda hacer nada si estas en game over salvo dar enter
@@ -246,6 +256,7 @@ namespace TGC.Group.Model
                 // update de elementos de agua
                 nave.Update();
                 oceano.Update();
+                Particulas.Update(time);
 
                 DateTime actualTimestamp = DateTime.Now;
                 // Mostrar Tiburon cada X cantidad de tiempo
@@ -305,6 +316,8 @@ namespace TGC.Group.Model
                 interiorNave.Render();
             } else
             {
+                
+
                 fog.updateValues();
                 effect.SetValue("ColorFog", fog.Color.ToArgb());
                 effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
@@ -352,6 +365,8 @@ namespace TGC.Group.Model
                     oro.Technique("RenderSceneLight");
                     oro.Render();
                 }
+
+                Particulas.Render(ElapsedTime);
             }
 
             //Dibuja un texto por pantalla
@@ -368,6 +383,7 @@ namespace TGC.Group.Model
             */
 
             Player.Render();
+            
 
             PostRender();
 
@@ -401,6 +417,8 @@ namespace TGC.Group.Model
             nave.Dispose();
 
             interiorNave.Dispose();
+
+            Particulas.Dispose();
 
             Hud.Dispose();
         }
