@@ -59,7 +59,6 @@ namespace TGC.Group.Model
         // sonidos
         private TgcStaticSound colision;
         private TgcStaticSound walking;
-        private float ultimoCaminar = 0;
 
         private static Player _instance;
 
@@ -191,27 +190,33 @@ namespace TGC.Group.Model
 
             if (i)
             {
-                if (Hud.GetCurrentStatus() != Hud.Status.Inventory && Hud.GetCurrentStatus() != Hud.Status.Crafting)
-                    if (!estaEnNave)
-                        Hud.ChangeStatus(Hud.Status.Inventory);
+                if (!Hud.IsCurrentStatus(Hud.Status.MainMenu) && !Hud.IsCurrentStatus(Hud.Status.GameOver))
+                {
+                    if (!Hud.IsCurrentStatus(Hud.Status.Inventory) && !Hud.IsCurrentStatus(Hud.Status.Crafting))
+                        if (!estaEnNave)
+                            Hud.ChangeStatus(Hud.Status.Inventory);
+                        else
+                            Hud.ChangeStatus(Hud.Status.Crafting);
                     else
-                        Hud.ChangeStatus(Hud.Status.Crafting);
-                else
-                    Hud.ChangeStatus(Hud.Status.Gameplay);
+                        Hud.ChangeStatus(Hud.Status.Gameplay);
+                }
             }
 
             if (o)
             {
-                ultimoCaminar = 0;
-                estaEnNave_ = !estaEnNave_;
-                if (estaEnNave_)
+                if (!Hud.IsCurrentStatus(Hud.Status.MainMenu) && !Hud.IsCurrentStatus(Hud.Status.GameOver))
                 {
-                    // todo: guardar la posicion en la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
-                    // posiciono dentro de nave
-                    mesh.Position = posicionInteriorNave;
-                }
+                    estaEnNave_ = !estaEnNave_;
+                    walking.stop();
+                    if (estaEnNave_)
+                    {
+                        // todo: guardar la posicion en la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
+                        // posiciono dentro de nave
+                        mesh.Position = posicionInteriorNave;
+                    }
 
-                Hud.ChangeStatus(Hud.Status.Gameplay);
+                    Hud.ChangeStatus(Hud.Status.Gameplay);
+                }
             }
 
             //Dev
@@ -225,7 +230,6 @@ namespace TGC.Group.Model
             colision.stop();
             if (estaEnNave)
             {
-                ultimoCaminar += ElapsedTime;
                 //Check for collisions
                 bool collided = false;
                 List<TGCBox> meshes = InteriorNave.Instance().obtenerParedes();

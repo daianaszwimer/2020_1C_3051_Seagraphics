@@ -453,7 +453,10 @@ namespace TGC.Group.Model.Gui
         }
 
         public static Status GetCurrentStatus() { return CurrentStatus; }
-
+        static public bool IsCurrentStatus(Status status)
+        {
+            return CurrentStatus == status;
+        }
         //Internal functions
         private static int Round(float n) { return (int)Math.Round(n); }
 
