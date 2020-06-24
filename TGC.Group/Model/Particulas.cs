@@ -73,6 +73,7 @@ namespace TGC.Group.Model
                 emitter.Render(elapsedTime);
         }
 
+
         static public void Dispose()
         {
             foreach (Emisor emitter in Emitters)

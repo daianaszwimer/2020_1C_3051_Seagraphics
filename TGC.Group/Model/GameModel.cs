@@ -14,6 +14,9 @@ using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
 using TGC.Group.Model.Gui;
 using TGC.Core.Sound;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Collision;
+using TGC.Core.Particle;
 
 namespace TGC.Group.Model
 {
@@ -78,6 +81,8 @@ namespace TGC.Group.Model
         float marScaleY = .35f;
         float marOffsetY = -100f;
 
+        //Optimizacion
+
         private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
         {
             elemento.Init();
@@ -85,7 +90,7 @@ namespace TGC.Group.Model
             //elemento.Recolectable = recolectador;
             int seed = DateTime.Now.Millisecond + i;
             Random random = new Random(seed);
-            float y = posicionY == 0 ? i/10 : posicionY;
+            float y = posicionY == 0 ? i / 10 : posicionY;
             TGCVector3 posicion = new TGCVector3((i * (random.Next(0, 5) * (float)Math.Sin(i)) * 2), y, i * 2 * (float)Math.Cos(i) * random.Next(0, 5));
             // todo: fixear corales y oro que se superponen
             // todo: nave se superpone con cosas del piso, si la ponemos arriba en el limite con el agua no pasaria mas
@@ -100,7 +105,7 @@ namespace TGC.Group.Model
         ///     Borrar el codigo ejemplo no utilizado.
         /// </summary>
         public override void Init()
-        { 
+        {
             //Device de DirectX para crear primitivas.
             var d3dDevice = D3DDevice.Instance.Device;
 
@@ -122,7 +127,7 @@ namespace TGC.Group.Model
             //Burbujas
             D3DDevice.Instance.ParticlesEnabled = true;
             D3DDevice.Instance.EnableParticles();
-            Particulas.Init(MediaDir,20);
+            Particulas.Init(MediaDir, 20);
 
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
@@ -176,10 +181,10 @@ namespace TGC.Group.Model
             shark.Init();
             sharkSound = new Tgc3dSound(MediaDir + "Sounds\\shark.wav", shark.GetMesh().Position, DirectSound.DsDevice);
             shark.setearSonido(sharkSound);
-            
+
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
-            
+
 
             corales = new List<Coral>();
             i = 0;
@@ -234,7 +239,7 @@ namespace TGC.Group.Model
         ///     ante ellas.
         /// </summary>
         public override void Update()
-        { 
+        {
             PreUpdate();
 
             time += ElapsedTime;
@@ -250,7 +255,8 @@ namespace TGC.Group.Model
                 interiorNave.Update();
                 sharkSound.stop();
                 sonidoUnderwater.stop();
-            } else
+            }
+            else
             {
                 sonidoUnderwater.play(true);
                 // update de elementos de agua
@@ -279,7 +285,7 @@ namespace TGC.Group.Model
                 {
                     oro.Update(ElapsedTime);
                 }
-                
+
                 effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
                 effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
                 effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
@@ -314,10 +320,9 @@ namespace TGC.Group.Model
             if (estaEnNave)
             {
                 interiorNave.Render();
-            } else
+            }
+            else
             {
-                
-
                 fog.updateValues();
                 effect.SetValue("ColorFog", fog.Color.ToArgb());
                 effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
@@ -329,41 +334,57 @@ namespace TGC.Group.Model
                 oceano.Effect(effect);
                 oceano.Technique("RenderScene");
                 oceano.Render();
-                
+
                 heightmap.Effect = effect;
                 heightmap.Technique = "RenderScene";
                 heightmap.Render();
 
                 foreach (var pez in peces)
                 {
-                    pez.Effect(effect);
-                    pez.Technique("RenderScene");
-                    pez.Render();
+                    if (IsInFrustum(pez.GetMesh()))
+                    {
+                        pez.Effect(effect);
+                        pez.Technique("RenderScene");
+                        pez.Render();
+                    }
                 }
                 foreach (var coral in corales)
                 {
-                    coral.Effect(effect);
-                    coral.Technique("RenderScene");
-                    coral.Render();
+                    if (IsInFrustum(coral.GetMesh()))
+                    {
+                        coral.Effect(effect);
+                        coral.Technique("RenderScene");
+                        coral.Render();
+                    }
                 }
 
-                shark.Effect(effect);
-                shark.Technique("RenderScene");
-                shark.Render();
+                if (IsInFrustum(shark.GetMesh()))
+                {
+
+                    shark.Effect(effect);
+                    shark.Technique("RenderScene");
+                    shark.Render();
+                }
 
                 //Efecto metalico
                 effect.SetValue("shininess", 30f);
 
-                nave.Effect(effect);
-                nave.Technique("RenderSceneLight");
-                nave.Render();
+                if (IsInFrustum(nave.obtenerMeshes()))
+                {
+                    nave.Effect(effect);
+                    nave.Technique("RenderSceneLight");
+                    nave.Render();
+                }
 
                 effect.SetValue("shininess", 2f);
                 foreach (var oro in metalesOro)
                 {
-                    oro.Effect(effect);
-                    oro.Technique("RenderSceneLight");
-                    oro.Render();
+                    if (IsInFrustum(oro.GetMesh()))
+                    {
+                        oro.Effect(effect);
+                        oro.Technique("RenderSceneLight");
+                        oro.Render();
+                    }
                 }
 
                 Particulas.Render(ElapsedTime);
@@ -382,8 +403,8 @@ namespace TGC.Group.Model
             DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
             */
 
+
             Player.Render();
-            
 
             PostRender();
 
@@ -421,6 +442,26 @@ namespace TGC.Group.Model
             Particulas.Dispose();
 
             Hud.Dispose();
+        }
+        bool IsInFrustum(TgcMesh mesh)
+        {
+            var col = TgcCollisionUtils.classifyFrustumAABB(Frustum, mesh.BoundingBox);
+            if (col != TgcCollisionUtils.FrustumResult.OUTSIDE)
+                return true;
+            else
+                return false;
+        }
+
+        bool IsInFrustum(List<TgcMesh> meshes)
+        {
+            bool isIn = false;
+            foreach (TgcMesh mesh in meshes)
+            {
+                isIn = IsInFrustum(mesh);
+                if (isIn)
+                    break;
+            }
+            return isIn;
         }
     }
 }
