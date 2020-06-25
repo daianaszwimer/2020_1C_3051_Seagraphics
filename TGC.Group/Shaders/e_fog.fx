@@ -51,8 +51,8 @@ struct VS_INPUT_VERTEX
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
-    float4 WorldPosition : POSITION1;
     float2 Texture : TEXCOORD0;
+    float4 WorldPosition : TEXCOORD1;
     float4 PosView : COLOR0;
 };
 //Input del Vertex Shader
@@ -60,7 +60,7 @@ struct VS_INPUT_VERTEX_LIGHT
 {
     float4 Position : POSITION0;
     float3 Normal : NORMAL0;
-    float4 Color : COLOR;
+    float4 Color : COLOR0;
     float2 Texture : TEXCOORD0;
 };
 

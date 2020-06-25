@@ -33,7 +33,6 @@ struct VS_INPUT_VERTEX
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
-    float4 WorldPosition : POSITION1;
 };
 
 //Vertex Shader
@@ -41,12 +40,10 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
 {
     VS_OUTPUT_VERTEX output;
     
-    float3 worldPos = mul(input.Position, matWorld);
-    float yPos = saturate(sin(worldPos.x + time) + cos(worldPos.z + time)) * 20;
+    float yPos = saturate(sin(input.Position.x + time) + cos(input.Position.z + time)) * 20;
     //yPos = max(yPos, -10);
     
     input.Position.y += yPos;
-    output.WorldPosition = mul(input.Position, matWorld);
     output.Position = mul(input.Position, matWorldViewProj);
     
     return output;
