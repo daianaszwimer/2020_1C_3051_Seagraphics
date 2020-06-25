@@ -383,16 +383,24 @@ namespace TGC.Group.Model
                 {
                     shark.Render();
                 }
+                Particulas.Render(ElapsedTime);
+
+                Oceano.Render();
 
                 //Efecto metalico
                 effect.SetValue("shininess", 30f);
-
+                effect.SetValue("KSpecular", 1.0f);
+                effect.SetValue("KAmbient", 1.0f);
+                effect.SetValue("KDiffuse", 0.5f);
                 if (IsInFrustum(nave.obtenerMeshes()))
                 {
                     nave.Render();
                 }
 
                 effect.SetValue("shininess", 10f);
+                effect.SetValue("KSpecular", 1.25f);
+                effect.SetValue("KAmbient", 1.2f);
+                effect.SetValue("KDiffuse", 0.25f);
                 foreach (var oro in metalesOro)
                 {
                     if (IsInFrustum(oro.GetMesh()))
@@ -400,10 +408,6 @@ namespace TGC.Group.Model
                         oro.Render();
                     }
                 }
-
-                Particulas.Render(ElapsedTime);
-
-                Oceano.Render();
             }
 
             //Dibuja un texto por pantalla

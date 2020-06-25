@@ -32,13 +32,13 @@ float nivelAgua;
 //Luz
 float3 lightPos = float3(10, 100, 10);
 float3 eyePos;
-float KSpecular = 0.5;
+float KSpecular;
 float shininess;
 float3 ambientColor; //Color RGB para Ambient de la luz
 float3 diffuseColor; //Color RGB para Diffuse de la luz
 float3 specularColor; //Color RGB para Specular de la luz
-float KAmbient = 1.0; // Coeficiente de Ambient
-float KDiffuse = 0.5; // Coeficiente de Diffuse
+float KAmbient; // Coeficiente de Ambient
+float KDiffuse; // Coeficiente de Diffuse
 
 //Input del Vertex Shader
 struct VS_INPUT_VERTEX
