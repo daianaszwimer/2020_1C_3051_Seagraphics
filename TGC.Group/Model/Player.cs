@@ -30,7 +30,7 @@ namespace TGC.Group.Model
         private const float OXYGEN_MAX = 100f;
         private const float OXYGEN_DAMAGE = 5f;
         private const float HEALTH_MAX = 100f;
-        private const float WATER_LEVEL = 95f; //When players reaches a position above this level, then recovers oxygen.
+        private const float WATER_LEVEL = 75; //When players reaches a position above this level, then recovers oxygen.
 
         private const float MIN_Y_POS = -10f; //nivel del piso
 
@@ -186,6 +186,11 @@ namespace TGC.Group.Model
             movement *= ElapsedTime;
             movement.Y = mesh.Position.Y + movement.Y < MIN_Y_POS ? 0 : movement.Y;
 
+            if (OnWaterLevel())
+            {
+                movement.Y = FastMath.Min(movement.Y, 0);
+            }
+
             Move(movement, ElapsedTime);
 
             if (i)
@@ -319,10 +324,17 @@ namespace TGC.Group.Model
             }
         }
 
+        private bool OnWaterLevel()
+        {
+            return Position().Y >= WATER_LEVEL;
+        }
+
         private void LoseOxygen(float ElapsedTime) { 
             oxygen = Math.Max(0, oxygen - OXYGEN_LOSS_SPEED * ElapsedTime);
             if (oxygen == 0) GetDamage(OXYGEN_DAMAGE * ElapsedTime);
         }
+
+        
 
         public void GetHeal(float amount) { health = Math.Min(100f, health + amount); }
         public void GetDamage(float amount) { health = Math.Max(0, health - amount); }

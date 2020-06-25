@@ -21,6 +21,7 @@ sampler2D diffuseMap = sampler_state
 };
 
 float time;
+float color;
 
 //Input del Vertex Shader
 struct VS_INPUT_VERTEX
@@ -41,8 +42,10 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
     VS_OUTPUT_VERTEX output;
     
     float3 worldPos = mul(input.Position, matWorld);
+    float yPos = saturate(sin(worldPos.x + time) + cos(worldPos.z + time)) * 20;
+    //yPos = max(yPos, -10);
     
-    input.Position.y += sin(worldPos.x + time) * 20;
+    input.Position.y += yPos;
     output.WorldPosition = mul(input.Position, matWorld);
     output.Position = mul(input.Position, matWorldViewProj);
     
@@ -52,9 +55,7 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
 //Pixel Shader
 float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    float4 colorTop = float4(0.3, 0.7, 0.7, 0.7);
-    
-    return colorTop;
+    return float4(0.3, 0.7, 0.7, 0.7);
 }
 
 // ------------------------------------------------------------------

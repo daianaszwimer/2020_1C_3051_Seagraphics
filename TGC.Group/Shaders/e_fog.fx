@@ -27,6 +27,8 @@ float StartFogDistance;
 float EndFogDistance;
 float Density;
 
+float nivelAgua;
+
 //Luz
 float3 lightPos = float3(10, 100, 10);
 float3 eyePos;
@@ -49,6 +51,7 @@ struct VS_INPUT_VERTEX
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
+    float4 WorldPosition : POSITION1;
     float2 Texture : TEXCOORD0;
     float4 PosView : COLOR0;
 };
@@ -77,6 +80,7 @@ VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
     VS_OUTPUT_VERTEX output;
 
     output.Position = mul(input.Position, matWorldViewProj);
+    output.WorldPosition = mul(input.Position, matWorld);
     output.Texture = input.Texture;
     output.PosView = mul(input.Position, matWorldView);
     return output;
@@ -98,12 +102,12 @@ VS_OUTPUT_VERTEX_LIGHT vs_main_light(VS_INPUT_VERTEX_LIGHT input)
     return output;
 }
 
-float4 fogEffect(float positionViewZ, float4 fvBaseColor)
+float4 fogEffect(float positionViewZ, float4 fvBaseColor, float yPos)
 {
     float zn = StartFogDistance;
     float zf = EndFogDistance;
 
-    if (positionViewZ < zn)
+    if (positionViewZ < zn || yPos > nivelAgua)
         return fvBaseColor;
     else if (positionViewZ > zf)
     {
@@ -128,7 +132,7 @@ float4 fogEffect(float positionViewZ, float4 fvBaseColor)
 float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
 {
     float4 fvBaseColor = tex2D(diffuseMap, input.Texture);
-    return fogEffect(input.PosView.z, fvBaseColor);
+    return fogEffect(input.PosView.z, fvBaseColor, input.WorldPosition.y);
 
 }
 
@@ -154,7 +158,7 @@ float4 ps_main_light(VS_OUTPUT_VERTEX_LIGHT input) : COLOR0
 
     color = float4(saturate(ambientColor * KAmbient + diffuseLight) * color + specularLight, color.a);
     
-    return fogEffect(input.PosView.z, color);
+    return fogEffect(input.PosView.z, color, input.WorldPosition.y);
 }
 
 // ------------------------------------------------------------------

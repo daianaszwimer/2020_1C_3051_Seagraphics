@@ -35,7 +35,7 @@ namespace TGC.Group.Model
                 particleEmitter.CreationFrecuency = GetRandomFloat(.1f,.3f,i);
                 particleEmitter.MaxSizeParticle = .25f;
                 particleEmitter.MinSizeParticle = .1f;
-                particleEmitter.ParticleTimeToLive = GetRandomFloat(7f,10f,i);
+                particleEmitter.ParticleTimeToLive = GetRandomFloat(3f,4f,i);
                 particleEmitter.Speed = TGCVector3.Up * GetRandomFloat(9.5f,10f,i);
                 particleEmitter.Playing = true;
 

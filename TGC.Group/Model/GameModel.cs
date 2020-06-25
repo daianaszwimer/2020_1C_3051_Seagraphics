@@ -132,7 +132,7 @@ namespace TGC.Group.Model
             Particulas.Init(MediaDir, 20);
 
             //Oceano
-            Oceano.Init(TGCVector3.Up * nivelDelAgua, 100, 50, ShadersDir);
+            Oceano.Init(TGCVector3.Up * nivelDelAgua * 0.8f, 100, 100, ShadersDir);
 
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
@@ -232,6 +232,7 @@ namespace TGC.Group.Model
 
             //Fog + Lights
             effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
+            effect.SetValue("nivelAgua", nivelDelAgua);
 
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);

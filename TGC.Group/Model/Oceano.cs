@@ -1,6 +1,7 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace TGC.Group.Model
             //Inicializar efecto
             effect = TGCShaders.Instance.LoadEffect(ShadersDir + "agua.fx");
             effect.Technique = "RenderScene";
+            effect.SetValue("time", 0);
 
             //Inicializar vertex buffer
             int nivelTeseladoX = nivelTeselado;
