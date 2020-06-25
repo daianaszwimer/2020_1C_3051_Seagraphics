@@ -52,6 +52,8 @@ namespace TGC.Group.Model
 
         bool estaEnNave = true;
 
+        float nivelDelAgua = 80f;
+
         Fondo oceano;
         TgcSimpleTerrain heightmap;
         Control focusWindows;
@@ -128,6 +130,9 @@ namespace TGC.Group.Model
             D3DDevice.Instance.ParticlesEnabled = true;
             D3DDevice.Instance.EnableParticles();
             Particulas.Init(MediaDir, 20);
+
+            //Oceano
+            Oceano.Init(TGCVector3.Up * nivelDelAgua, 100, 50, ShadersDir);
 
             //Settear jugador y camara
             FPSCamara = new FPSCamara(Camera, Input);
@@ -225,6 +230,7 @@ namespace TGC.Group.Model
             fog.StartDistance = 1;
             fog.Enabled = true;
 
+            //Fog + Lights
             effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
 
             interiorNave = InteriorNave.Instance();
@@ -245,7 +251,7 @@ namespace TGC.Group.Model
             time += ElapsedTime;
 
             Hud.Update(Input);
-
+            Oceano.Update(time);
             //Que no se pueda hacer nada si estas en game over salvo dar enter
             if (Hud.GetCurrentStatus() == Hud.Status.GameOver)
                 return;
@@ -314,6 +320,8 @@ namespace TGC.Group.Model
             ClearTextures();
             D3DDevice.Instance.Device.BeginScene();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            
+
 
             Hud.Render();
 
@@ -388,6 +396,8 @@ namespace TGC.Group.Model
                 }
 
                 Particulas.Render(ElapsedTime);
+
+                Oceano.Render();
             }
 
             //Dibuja un texto por pantalla
@@ -440,7 +450,7 @@ namespace TGC.Group.Model
             interiorNave.Dispose();
 
             Particulas.Dispose();
-
+            Oceano.Dispose();
             Hud.Dispose();
         }
         bool IsInFrustum(TgcMesh mesh)

@@ -25,9 +25,9 @@ namespace TGC.Group.Model
             int nivelTeseladoX = nivelTeselado;
             int nivelTeseladoZ = nivelTeselado;
             totalVertices = 6 * nivelTeseladoX * nivelTeseladoZ;
-            vertexBuffer = new VertexBuffer(typeof(CustomVertex.PositionTextured), totalVertices,
+            vertexBuffer = new VertexBuffer(typeof(CustomVertex.PositionOnly), totalVertices,
                 D3DDevice.Instance.Device,
-                Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
+                Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionOnly.Format, Pool.Default);
 
             //Inicializar y llenar data para meterla en el vertexBuffer
             int dataIndex = 0;
@@ -71,10 +71,11 @@ namespace TGC.Group.Model
 
         static public void Render()
         {
+            D3DDevice.Instance.Device.RenderState.AlphaBlendEnable = true;
             TGCShaders.Instance.SetShaderMatrix(effect, TGCMatrix.Identity);
+            D3DDevice.Instance.Device.VertexFormat = CustomVertex.PositionOnly.Format;
             D3DDevice.Instance.Device.SetStreamSource(0, vertexBuffer, 0);
 
-            //Render con shader
             effect.Begin(0);
             effect.BeginPass(0);
             D3DDevice.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, totalVertices / 3);
@@ -82,6 +83,10 @@ namespace TGC.Group.Model
             effect.End();
         }
 
+        static public void Dispose()
+        {
+            vertexBuffer.Dispose();
+        }
 
     }
 }

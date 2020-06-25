@@ -30,7 +30,7 @@ namespace TGC.Group.Model
         private const float OXYGEN_MAX = 100f;
         private const float OXYGEN_DAMAGE = 5f;
         private const float HEALTH_MAX = 100f;
-        private const float WATER_LEVEL = 10f; //When players reaches a position above this level, then recovers oxygen.
+        private const float WATER_LEVEL = 95f; //When players reaches a position above this level, then recovers oxygen.
 
         private const float MIN_Y_POS = -10f; //nivel del piso
 

@@ -123,6 +123,7 @@
     <Compile Include="Model\Gui\Hud.cs" />
     <Compile Include="Model\InteriorNave.cs" />
     <Compile Include="Model\Nave.cs" />
+    <Compile Include="Model\Oceano.cs" />
     <Compile Include="Model\Particulas.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Sounds\SoundsManager.cs" />
@@ -262,6 +263,7 @@
     <Content Include="obj\x86\Debug\TGC.Group.csproj.FileListAbsolute.txt" />
     <Content Include="obj\x86\Debug\TGC.Group.exe" />
     <Content Include="obj\x86\Debug\TGC.Group.pdb" />
+    <Content Include="Shaders\agua.fx" />
     <Content Include="Shaders\e_fog.fx" />
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
