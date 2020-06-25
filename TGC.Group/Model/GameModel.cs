@@ -146,6 +146,8 @@ namespace TGC.Group.Model
 
             sonidoUnderwater = new TgcStaticSound();
             sonidoUnderwater.loadSound(MediaDir + "Sounds\\mar.wav", DirectSound.DsDevice);
+            
+            effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
 
             //Iniciar HUD
             Hud.Init(MediaDir);
@@ -174,6 +176,9 @@ namespace TGC.Group.Model
                 fish = new Fish(mesh.clone(meshName));
                 fish = (Fish)setearMeshParaLista(fish, i);
                 peces.Add(fish);
+
+                fish.Effect(effect);
+                fish.Technique("RenderScene");
                 i++;
             }
 
@@ -198,6 +203,9 @@ namespace TGC.Group.Model
                 coral = new Coral(mesh.createMeshInstance(meshName));
                 coral = (Coral)setearMeshParaLista(coral, i * 4, -20);
                 corales.Add(coral);
+
+                coral.Effect(effect);
+                coral.Technique("RenderScene");
                 i++;
             }
 
@@ -213,6 +221,9 @@ namespace TGC.Group.Model
                 oro = (Metal)setearMeshParaLista(oro, i * 8, -20);
                 oro.Tipo = ElementoRecolectable.oro;
                 metalesOro.Add(oro);
+
+                oro.Effect(effect);
+                oro.Technique("RenderSceneLight");
                 i++;
             }
 
@@ -229,13 +240,28 @@ namespace TGC.Group.Model
             fog.Enabled = true;
 
             //Fog + Lights
-            effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
             effect.SetValue("nivelAgua", nivelDelAgua);
 
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
 
             DirectSound.ListenerTracking = Player.Instance().mesh;
+            // seteamos los efectos aca porque son fijos
+            oceano.Effect(effect);
+            oceano.Technique("RenderScene");
+
+            heightmap.Effect = effect;
+            heightmap.Technique = "RenderScene";
+
+            shark.Effect(effect);
+            shark.Technique("RenderScene");
+
+            nave.Effect(effect);
+            nave.Technique("RenderSceneLight");
+
+            effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
+            effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
+            effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
         }
 
         /// <summary>
@@ -291,9 +317,13 @@ namespace TGC.Group.Model
                     oro.Update(ElapsedTime);
                 }
 
-                effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
-                effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
-                effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
+                fog.updateValues();
+                effect.SetValue("ColorFog", fog.Color.ToArgb());
+                effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+                effect.SetValue("StartFogDistance", fog.StartDistance);
+                effect.SetValue("EndFogDistance", fog.EndDistance);
+                effect.SetValue("Density", fog.Density);
+                effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
             }
 
             // esto se hace siempre
@@ -330,28 +360,14 @@ namespace TGC.Group.Model
             }
             else
             {
-                fog.updateValues();
-                effect.SetValue("ColorFog", fog.Color.ToArgb());
-                effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-                effect.SetValue("StartFogDistance", fog.StartDistance);
-                effect.SetValue("EndFogDistance", fog.EndDistance);
-                effect.SetValue("Density", fog.Density);
-                effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
-
-                oceano.Effect(effect);
-                oceano.Technique("RenderScene");
                 oceano.Render();
 
-                heightmap.Effect = effect;
-                heightmap.Technique = "RenderScene";
                 heightmap.Render();
 
                 foreach (var pez in peces)
                 {
                     if (IsInFrustum(pez.GetMesh()))
                     {
-                        pez.Effect(effect);
-                        pez.Technique("RenderScene");
                         pez.Render();
                     }
                 }
@@ -359,17 +375,12 @@ namespace TGC.Group.Model
                 {
                     if (IsInFrustum(coral.GetMesh()))
                     {
-                        coral.Effect(effect);
-                        coral.Technique("RenderScene");
                         coral.Render();
                     }
                 }
 
                 if (IsInFrustum(shark.GetMesh()))
                 {
-
-                    shark.Effect(effect);
-                    shark.Technique("RenderScene");
                     shark.Render();
                 }
 
@@ -378,18 +389,14 @@ namespace TGC.Group.Model
 
                 if (IsInFrustum(nave.obtenerMeshes()))
                 {
-                    nave.Effect(effect);
-                    nave.Technique("RenderSceneLight");
                     nave.Render();
                 }
 
-                effect.SetValue("shininess", 2f);
+                effect.SetValue("shininess", 10f);
                 foreach (var oro in metalesOro)
                 {
                     if (IsInFrustum(oro.GetMesh()))
                     {
-                        oro.Effect(effect);
-                        oro.Technique("RenderSceneLight");
                         oro.Render();
                     }
                 }
@@ -426,6 +433,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
+            effect.Dispose();
             sonidoUnderwater.dispose();
             Player.Dispose();
             oceano.Dispose();
