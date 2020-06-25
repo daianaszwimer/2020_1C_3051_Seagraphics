@@ -14,9 +14,7 @@ using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
 using TGC.Group.Model.Gui;
 using TGC.Core.Sound;
-using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
-using TGC.Core.Particle;
 
 namespace TGC.Group.Model
 {
