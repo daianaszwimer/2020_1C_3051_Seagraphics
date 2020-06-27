@@ -75,7 +75,7 @@ namespace TGC.Group.Model.Entidades
         }
 
         protected override void RenderEntity() { 
-            mesh.BoundingBox.Render();
+            //mesh.BoundingBox.Render();
         }
 
         protected override void DisposeEntity() {

@@ -21,7 +21,7 @@ namespace TGC.Group.Model.Entidades
 
         protected override void InitEntity()
         {
-            mesh.Scale = new TGCVector3(0.3f, 0.3f, 0.3f);
+            mesh.Scale = new TGCVector3(0.2f, 0.2f, 0.2f);
         }
 
         protected override void UpdateEntity(float ElapsedTime)
@@ -49,7 +49,7 @@ namespace TGC.Group.Model.Entidades
         }
 
         protected override void RenderEntity() {
-            mesh.BoundingBox.Render();
+            //mesh.BoundingBox.Render();
         }
 
         protected override void DisposeEntity() { }
