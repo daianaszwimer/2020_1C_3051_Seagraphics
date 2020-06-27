@@ -67,6 +67,7 @@ namespace TGC.Group.Model.Gui
         static List<ItemSprite> CraftingItems;
 
         static TgcText2D GameOver;
+        static TgcText2D GameOverSubtitle;
 
         static string MediaDir;
 
@@ -208,7 +209,14 @@ namespace TGC.Group.Model.Gui
             GameOver.Size = new Size(750, 500);
             GameOver.changeFont(new Font("Calibri", 100, FontStyle.Bold));
             GameOver.Color = Color.Red;
-            
+
+            GameOverSubtitle = new TgcText2D();
+            GameOverSubtitle.Text = "Press Enter to exit";
+            GameOverSubtitle.Align = TgcText2D.TextAlign.LEFT;
+            GameOverSubtitle.Position = new Point(Round(WIDTH * 0.4f), Round(HEIGHT * 0.7f));
+            GameOverSubtitle.Size = new Size(350, 200);
+            GameOverSubtitle.changeFont(new Font("Calibri", 30, FontStyle.Bold));
+            GameOverSubtitle.Color = Color.Red;
         }
 
         public static void Update(TgcD3dInput Input)
@@ -426,6 +434,7 @@ namespace TGC.Group.Model.Gui
             else if (CurrentStatus == Status.GameOver)
             {
                 GameOver.render();
+                GameOverSubtitle.render();
             }
         }
 
