@@ -120,13 +120,19 @@ namespace TGC.Group.Model.Entidades
         //Common functinos
         /// <param name="goalPos">Posicion en el mundo a la que se quiere llegar</param>
         /// <param name="speed">Velocidad a la que la entidad se mueve</param>
-        protected void Move(TGCVector3 goalPos, float speed, float ElapsedTime)
+        protected void Move(TGCVector3 goalPos, float speed, float ElapsedTime, float limiteY = -1f)
         {
             TGCVector3 dir = TGCVector3.Normalize(goalPos - mesh.Position);
             LookAt(dir);
 
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
+
+            if (limiteY != -1 && mesh.Position.Y >= (limiteY - 20f))
+            {
+                // si hay limite lo pongo ahi, un poco mas abajo
+                mesh.Position = new TGCVector3(mesh.Position.X, limiteY - 20f, mesh.Position.Z);
+            }
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }
 

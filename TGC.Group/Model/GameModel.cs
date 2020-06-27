@@ -190,6 +190,7 @@ namespace TGC.Group.Model
             shark.Init();
             sharkSound = new Tgc3dSound(MediaDir + "Sounds\\shark.wav", shark.GetMesh().Position, DirectSound.DsDevice);
             shark.setearSonido(sharkSound);
+            shark.setearAlturaMaxima(nivelDelAgua);
 
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];

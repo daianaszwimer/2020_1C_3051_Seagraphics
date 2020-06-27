@@ -12,6 +12,7 @@ namespace TGC.Group.Model.Entidades
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
 
         private int vida;
+        private float yMax;
 
         //private Crafting conQueMeAtacan = null; 
         private Tgc3dSound sound;
@@ -64,7 +65,7 @@ namespace TGC.Group.Model.Entidades
             if (canDealDamage)
                 Attack();
             
-            Move(goalPos, speed, ElapsedTime);
+            Move(goalPos, speed, ElapsedTime, yMax);
 
             sound.Position = mesh.Position;
             if(!estaOculto)
@@ -112,6 +113,11 @@ namespace TGC.Group.Model.Entidades
         {
             sound = _sound;
             sound.MinDistance = 20f;
+        }
+
+        public void setearAlturaMaxima(float yMax_)
+        {
+            yMax = yMax_;
         }
 
         //Internal functions
