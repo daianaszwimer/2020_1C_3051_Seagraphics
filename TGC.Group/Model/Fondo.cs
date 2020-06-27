@@ -33,12 +33,12 @@ namespace TGC.Group.Model
             var rutaTextura = MediaDir + "Superficie\\";
 
             //coloco cada textura en cada cara del cubo del skyBox
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, rutaTextura + "lostatseaday_up.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, rutaTextura + "lostatseaday_dn.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, rutaTextura + "lostatseaday_lf.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, rutaTextura + "lostatseaday_rt.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, rutaTextura + "lostatseaday_bk.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, rutaTextura + "lostatseaday_ft.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, rutaTextura + "skybox-up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, rutaTextura + "skybox-down.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, rutaTextura + "skybox-left.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, rutaTextura + "skybox-right.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, rutaTextura + "skybox-front.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, rutaTextura + "skybox-back.jpg");
 
 
             skyBox.SkyEpsilon = 25f;
