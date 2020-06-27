@@ -59,6 +59,7 @@ namespace TGC.Group.Model
         // sonidos
         private TgcStaticSound colision;
         private TgcStaticSound walking;
+        private TgcStaticSound gameOver;
 
         private static Player _instance;
 
@@ -68,6 +69,8 @@ namespace TGC.Group.Model
             walking.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\walking.wav", SoundsManager.Instance().sound);
             colision = new TgcStaticSound();
             colision.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\colision.wav", SoundsManager.Instance().sound);
+            gameOver = new TgcStaticSound();
+            gameOver.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\gameover.wav", SoundsManager.Instance().sound);
         }
 
         public static Player Instance()
@@ -320,6 +323,7 @@ namespace TGC.Group.Model
 
             if (IsDead())
             {
+                gameOver.play(false);
                 Hud.ChangeStatus(Hud.Status.GameOver);
             }
         }
