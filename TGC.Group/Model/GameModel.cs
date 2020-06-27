@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using TGC.Group.Model.Gui;
 using TGC.Core.Sound;
 using TGC.Core.Collision;
+using TGC.Core.Textures;
 
 namespace TGC.Group.Model
 {
@@ -82,6 +83,11 @@ namespace TGC.Group.Model
         float marScaleY = .35f;
         float marOffsetY = -100f;
 
+        private Surface depthStencil;
+        private Texture renderTarget;
+        private VertexBuffer fullScreenQuad;
+
+        private TgcTexture maskTexture;
         //Optimizacion
 
         private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
@@ -149,6 +155,7 @@ namespace TGC.Group.Model
             sonidoUnderwater.loadSound(MediaDir + "Sounds\\mar.wav", DirectSound.DsDevice);
             
             effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
+
 
             //Iniciar HUD
             Hud.Init(MediaDir);
@@ -264,6 +271,27 @@ namespace TGC.Group.Model
             effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
             effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
             effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
+
+            // dibujo el full screen quad
+            CustomVertex.PositionTextured[] vertices =
+            {
+                new CustomVertex.PositionTextured(-1, 1, 1, 0, 0),
+                new CustomVertex.PositionTextured(1, 1, 1, 1, 0),
+                new CustomVertex.PositionTextured(-1, -1, 1, 0, 1),
+                new CustomVertex.PositionTextured(1, -1, 1, 1, 1)
+            };
+
+            // Vertex buffer de los triangulos
+            fullScreenQuad = new VertexBuffer(typeof(CustomVertex.PositionTextured), 4, d3dDevice, Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
+            fullScreenQuad.SetData(vertices, 0, LockFlags.None);
+
+            // dibujo render target
+
+            depthStencil = d3dDevice.CreateDepthStencilSurface(d3dDevice.PresentationParameters.BackBufferWidth, d3dDevice.PresentationParameters.BackBufferHeight, DepthFormat.D24S8, MultiSampleType.None, 0, true);
+
+            renderTarget = new Texture(d3dDevice, d3dDevice.PresentationParameters.BackBufferWidth, d3dDevice.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
+
+            maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mask.png");
         }
 
         /// <summary>
@@ -357,11 +385,23 @@ namespace TGC.Group.Model
         public override void Render()
         {
             ClearTextures();
-            D3DDevice.Instance.Device.BeginScene();
-            D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            
-            Hud.Render();
+            var device = D3DDevice.Instance.Device;
 
+            // Capturamos las texturas de pantalla
+            Surface screenRenderTarget = device.GetRenderTarget(0);
+            Surface screenDepthSurface = device.DepthStencilSurface;
+
+            // Especificamos que vamos a dibujar en una textura
+            Surface surface = renderTarget.GetSurfaceLevel(0);
+            device.SetRenderTarget(0, surface);
+            device.DepthStencilSurface = depthStencil;
+
+            // Captura de escena en render target
+            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            device.BeginScene();
+
+            Hud.Render();
+            effect.Technique = "PostProcess";
             if (!estaEnAlgunMenu)
             {
                 if (estaEnNave)
@@ -370,6 +410,8 @@ namespace TGC.Group.Model
                 }
                 else
                 {
+                    effect.Technique = "PostProcessMar";
+
                     oceano.Render();
                     heightmap.Render();
 
@@ -436,9 +478,35 @@ namespace TGC.Group.Model
                 Player.Render();
 
             }
+            device.EndScene();
+            // Especificamos que vamos a dibujar en pantalla
+            device.SetRenderTarget(0, screenRenderTarget);
+            device.DepthStencilSurface = screenDepthSurface;
 
-            PostRender();
+            device.BeginScene();
 
+            device.VertexFormat = CustomVertex.PositionTextured.Format;
+            device.SetStreamSource(0, fullScreenQuad, 0);
+            effect.SetValue("renderTarget", renderTarget);
+
+            effect.SetValue("textura_mascara", maskTexture.D3dTexture);
+
+            // Dibujado de textura en full screen quad
+            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            // Dibujamos el full screen quad
+            effect.Begin(FX.None);
+            effect.BeginPass(0);
+            device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+            effect.EndPass();
+            effect.End();
+
+            RenderFPS();
+            RenderAxis();
+            device.EndScene();
+
+            device.Present();
+
+            surface.Dispose();
         }
 
         /// <summary>
@@ -474,6 +542,10 @@ namespace TGC.Group.Model
             Particulas.Dispose();
             Oceano.Dispose();
             Hud.Dispose();
+            maskTexture.dispose();
+            fullScreenQuad.Dispose();
+            renderTarget.Dispose();
+            depthStencil.Dispose();
         }
         bool IsInFrustum(TgcMesh mesh)
         {

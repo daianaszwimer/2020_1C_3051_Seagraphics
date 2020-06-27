@@ -234,6 +234,7 @@
     <Content Include="bin\x86\Debug\TGC.Group.exe" />
     <Content Include="bin\x86\Debug\TGC.Group.pdb" />
     <Content Include="Media\coral-TgcScene.xml" />
+    <Content Include="Media\mask.png" />
     <Content Include="Media\Oro-TgcScene.xml" />
     <Content Include="Media\ship-TgcScene.xml" />
     <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />

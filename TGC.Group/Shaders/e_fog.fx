@@ -20,6 +20,25 @@ sampler2D diffuseMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
+//Textura para full screen quad
+texture renderTarget;
+sampler2D renderTargetSampler = sampler_state
+{
+    Texture = (renderTarget);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
+texture textura_mascara;
+sampler sampler_mascara = sampler_state
+{
+    Texture = (textura_mascara);
+};
+
+
 // variable de fogs
 float4 ColorFog;
 float4 CameraPos;
@@ -161,6 +180,48 @@ float4 ps_main_light(VS_OUTPUT_VERTEX_LIGHT input) : COLOR0
     return fogEffect(input.PosView.z, color, input.WorldPosition.y);
 }
 
+//Input del Vertex Shader
+struct VS_INPUT_POSTPROCESS
+{
+    float4 Position : POSITION0;
+    float2 TextureCoordinates : TEXCOORD0;
+};
+
+//Output del Vertex Shader
+struct VS_OUTPUT_POSTPROCESS
+{
+    float4 Position : POSITION0;
+    float2 TextureCoordinates : TEXCOORD0;
+};
+
+//Vertex Shader
+VS_OUTPUT_POSTPROCESS VSPostProcess(VS_INPUT_POSTPROCESS input)
+{
+    VS_OUTPUT_POSTPROCESS output;
+
+	// Propagamos la posicion, ya que esta en espacio de pantalla
+    output.Position = input.Position;
+
+	// Propagar coordenadas de textura
+    output.TextureCoordinates = input.TextureCoordinates;
+
+    return output;
+}
+
+//Pixel Shader
+float4 PSPostProcess(VS_OUTPUT_POSTPROCESS input) : COLOR0
+{
+    float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
+    return color;
+}
+float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
+{
+    float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
+    float4 colorMascara = tex2D(sampler_mascara, input.TextureCoordinates);
+    return color + colorMascara;
+}
+
+
 // ------------------------------------------------------------------
 technique RenderScene
 {
@@ -176,5 +237,23 @@ technique RenderSceneLight
     {
         VertexShader = compile vs_3_0 vs_main_light();
         PixelShader = compile ps_3_0 ps_main_light();
+    }
+}
+
+technique PostProcess
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 VSPostProcess();
+        PixelShader = compile ps_3_0 PSPostProcess();
+    }
+}
+
+technique PostProcessMar
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 VSPostProcess();
+        PixelShader = compile ps_3_0 PSPostProcessMar();
     }
 }
