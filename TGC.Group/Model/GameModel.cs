@@ -49,6 +49,7 @@ namespace TGC.Group.Model
         float time;
 
         bool estaEnNave = true;
+        bool estaEnAlgunMenu = true;
 
         float nivelDelAgua = 80f;
 
@@ -277,64 +278,72 @@ namespace TGC.Group.Model
 
             Hud.Update(Input);
             Oceano.Update(time);
+            estaEnAlgunMenu = Hud.GetCurrentStatus() == Hud.Status.MainMenu || Hud.GetCurrentStatus() == Hud.Status.Instructions;
+
             //Que no se pueda hacer nada si estas en game over salvo dar enter
             if (Hud.GetCurrentStatus() == Hud.Status.GameOver)
+            {
+                PostUpdate();
                 return;
-
-            if (estaEnNave)
-            {
-                interiorNave.Update();
-                sharkSound.stop();
-                sonidoUnderwater.stop();
             }
-            else
+            if (!estaEnAlgunMenu)
             {
-                sonidoUnderwater.play(true);
-                // update de elementos de agua
-                nave.Update();
-                oceano.Update();
-                Particulas.Update(time);
+                if (estaEnNave)
+                {
+                    interiorNave.Update();
+                    sharkSound.stop();
+                    sonidoUnderwater.stop();
+                }
+                else
+                {
+                    sonidoUnderwater.play(true);
+                    // update de elementos de agua
+                    nave.Update();
+                    oceano.Update();
+                    Particulas.Update(time);
 
-                DateTime actualTimestamp = DateTime.Now;
-                // Mostrar Tiburon cada X cantidad de tiempo
-                if (actualTimestamp.Subtract(timestamp).TotalSeconds > 15)
-                {
-                    shark.Spawn();
-                    timestamp = actualTimestamp;
-                }
-                shark.Update(ElapsedTime);
+                    DateTime actualTimestamp = DateTime.Now;
+                    // Mostrar Tiburon cada X cantidad de tiempo
+                    if (actualTimestamp.Subtract(timestamp).TotalSeconds > 15)
+                    {
+                        shark.Spawn();
+                        timestamp = actualTimestamp;
+                    }
+                    shark.Update(ElapsedTime);
 
-                foreach (var pez in peces)
-                {
-                    pez.Update(ElapsedTime);
-                }
-                foreach (var coral in corales)
-                {
-                    coral.Update(ElapsedTime);
-                }
-                foreach (var oro in metalesOro)
-                {
-                    oro.Update(ElapsedTime);
+                    foreach (var pez in peces)
+                    {
+                        pez.Update(ElapsedTime);
+                    }
+                    foreach (var coral in corales)
+                    {
+                        coral.Update(ElapsedTime);
+                    }
+                    foreach (var oro in metalesOro)
+                    {
+                        oro.Update(ElapsedTime);
+                    }
+
+                    fog.updateValues();
+                    effect.SetValue("ColorFog", fog.Color.ToArgb());
+                    effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+                    effect.SetValue("StartFogDistance", fog.StartDistance);
+                    effect.SetValue("EndFogDistance", fog.EndDistance);
+                    effect.SetValue("Density", fog.Density);
+                    effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
                 }
 
-                fog.updateValues();
-                effect.SetValue("ColorFog", fog.Color.ToArgb());
-                effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-                effect.SetValue("StartFogDistance", fog.StartDistance);
-                effect.SetValue("EndFogDistance", fog.EndDistance);
-                effect.SetValue("Density", fog.Density);
-                effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
+
+                //Camara y jugador
+                FPSCamara.Update(ElapsedTime);
+
+                Player.Update(ElapsedTime, ref estaEnNave);
+
             }
 
             // esto se hace siempre
             //Lockear mouse
             Cursor.Position = mousePosition;
-
-            //Camara y jugador
-            FPSCamara.Update(ElapsedTime);
-
-            Player.Update(ElapsedTime, ref estaEnNave);
-
             PostUpdate();
 
         }
@@ -350,81 +359,83 @@ namespace TGC.Group.Model
             D3DDevice.Instance.Device.BeginScene();
             D3DDevice.Instance.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
             
-
-
             Hud.Render();
 
-            if (estaEnNave)
+            if (!estaEnAlgunMenu)
             {
-                interiorNave.Render();
+                if (estaEnNave)
+                {
+                    interiorNave.Render();
+                }
+                else
+                {
+                    oceano.Render();
+
+                    heightmap.Render();
+
+                    foreach (var pez in peces)
+                    {
+                        if (IsInFrustum(pez.GetMesh()))
+                        {
+                            pez.Render();
+                        }
+                    }
+                    foreach (var coral in corales)
+                    {
+                        if (IsInFrustum(coral.GetMesh()))
+                        {
+                            coral.Render();
+                        }
+                    }
+
+                    if (IsInFrustum(shark.GetMesh()))
+                    {
+                        shark.Render();
+                    }
+                    Particulas.Render(ElapsedTime);
+
+                    Oceano.Render();
+
+                    //Efecto metalico
+                    effect.SetValue("shininess", 30f);
+                    effect.SetValue("KSpecular", 1.0f);
+                    effect.SetValue("KAmbient", 1.0f);
+                    effect.SetValue("KDiffuse", 0.5f);
+                    if (IsInFrustum(nave.obtenerMeshes()))
+                    {
+                        nave.Render();
+                    }
+
+                    effect.SetValue("shininess", 10f);
+                    effect.SetValue("KSpecular", 1.25f);
+                    effect.SetValue("KAmbient", 1.2f);
+                    effect.SetValue("KDiffuse", 0.25f);
+                    foreach (var oro in metalesOro)
+                    {
+                        if (IsInFrustum(oro.GetMesh()))
+                        {
+                            oro.Render();
+                        }
+                    }
+                }
+
+                //Dibuja un texto por pantalla
+                /*
+                DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
+                DrawText.drawText("A,S,D,W para moverse, Ctrl y Espacio para subir o bajar.", 5, 35, Color.DarkKhaki);
+                DrawText.drawText("Player Ypos: " + Player.Position().Y, 5, 50, Color.DarkRed);
+                DrawText.drawText("Health: " + Player.Health(), 5, 70, Color.DarkSalmon);
+                DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
+                DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
+                DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
+                DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
+                DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
+                */
+
+
+                Player.Render();
+
             }
-            else
-            {
-                oceano.Render();
-
-                heightmap.Render();
-
-                foreach (var pez in peces)
-                {
-                    if (IsInFrustum(pez.GetMesh()))
-                    {
-                        pez.Render();
-                    }
-                }
-                foreach (var coral in corales)
-                {
-                    if (IsInFrustum(coral.GetMesh()))
-                    {
-                        coral.Render();
-                    }
-                }
-
-                if (IsInFrustum(shark.GetMesh()))
-                {
-                    shark.Render();
-                }
-                Particulas.Render(ElapsedTime);
-
-                Oceano.Render();
-
-                //Efecto metalico
-                effect.SetValue("shininess", 30f);
-                effect.SetValue("KSpecular", 1.0f);
-                effect.SetValue("KAmbient", 1.0f);
-                effect.SetValue("KDiffuse", 0.5f);
-                if (IsInFrustum(nave.obtenerMeshes()))
-                {
-                    nave.Render();
-                }
-
-                effect.SetValue("shininess", 10f);
-                effect.SetValue("KSpecular", 1.25f);
-                effect.SetValue("KAmbient", 1.2f);
-                effect.SetValue("KDiffuse", 0.25f);
-                foreach (var oro in metalesOro)
-                {
-                    if (IsInFrustum(oro.GetMesh()))
-                    {
-                        oro.Render();
-                    }
-                }
-            }
-
-            //Dibuja un texto por pantalla
-            /*
-            DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
-            DrawText.drawText("A,S,D,W para moverse, Ctrl y Espacio para subir o bajar.", 5, 35, Color.DarkKhaki);
-            DrawText.drawText("Player Ypos: " + Player.Position().Y, 5, 50, Color.DarkRed);
-            DrawText.drawText("Health: " + Player.Health(), 5, 70, Color.DarkSalmon);
-            DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
-            DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
-            DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
-            DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
-            DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
-            */
-
-
-            Player.Render();
 
             PostRender();
 

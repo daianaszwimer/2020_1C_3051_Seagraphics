@@ -19,7 +19,8 @@ namespace TGC.Group.Model.Gui
             Inventory,
             Crafting,
             GameOver, //Player changes to this state when IsDead();
-            Gameplay
+            Gameplay,
+            Instructions
         };
 
         struct ItemSprite
@@ -53,6 +54,7 @@ namespace TGC.Group.Model.Gui
         //Drawing vars
         static Drawer2D drawer;
         static TgcText2D Start;
+        static TgcText2D Instruccion;
         static TgcText2D Exit;
 
         static CustomSprite Logo;
@@ -68,6 +70,8 @@ namespace TGC.Group.Model.Gui
 
         static TgcText2D GameOver;
         static TgcText2D GameOverSubtitle;
+
+        static List<TgcText2D> instrucciones;
 
         static string MediaDir;
 
@@ -110,13 +114,49 @@ namespace TGC.Group.Model.Gui
             Start.changeFont(new Font("Calibri", 35, FontStyle.Bold));
             Start.Color = Color.White;
 
+            Instruccion = new TgcText2D();
+            Instruccion.Text = "Instructions";
+            Instruccion.Align = TgcText2D.TextAlign.LEFT;
+            Instruccion.Position = new Point(Round(WIDTH * 0.45f), Round(HEIGHT * 0.75f));
+            Instruccion.Size = new Size(300, 100);
+            Instruccion.changeFont(new Font("Calibri", 35, FontStyle.Bold));
+            Instruccion.Color = Color.White;
+
             Exit = new TgcText2D();
             Exit.Text = "Exit";
             Exit.Align = TgcText2D.TextAlign.LEFT;
-            Exit.Position = new Point(Round(WIDTH * 0.45f), Round(HEIGHT * 0.75f));
+            Exit.Position = new Point(Round(WIDTH * 0.45f), Round(HEIGHT * 0.8f));
             Exit.Size = new Size(300, 100);
             Exit.changeFont(new Font("Calibri", 35, FontStyle.Bold));
             Exit.Color = Color.White;
+
+
+            instrucciones = new List<TgcText2D>();
+            TgcText2D instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "Press A S D W to move";
+
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.45f), Round(HEIGHT * 0.8f));
+            instruccionesItem.Size = new Size(300, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 35, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
+
+            instruccionesItem.Text = "Press O to go inside/outside the ship";
+
+            instruccionesItem.Text = "Press I to show/hide the inventory";
+
+            instruccionesItem.Text = "Press P to enter developer mode";
+
+            instruccionesItem.Text = "Collect as many items as you can by clicking on them";
+
+            instruccionesItem.Text = "Be careful with the shark! In order to kill it, you must have a weapon";
+
+            instruccionesItem.Text = "To get a weapon, go to the inventory and trade it for items";
+
+            instruccionesItem.Text = "To recover oxygen, go inside the ship or the ocean's surface";
+            
+            instruccionesItem.Text = "Press Enter to go back to the menu";
 
             SelectedText = Start;
 
@@ -306,6 +346,8 @@ namespace TGC.Group.Model.Gui
                 SelectedText.Color = Color.White;
             }
 
+            ///// si tocas enter volver al menu
+
             //Update selection var
             if (CurrentStatus == Status.Gameplay)
             {
@@ -319,15 +361,49 @@ namespace TGC.Group.Model.Gui
             }
             else if (CurrentStatus == Status.MainMenu)
             {
+                ///////////////////// todo: cambiar y agregar instrucciones
                 if (up)
-                    SelectedText = Start;
+                {
+                    if (SelectedText == Start)
+                    {
+                        SelectedText = Exit;
+                    }
+                    else if (SelectedText == Instruccion)
+                    {
+                        SelectedText = Start;
+                    }
+                    else if (SelectedText == Exit)
+                    {
+                        SelectedText = Instruccion;
+                    }
+                }
                 else if (down)
-                    SelectedText = Exit;
-                else if (enter)
+                {
+                    if (SelectedText == Start)
+                    {
+                        SelectedText = Instruccion;
+                    }
+                    else if (SelectedText == Instruccion)
+                    {
+                        SelectedText = Exit;
+                    }
+                    else if (SelectedText == Exit)
+                    {
+                        SelectedText = Start;
+                    }
+                } else if (enter)
                     if (SelectedText == Start)
                         ChangeStatus(Status.Gameplay);
                     else if (SelectedText == Exit)
                         Application.Exit();
+                    else if (SelectedText == Instruccion)
+                        CurrentStatus = Status.Instructions;
+            } else if (CurrentStatus == Status.Instructions)
+            {
+                if (enter)
+                {
+                    CurrentStatus = Status.MainMenu;
+                }
             }
             else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
             {
@@ -392,7 +468,17 @@ namespace TGC.Group.Model.Gui
 
                 SelectedText.Color = Color.Orange;
                 Start.render();
+                Instruccion.render();
                 Exit.render();
+            } else if (CurrentStatus == Status.Instructions){
+                drawer.BeginDrawSprite();
+                drawer.DrawSprite(Background);
+                drawer.DrawSprite(Logo);
+                drawer.EndDrawSprite();
+                foreach (var ins in instrucciones)
+                {
+                    ins.render();
+                }
             }
             //Inventory + Crafting
             else if (CurrentStatus == Status.Inventory || CurrentStatus == Status.Crafting)
@@ -441,6 +527,7 @@ namespace TGC.Group.Model.Gui
         public static void Dispose()
         {
             Start.Dispose();
+            Instruccion.Dispose();
             Exit.Dispose();
             GameOver.Dispose();
             Logo.Dispose();
@@ -449,6 +536,10 @@ namespace TGC.Group.Model.Gui
             OverlayCraft.Dispose();
             HealthBar.Dispose();
             OxygenBar.Dispose();
+            foreach (var ins in instrucciones)
+            {
+                ins.Dispose();
+            }
             foreach (var item in InventoryItems)
                 item.Dispose();
             foreach (var item in CraftingItems)
