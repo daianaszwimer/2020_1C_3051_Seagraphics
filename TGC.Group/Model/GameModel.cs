@@ -54,6 +54,7 @@ namespace TGC.Group.Model
         float nivelDelAgua = 80f;
 
         Fondo oceano;
+        Superficie superficie;
         TgcSimpleTerrain heightmap;
         Control focusWindows;
         Point mousePosition;
@@ -158,6 +159,10 @@ namespace TGC.Group.Model
             oceano = new Fondo(MediaDir, ShadersDir);
             oceano.Init();
             oceano.Camera = Camera;
+
+            superficie = new Superficie(MediaDir, ShadersDir);
+            superficie.Init();
+            superficie.Camera = Camera;
 
             heightmap = new TgcSimpleTerrain();
             heightmap.loadHeightmap(MediaDir + marBnwDir, marScaleXZ, marScaleY, new TGCVector3(0, marOffsetY, 0));
@@ -278,7 +283,6 @@ namespace TGC.Group.Model
             time += ElapsedTime;
 
             Hud.Update(Input);
-            Oceano.Update(time);
             estaEnAlgunMenu = Hud.GetCurrentStatus() == Hud.Status.MainMenu || Hud.GetCurrentStatus() == Hud.Status.Instructions;
 
             //Que no se pueda hacer nada si estas en game over salvo dar enter
@@ -300,7 +304,15 @@ namespace TGC.Group.Model
                     sonidoUnderwater.play(true);
                     // update de elementos de agua
                     nave.Update();
-                    oceano.Update();
+                    Oceano.Update(time);
+
+                    if (Player.IsOutsideWater())
+                    {
+                        superficie.Update();
+                    } else
+                    {
+                        oceano.Update();
+                    }
                     Particulas.Update(time);
 
                     DateTime actualTimestamp = DateTime.Now;
@@ -370,8 +382,15 @@ namespace TGC.Group.Model
                 }
                 else
                 {
-                    oceano.Render();
 
+                    if (Player.IsOutsideWater())
+                    {
+                        superficie.Render();
+                    }
+                    else
+                    {
+                        oceano.Render();
+                    }
                     heightmap.Render();
 
                     foreach (var pez in peces)

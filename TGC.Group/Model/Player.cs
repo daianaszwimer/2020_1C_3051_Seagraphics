@@ -344,7 +344,7 @@ namespace TGC.Group.Model
         public void GetDamage(float amount) { health = Math.Max(0, health - amount); }
         public bool IsDead() { return health <= 0; }
         private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(OXYGEN_MAX, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
-        private bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
+        public bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
 
         public float Oxygen() { return oxygen; }
         public float MaxOxygen() { return OXYGEN_MAX; }

@@ -127,6 +127,7 @@
     <Compile Include="Model\Particulas.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Sounds\SoundsManager.cs" />
+    <Compile Include="Model\Superficie.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
