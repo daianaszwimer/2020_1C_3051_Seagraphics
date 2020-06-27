@@ -30,15 +30,15 @@ namespace TGC.Group.Model
             skyBox.Size = new TGCVector3(10000, 10000, 10000);
 
             //especifico donde estan las texturas cargadas
-            var rutaTextura = MediaDir + "Mar\\";
+            var rutaTextura = MediaDir + "Superficie\\";
 
             //coloco cada textura en cada cara del cubo del skyBox
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, rutaTextura + "marUp.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, rutaTextura + "marDown.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, rutaTextura + "marLeft.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, rutaTextura + "marRight.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, rutaTextura + "marBack.jpg");
-            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, rutaTextura + "marFront.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, rutaTextura + "lostatseaday_up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, rutaTextura + "lostatseaday_dn.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, rutaTextura + "lostatseaday_lf.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, rutaTextura + "lostatseaday_rt.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, rutaTextura + "lostatseaday_bk.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, rutaTextura + "lostatseaday_ft.jpg");
 
 
             skyBox.SkyEpsilon = 25f;

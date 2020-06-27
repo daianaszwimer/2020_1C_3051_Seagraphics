@@ -54,7 +54,6 @@ namespace TGC.Group.Model
         float nivelDelAgua = 80f;
 
         Fondo oceano;
-        Superficie superficie;
         TgcSimpleTerrain heightmap;
         Control focusWindows;
         Point mousePosition;
@@ -159,10 +158,6 @@ namespace TGC.Group.Model
             oceano = new Fondo(MediaDir, ShadersDir);
             oceano.Init();
             oceano.Camera = Camera;
-
-            superficie = new Superficie(MediaDir, ShadersDir);
-            superficie.Init();
-            superficie.Camera = Camera;
 
             heightmap = new TgcSimpleTerrain();
             heightmap.loadHeightmap(MediaDir + marBnwDir, marScaleXZ, marScaleY, new TGCVector3(0, marOffsetY, 0));
@@ -305,14 +300,7 @@ namespace TGC.Group.Model
                     // update de elementos de agua
                     nave.Update();
                     Oceano.Update(time);
-
-                    if (Player.IsOutsideWater())
-                    {
-                        superficie.Update();
-                    } else
-                    {
-                        oceano.Update();
-                    }
+                    oceano.Update();
                     Particulas.Update(time);
 
                     DateTime actualTimestamp = DateTime.Now;
@@ -382,15 +370,7 @@ namespace TGC.Group.Model
                 }
                 else
                 {
-
-                    if (Player.IsOutsideWater())
-                    {
-                        superficie.Render();
-                    }
-                    else
-                    {
-                        oceano.Render();
-                    }
+                    oceano.Render();
                     heightmap.Render();
 
                     foreach (var pez in peces)
