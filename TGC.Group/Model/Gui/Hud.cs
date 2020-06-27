@@ -132,34 +132,89 @@ namespace TGC.Group.Model.Gui
 
 
             instrucciones = new List<TgcText2D>();
-            TgcText2D instruccionesItem = new TgcText2D();
-            instruccionesItem.Text = "Press A S D W to move";
 
+            TgcText2D instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Press A S D W to move";
             instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
-            instruccionesItem.Position = new Point(Round(WIDTH * 0.45f), Round(HEIGHT * 0.8f));
-            instruccionesItem.Size = new Size(300, 100);
-            instruccionesItem.changeFont(new Font("Calibri", 35, FontStyle.Bold));
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.4f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
+            
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Press O to go inside/outside the ship";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.45f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
             instruccionesItem.Color = Color.White;
             instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "Press O to go inside/outside the ship";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Press I to show/hide the inventory";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.5f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "Press I to show/hide the inventory";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Press P to enter developer mode";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.55f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "Press P to enter developer mode";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Collect as many items as you can by clicking on them";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.6f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "Collect as many items as you can by clicking on them";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- Be careful with the shark! In order to kill it, you must have a weapon";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.65f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "Be careful with the shark! In order to kill it, you must have a weapon";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- To get a weapon, go to the inventory and trade it for items";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.7f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "To get a weapon, go to the inventory and trade it for items";
+            instruccionesItem = new TgcText2D();
+            instruccionesItem.Text = "- To recover oxygen, go inside the ship or the ocean's surface";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.75f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
-            instruccionesItem.Text = "To recover oxygen, go inside the ship or the ocean's surface";
-            
+            instruccionesItem = new TgcText2D();
             instruccionesItem.Text = "Press Enter to go back to the menu";
+            instruccionesItem.Align = TgcText2D.TextAlign.LEFT;
+            instruccionesItem.Position = new Point(Round(WIDTH * 0.2f), Round(HEIGHT * 0.8f));
+            instruccionesItem.Size = new Size(WIDTH - 200, 100);
+            instruccionesItem.changeFont(new Font("Calibri", 25, FontStyle.Bold));
+            instruccionesItem.Color = Color.White;
+            instrucciones.Add(instruccionesItem);
 
             SelectedText = Start;
-
 
             //Gameplay
             HealthBar = new CustomSprite();
