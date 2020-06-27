@@ -300,6 +300,14 @@ namespace TGC.Group.Model
                     colision.play(true);
                     return;
                 }
+                Console.WriteLine(mesh.Position.ToString() + "----------------------------");
+                if (mesh.Position.X > 1000f || mesh.Position.X < -1000f || mesh.Position.Z > 1000f || mesh.Position.Z < -1000f)
+                {
+                    // limitamos cuanto se puede mover el jugador
+                    mesh.Position = lastPos;
+                    colision.play(true);
+
+                }
                 // colisiones contra elementos del mar
             }
         }
