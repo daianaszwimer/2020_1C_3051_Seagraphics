@@ -30,7 +30,8 @@ namespace TGC.Group.Model
         private const float OXYGEN_MAX = 100f;
         private const float OXYGEN_DAMAGE = 5f;
         private const float HEALTH_MAX = 100f;
-        private const float WATER_LEVEL = 75; //When players reaches a position above this level, then recovers oxygen.
+        private const float WATER_LEVEL = 65f; //When players reaches a position above this level, then recovers oxygen.
+        private const float WATER_LEVEL_OFFSET = 15f; //Extra range that the player can move over the water level
 
         private const float MIN_Y_POS = -10f; //nivel del piso
 
@@ -189,7 +190,7 @@ namespace TGC.Group.Model
             movement *= ElapsedTime;
             movement.Y = mesh.Position.Y + movement.Y < MIN_Y_POS ? 0 : movement.Y;
 
-            if (OnWaterLevel())
+            if (IsOnTopOfWater())
             {
                 movement.Y = FastMath.Min(movement.Y, 0);
             }
@@ -335,11 +336,6 @@ namespace TGC.Group.Model
             }
         }
 
-        private bool OnWaterLevel()
-        {
-            return Position().Y >= WATER_LEVEL;
-        }
-
         private void LoseOxygen(float ElapsedTime) { 
             oxygen = Math.Max(0, oxygen - OXYGEN_LOSS_SPEED * ElapsedTime);
             if (oxygen == 0) GetDamage(OXYGEN_DAMAGE * ElapsedTime);
@@ -351,8 +347,8 @@ namespace TGC.Group.Model
         public void GetDamage(float amount) { health = Math.Max(0, health - amount); }
         public bool IsDead() { return health <= 0; }
         private void RecoverOxygen(float ElapsedTime) { oxygen = Math.Min(OXYGEN_MAX, oxygen + OXYGEN_RECOVER_SPEED * ElapsedTime); }
-        public bool IsOutsideWater() { return estaEnNave || mesh.Position.Y > WATER_LEVEL; }
-
+        public bool IsOutsideWater() { return estaEnNave || mesh.Position.Y >= WATER_LEVEL; }
+        public bool IsOnTopOfWater() { return mesh.Position.Y >= WATER_LEVEL + WATER_LEVEL_OFFSET; }
         public float Oxygen() { return oxygen; }
         public float MaxOxygen() { return OXYGEN_MAX; }
         public float Health() { return health; }

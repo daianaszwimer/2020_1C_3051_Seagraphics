@@ -251,10 +251,16 @@ namespace TGC.Group.Model
             //Fog + Lights
             effect.SetValue("nivelAgua", nivelDelAgua);
 
+
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
 
             DirectSound.ListenerTracking = Player.Instance().mesh;
+
+            //Mascara post process
+            maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mask.png");
+            effect.SetValue("textura_mascara", maskTexture.D3dTexture);
+
             // seteamos los efectos aca porque son fijos
             oceano.Effect(effect);
             oceano.Technique("RenderScene");
@@ -291,7 +297,7 @@ namespace TGC.Group.Model
 
             renderTarget = new Texture(d3dDevice, d3dDevice.PresentationParameters.BackBufferWidth, d3dDevice.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
 
-            maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mask.png");
+            
         }
 
         /// <summary>
@@ -400,7 +406,6 @@ namespace TGC.Group.Model
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
             device.BeginScene();
 
-            Hud.Render();
             effect.Technique = "PostProcess";
             if (!estaEnAlgunMenu)
             {
@@ -483,13 +488,18 @@ namespace TGC.Group.Model
             device.SetRenderTarget(0, screenRenderTarget);
             device.DepthStencilSurface = screenDepthSurface;
 
+            effect.SetValue("renderTarget", renderTarget);
+            if (Player.Instance().IsOutsideWater())
+                effect.Technique = "PostProcess";
+            else
+                effect.Technique = "PostProcessMar";
+
             device.BeginScene();
 
             device.VertexFormat = CustomVertex.PositionTextured.Format;
             device.SetStreamSource(0, fullScreenQuad, 0);
-            effect.SetValue("renderTarget", renderTarget);
-
-            effect.SetValue("textura_mascara", maskTexture.D3dTexture);
+            
+            
 
             // Dibujado de textura en full screen quad
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
@@ -499,6 +509,8 @@ namespace TGC.Group.Model
             device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
             effect.EndPass();
             effect.End();
+
+            Hud.Render();
 
             RenderFPS();
             RenderAxis();
