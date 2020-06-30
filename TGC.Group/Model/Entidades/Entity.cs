@@ -132,10 +132,10 @@ namespace TGC.Group.Model.Entidades
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
 
-            if (limiteY != -1 && mesh.Position.Y >= (limiteY - 20f))
+            if (limiteY != -1 && mesh.Position.Y >= (limiteY - 30f))
             {
                 // si hay limite lo pongo ahi, un poco mas abajo
-                mesh.Position = new TGCVector3(mesh.Position.X, limiteY - 20f, mesh.Position.Z);
+                mesh.Position = new TGCVector3(mesh.Position.X, limiteY - 30f, mesh.Position.Z);
             }
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }

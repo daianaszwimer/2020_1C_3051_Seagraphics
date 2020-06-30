@@ -70,7 +70,7 @@ namespace TGC.Group.Model.Entidades
         //Entity functions
         protected override void InitEntity()
         {
-            mesh.Scale = new TGCVector3(0.1f, 0.1f, 0.1f);
+            mesh.Scale = new TGCVector3(0.2f, 0.2f, 0.2f);
         }
 
         protected override void UpdateEntity(float ElapsedTime)

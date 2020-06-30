@@ -219,7 +219,7 @@ namespace TGC.Group.Model
                 Coral coral;
                 string meshName = i.ToString();
                 coral = new Coral(mesh.createMeshInstance(meshName));
-                coral = (Coral)setearMeshParaLista(coral, i * 4, -20);
+                coral = (Coral)setearMeshParaLista(coral, i * 4, -17);
                 corales.Add(coral);
 
                 coral.Effect(effect);
@@ -236,7 +236,7 @@ namespace TGC.Group.Model
                 Metal oro;
                 string meshName = i.ToString();
                 oro = new Metal(mesh.createMeshInstance(meshName));
-                oro = (Metal)setearMeshParaLista(oro, i * 8, -20);
+                oro = (Metal)setearMeshParaLista(oro, i * 8, -17);
                 oro.Tipo = ElementoRecolectable.oro;
                 metalesOro.Add(oro);
 
