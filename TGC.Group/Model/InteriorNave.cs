@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 using TGC.Core.Mathematica;
 using TGC.Core.Geometry;
-using TGC.Core.Direct3D;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model
 {
@@ -30,6 +29,35 @@ namespace TGC.Group.Model
         public List<TGCBox> obtenerParedes()
         {
             return paredes;
+        }
+
+        public void Effect(Effect effect)
+        {
+            foreach (var mesh in paredes)
+            {
+                if (mesh == null)
+                {
+                    break;
+                }
+                mesh.Effect = effect;
+            }
+
+            piso.Effect = effect;
+            techo.Effect = effect;
+        }
+
+        public void Technique(string tec)
+        {
+            foreach (var mesh in paredes)
+            {
+                if (mesh == null)
+                {
+                    break;
+                }
+                mesh.Technique = tec;
+            }
+            piso.Technique = tec;
+            techo.Technique = tec;
         }
 
         public void Init(string MediaDir)

@@ -71,10 +71,15 @@ namespace TGC.Group.Model
         InteriorNave interiorNave;
         Arma arma;
 
+        // Interior de la nave
+        MesaNave mesaNave;
+        LamparaNave lamparaNave;
+
         //Shaders
         TgcFog fog;
         Microsoft.DirectX.Direct3D.Effect effect;
         Microsoft.DirectX.Direct3D.Effect efectoDesaparecer;
+        Microsoft.DirectX.Direct3D.Effect efectoInterior;
 
         private TgcStaticSound sonidoUnderwater;
         Tgc3dSound sharkSound;
@@ -157,6 +162,7 @@ namespace TGC.Group.Model
             sonidoUnderwater.loadSound(MediaDir + "Sounds\\mar.wav", DirectSound.DsDevice);
             
             effect = TGCShaders.Instance.LoadEffect(ShadersDir + "e_fog.fx");
+            efectoInterior = TGCShaders.Instance.LoadEffect(ShadersDir + "interior.fx");
 
 
             //Iniciar HUD
@@ -253,6 +259,18 @@ namespace TGC.Group.Model
             mesh = scene.Meshes[0];
             arma = new Arma(mesh);
 
+            scene = loader.loadSceneFromFile(MediaDir + "Mesa-TgcScene.xml");
+            mesaNave = MesaNave.Instance();
+            mesaNave.Init(scene);
+            mesaNave.Effect(efectoInterior);
+            mesaNave.Technique("RenderScene");
+
+            scene = loader.loadSceneFromFile(MediaDir + "LamparaTecho-TgcScene.xml");
+            lamparaNave = new LamparaNave(scene.Meshes[0]);
+            lamparaNave.Effect(efectoInterior);
+            lamparaNave.Technique("RenderScene");
+
+
             //Cargar shaders
             fog = new TgcFog();
             fog.Color = Color.FromArgb(30, 144, 255);
@@ -263,7 +281,6 @@ namespace TGC.Group.Model
 
             //Fog + Lights
             effect.SetValue("nivelAgua", nivelDelAgua);
-
 
             interiorNave = InteriorNave.Instance();
             interiorNave.Init(MediaDir);
@@ -290,6 +307,10 @@ namespace TGC.Group.Model
             effect.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
             effect.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
             effect.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
+
+            efectoInterior.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
+            efectoInterior.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
+            efectoInterior.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
 
             // dibujo el full screen quad
             CustomVertex.PositionTextured[] vertices =
@@ -346,6 +367,7 @@ namespace TGC.Group.Model
                     interiorNave.Update();
                     sharkSound.stop();
                     sonidoUnderwater.stop();
+                    efectoInterior.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
                 }
                 else
                 {
@@ -430,7 +452,24 @@ namespace TGC.Group.Model
             {
                 if (estaEnNave)
                 {
+                    efectoInterior.SetValue("shininess", 0f);
+                    efectoInterior.SetValue("KSpecular", 0f);
+                    efectoInterior.SetValue("KAmbient", 3.0f);
+                    efectoInterior.SetValue("KDiffuse", 0f);
                     interiorNave.Render();
+
+                    // constantes de iluminacion de la mesa
+                    efectoInterior.SetValue("shininess", 0f);
+                    efectoInterior.SetValue("KSpecular", 0f);
+                    efectoInterior.SetValue("KAmbient", 3.0f);
+                    efectoInterior.SetValue("KDiffuse", 0f);
+                    mesaNave.Render();
+
+                    efectoInterior.SetValue("shininess", 5.0f);
+                    efectoInterior.SetValue("KSpecular", 2.5f);
+                    efectoInterior.SetValue("KAmbient", 1.0f);
+                    efectoInterior.SetValue("KDiffuse", 0f);
+                    lamparaNave.Render();
                 }
                 else
                 {
@@ -470,7 +509,7 @@ namespace TGC.Group.Model
                     }
 
                     effect.SetValue("shininess", 10f);
-                    effect.SetValue("KSpecular", 1.25f);
+                    effect.SetValue("KSpecular", 1.1f);
                     effect.SetValue("KAmbient", 1.2f);
                     effect.SetValue("KDiffuse", 0.25f);
                     foreach (var oro in metalesOro)
@@ -573,7 +612,8 @@ namespace TGC.Group.Model
             nave.Dispose();
 
             interiorNave.Dispose();
-
+            mesaNave.Dispose();
+            lamparaNave.Dispose();
             Particulas.Dispose();
             Oceano.Dispose();
             Hud.Dispose();

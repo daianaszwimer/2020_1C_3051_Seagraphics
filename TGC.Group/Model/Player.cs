@@ -45,7 +45,7 @@ namespace TGC.Group.Model
         //Transformations vars
         public TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
-        private TGCVector3 posicionInteriorNave = new TGCVector3(0, 50, 0);
+        private TGCVector3 posicionInteriorNave = new TGCVector3(0, 40, 0);
         private TGCVector3 posicionMar = new TGCVector3(60, WATER_LEVEL + 15, 0);
 
         //Config vars
@@ -259,6 +259,7 @@ namespace TGC.Group.Model
             colision.stop();
             if (estaEnNave)
             {
+                // todo: chequear colisiones con la mesa y silla
                 //Check for collisions
                 bool collided = false;
                 List<TGCBox> meshes = InteriorNave.Instance().obtenerParedes();
@@ -270,6 +271,19 @@ namespace TGC.Group.Model
                     {
                         collided = true;
                         break;
+                    }
+                }
+                if (!collided)
+                {
+                    List<TgcMesh> elementosMesa = MesaNave.Instance().meshes();
+                    foreach (var elemento in elementosMesa)
+                    {
+                        var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
+                        if (result)
+                        {
+                            collided = true;
+                            break;
+                        }
                     }
                 }
                 //If any collision then go to last position.
