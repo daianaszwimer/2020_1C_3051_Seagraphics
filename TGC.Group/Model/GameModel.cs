@@ -247,7 +247,7 @@ namespace TGC.Group.Model
 
             scene = loader.loadSceneFromFile(MediaDir + "ship-TgcScene.xml");
             nave = Nave.Instance();
-            nave.Init(scene);
+            nave.Init(scene, nivelDelAgua);
 
             scene = loader.loadSceneFromFile(MediaDir + "EspadaDoble-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -551,7 +551,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
-            effect.Dispose();
+            shark.Dispose();
             efectoDesaparecer.Dispose();
             sonidoUnderwater.dispose();
             Player.Dispose();
@@ -570,7 +570,6 @@ namespace TGC.Group.Model
             {
                 oro.Dispose();
             }
-            shark.Dispose();
             nave.Dispose();
 
             interiorNave.Dispose();
@@ -584,6 +583,7 @@ namespace TGC.Group.Model
             renderTarget.Dispose();
             depthStencil.Dispose();
             arma.Dispose();
+            effect.Dispose();
         }
         bool IsInFrustum(TgcMesh mesh)
         {

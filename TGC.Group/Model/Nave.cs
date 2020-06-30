@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TGC.Core.SceneLoader;
 using Microsoft.DirectX.Direct3D;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model
 {
@@ -43,10 +44,19 @@ namespace TGC.Group.Model
         }
 
 
-        public void Init(TgcScene _escenaNave)
+        public void Init(TgcScene _escenaNave, float nivelDelAgua)
         {
             escenaNave = _escenaNave;
             //escalaBase = TGCMatrix.Scaling(new TGCVector3(0.2f, 0.2f, 0.2f));
+            foreach (var mesh in escenaNave.Meshes)
+            {
+                if (mesh == null)
+                {
+                    break;
+                }
+                mesh.Position += new TGCVector3(0, nivelDelAgua - 10, 0);
+                mesh.Transform = TGCMatrix.Translation(mesh.Position);
+            }
         }
         public void Update()
         {

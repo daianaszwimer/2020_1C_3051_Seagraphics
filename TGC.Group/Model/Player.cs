@@ -46,8 +46,8 @@ namespace TGC.Group.Model
         //Transformations vars
         public TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
-        private TGCQuaternion rotation = TGCQuaternion.Identity;
         private TGCVector3 posicionInteriorNave = new TGCVector3(0, 50, 0);
+        private TGCVector3 posicionMar = new TGCVector3(60, WATER_LEVEL + 15, 0);
 
         //Config vars
         private float speed = 25f; //foward and horizontal speed
@@ -218,23 +218,25 @@ namespace TGC.Group.Model
 
             if (o)
             {
-                if (!Hud.IsCurrentStatus(Hud.Status.MainMenu) && !Hud.IsCurrentStatus(Hud.Status.GameOver))
+                estaEnNave_ = !estaEnNave_;
+                walking.stop();
+                if (estaEnNave_)
                 {
-                    estaEnNave_ = !estaEnNave_;
-                    walking.stop();
-                    if (estaEnNave_)
-                    {
-                        // todo: guardar la posicion en la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
-                        // posiciono dentro de nave
-                        mesh.Position = posicionInteriorNave;
-                    }
-
-                    Hud.ChangeStatus(Hud.Status.Gameplay);
+                    // guardar la posicion en la que estaba para que cuando vuelva, ponerlo en esa posicion anterior
+                    // posiciono dentro de nave
+                    posicionMar = mesh.Position;
+                    mesh.Position = posicionInteriorNave;
+                } else
+                {
+                    mesh.Position = posicionMar;
                 }
+
+                Hud.ChangeStatus(Hud.Status.Gameplay);
             }
 
             //Dev
             bool p = Input.keyDown(Key.P);
+            // usar nuestra implementacion del key pressed
             if (p) { godmode = !godmode; GodMode(godmode); }
         }
 
