@@ -359,6 +359,8 @@ namespace TGC.Group.Model
         public float Health() { return health; }
         public float MaxHealth() { return HEALTH_MAX; }
 
+
+        public FPSCamara GetCamara() { return Camara; }
         public Inventory GetInventory() { return inventory; }
         public TGCVector3 GetLookDir() { return Camara.LookDir(); }
 

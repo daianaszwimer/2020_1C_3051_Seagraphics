@@ -14,12 +14,12 @@ namespace TGC.Group.Model
         private Player Player = Player.Instance();
         private TgcD3dInput Input;
 
-        
-
         //Internal vars
         public TGCVector2 cam_angles = TGCVector2.Zero;
         private TgcPickingRay ray;
         TGCVector3 collisionPoint;
+
+        TGCQuaternion rotation;
 
         //Configuration
         private const float CAMERA_MAX_X_ANGLE = 1.5f;
@@ -83,7 +83,7 @@ namespace TGC.Group.Model
             cam_angles.Y = cam_angles.Y > 2 * FastMath.PI || cam_angles.Y < -2 * FastMath.PI ? 0 : cam_angles.Y;
             TGCQuaternion rotationY = TGCQuaternion.RotationAxis(new TGCVector3(0f, 1f, 0f), cam_angles.Y);
             TGCQuaternion rotationX = TGCQuaternion.RotationAxis(new TGCVector3(1f, 0f, 0f), -cam_angles.X);
-            TGCQuaternion rotation = rotationX * rotationY;
+            rotation = rotationX * rotationY;
 
             var init_offset = new TGCVector3(0f, 0f, 1f);
             TGCMatrix camera_m = TGCMatrix.Translation(init_offset) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(Player.Position());
@@ -91,6 +91,7 @@ namespace TGC.Group.Model
             Camara.SetCamera(pos, Player.Position());
         }
 
+        public TGCQuaternion GetRotation() { return rotation; }
         public TGCVector3 LookDir() { return TGCVector3.Normalize(Camara.LookAt - Camara.Position); }
         public TGCVector3 LeftDir() { return TGCVector3.Cross(LookDir(), Camara.UpVector); }
 

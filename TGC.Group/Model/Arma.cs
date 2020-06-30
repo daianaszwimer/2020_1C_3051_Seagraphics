@@ -8,15 +8,21 @@ namespace TGC.Group.Model
     class Arma
     {
         protected TgcMesh mesh;
+        private FPSCamara cam;
+        private TGCVector3 posOffset = new TGCVector3(-5f, -4f, -10f);
+        private TGCQuaternion rotOffset = TGCQuaternion.RotationAxis(new TGCVector3(0f, 0f, 1f), FastMath.ToRad(90f)) * TGCQuaternion.RotationAxis(TGCVector3.Up, FastMath.ToRad(90f));
         public Arma(TgcMesh mesh)
         {
             this.mesh = mesh;
-            mesh.Transform = TGCMatrix.Scaling(new TGCVector3(0.5f, 0.5f, 0.5f));
+            mesh.Scale = new TGCVector3(0.3f, 0.3f, 0.3f);
+            cam = Player.Instance().GetCamara();
         }
 
-        public void Update(float ElapsedTime)
+        public void Update()
         {
-            // logica pero no hay ninguna
+            TGCQuaternion camRot = cam.GetRotation();
+            TGCMatrix plrTransform = TGCMatrix.Translation(Player.Instance().Position());
+            mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotOffset) * TGCMatrix.Translation(posOffset) * TGCMatrix.RotationTGCQuaternion(camRot) * plrTransform;
         }
 
         public void Render()

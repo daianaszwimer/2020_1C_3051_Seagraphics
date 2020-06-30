@@ -327,7 +327,7 @@ namespace TGC.Group.Model
             }
             if (!estaEnAlgunMenu)
             {
-                // arma.Update() pero como no hace nada no lo llamamos
+                arma.Update();
                 if (estaEnNave)
                 {
                     interiorNave.Update();
@@ -491,8 +491,8 @@ namespace TGC.Group.Model
                     // renderizo arma
                     arma.Render();
                 }
-
             }
+            
             device.EndScene();
             // Especificamos que vamos a dibujar en pantalla
             device.SetRenderTarget(0, screenRenderTarget);
