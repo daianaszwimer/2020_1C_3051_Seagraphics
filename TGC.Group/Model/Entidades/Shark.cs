@@ -105,7 +105,8 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             /*if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())*/
-                sound.stop();
+            sound.stop();
+            Player.Instance().usarArma();
             //reducirVidaEn(conQueMeAtacan.danio);
             //reducirVidaEn(10);
             //Console.WriteLine("Me ataco");
