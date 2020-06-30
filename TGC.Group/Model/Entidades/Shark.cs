@@ -135,6 +135,7 @@ namespace TGC.Group.Model.Entidades
             time = 0;
             meAtaco = true;
             sound.stop();
+            Player.Instance().usarArma();
             //reducirVidaEn(conQueMeAtacan.danio);
             //reducirVidaEn(10);
             //Console.WriteLine("Me ataco");
