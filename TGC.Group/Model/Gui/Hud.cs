@@ -14,13 +14,14 @@ namespace TGC.Group.Model.Gui
 {
     static class Hud
     {
-        public enum Status { 
+        public enum Status {
             MainMenu, //This state only works at the start of the game
             Inventory,
             Crafting,
             GameOver, //Player changes to this state when IsDead();
             Gameplay,
-            Instructions
+            Instructions,
+            Win
         };
 
         struct ItemSprite
@@ -28,7 +29,7 @@ namespace TGC.Group.Model.Gui
             public CustomSprite icon;
             public CustomSprite background;
             public TgcText2D amount;
-            public void Dispose() { 
+            public void Dispose() {
                 background.Dispose();
                 amount.Dispose();
                 if (icon != null)
@@ -70,6 +71,9 @@ namespace TGC.Group.Model.Gui
 
         static TgcText2D GameOver;
         static TgcText2D GameOverSubtitle;
+
+        static TgcText2D YouWin;
+        static TgcText2D YouWinSubtitle;
 
         static List<TgcText2D> instrucciones;
 
@@ -312,6 +316,24 @@ namespace TGC.Group.Model.Gui
             GameOverSubtitle.Size = new Size(350, 200);
             GameOverSubtitle.changeFont(new Font("Calibri", 30, FontStyle.Bold));
             GameOverSubtitle.Color = Color.Red;
+
+
+            //Win
+            YouWin = new TgcText2D();
+            YouWin.Text = "YOU WIN!";
+            YouWin.Align = TgcText2D.TextAlign.LEFT;
+            YouWin.Position = new Point(Round(WIDTH * 0.3f), Round(HEIGHT * 0.4f));
+            YouWin.Size = new Size(750, 500);
+            YouWin.changeFont(new Font("Calibri", 100, FontStyle.Bold));
+            YouWin.Color = Color.Green;
+
+            YouWinSubtitle = new TgcText2D();
+            YouWinSubtitle.Text = "Press Enter to exit";
+            YouWinSubtitle.Align = TgcText2D.TextAlign.LEFT;
+            YouWinSubtitle.Position = new Point(Round(WIDTH * 0.4f), Round(HEIGHT * 0.7f));
+            YouWinSubtitle.Size = new Size(350, 200);
+            YouWinSubtitle.changeFont(new Font("Calibri", 30, FontStyle.Bold));
+            YouWinSubtitle.Color = Color.Green;
         }
 
         public static void Update(TgcD3dInput Input)
@@ -494,7 +516,7 @@ namespace TGC.Group.Model.Gui
                     }
                 }
             }
-            else if (CurrentStatus == Status.GameOver)
+            else if (CurrentStatus == Status.GameOver || CurrentStatus == Status.Win)
             {
                 if (enter)
                     Application.Exit();
@@ -577,6 +599,12 @@ namespace TGC.Group.Model.Gui
                 GameOver.render();
                 GameOverSubtitle.render();
             }
+            //Win
+            else if (CurrentStatus == Status.Win)
+            {
+                YouWin.render();
+                YouWinSubtitle.render();
+            }
         }
 
         public static void Dispose()
@@ -585,6 +613,9 @@ namespace TGC.Group.Model.Gui
             Instruccion.Dispose();
             Exit.Dispose();
             GameOver.Dispose();
+            GameOverSubtitle.Dispose();
+            YouWin.Dispose();
+            YouWinSubtitle.Dispose();
             Logo.Dispose();
             Background.Dispose();
             OverlayInv.Dispose();

@@ -4,6 +4,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Collision;
 using TGC.Core.Sound;
 using TGC.Group.Model.Sounds;
+using TGC.Group.Model.Gui;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -16,6 +17,7 @@ namespace TGC.Group.Model.Entidades
 
         //private Crafting conQueMeAtacan = null; 
         private Tgc3dSound sound;
+        private TgcStaticSound soundWin;
 
         private bool puedoSerAtacado = false;
 
@@ -48,6 +50,8 @@ namespace TGC.Group.Model.Entidades
             necesitaArmaParaInteractuar = true;
             agarrarEfecto = new TgcStaticSound();
             agarrarEfecto.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\stab.wav", SoundsManager.Instance().sound);
+            soundWin = new TgcStaticSound();
+            soundWin.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\win.wav", SoundsManager.Instance().sound);
         }
 
         //Entity functions
@@ -79,6 +83,7 @@ namespace TGC.Group.Model.Entidades
 
         protected override void DisposeEntity() {
             sound.dispose();
+            soundWin.dispose();
         }
 
         //Gamemodel functions
@@ -105,6 +110,8 @@ namespace TGC.Group.Model.Entidades
             //reducirVidaEn(10);
             //Console.WriteLine("Me ataco");
             // player gano
+            Hud.ChangeStatus(Hud.Status.Win);
+            soundWin.play();
         }
 
         public void setearSonido(Tgc3dSound _sound)

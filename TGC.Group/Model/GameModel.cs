@@ -315,7 +315,7 @@ namespace TGC.Group.Model
             estaEnAlgunMenu = Hud.GetCurrentStatus() == Hud.Status.MainMenu || Hud.GetCurrentStatus() == Hud.Status.Instructions;
 
             //Que no se pueda hacer nada si estas en game over salvo dar enter
-            if (Hud.GetCurrentStatus() == Hud.Status.GameOver)
+            if (Hud.GetCurrentStatus() == Hud.Status.GameOver || Hud.GetCurrentStatus() == Hud.Status.Win)
             {
                 PostUpdate();
                 return;
