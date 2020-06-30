@@ -103,8 +103,7 @@ namespace TGC.Group.Model
             float y = posicionY == 0 ? i / 10 : posicionY;
             TGCVector3 posicion = new TGCVector3((i * (random.Next(0, 5) * (float)Math.Sin(i)) * 2), y, i * 2 * (float)Math.Cos(i) * random.Next(0, 5));
             // todo: fixear corales y oro que se superponen
-            // todo: nave se superpone con cosas del piso, si la ponemos arriba en el limite con el agua no pasaria mas
-            elemento.cambiarPosicion(posicion);
+            elemento.cambiarPosicion(posicion, corales, metalesOro);
             return elemento;
         }
 
@@ -179,6 +178,9 @@ namespace TGC.Group.Model
             var mesh = scene.Meshes[0];
 
             peces = new List<Fish>();
+            corales = new List<Coral>();
+            metalesOro = new List<Metal>();
+
             int i = 0;
             while (i < 20)
             {
@@ -212,7 +214,6 @@ namespace TGC.Group.Model
             mesh = scene.Meshes[0];
 
 
-            corales = new List<Coral>();
             i = 0;
             while (i < 25)
             {
@@ -229,7 +230,6 @@ namespace TGC.Group.Model
 
             scene = loader.loadSceneFromFile(MediaDir + "Oro-TgcScene.xml");
             mesh = scene.Meshes[0];
-            metalesOro = new List<Metal>();
             i = 0;
             while (i < 10)
             {

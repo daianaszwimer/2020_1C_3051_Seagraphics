@@ -42,7 +42,6 @@ namespace TGC.Group.Model
 
         private bool puedoEnfretarTiburon = false;
 
-
         //Transformations vars
         public TGCBox mesh { get; set; }
         private TGCVector3 size = new TGCVector3(2, 5, 2);
@@ -56,6 +55,7 @@ namespace TGC.Group.Model
         // como no anda el keypressed, lo hacemos a mano con estas variables:
         private bool presionoO = false;
         private bool presionoI = false;
+        private bool presionoP = false;
 
         // sonidos
         private TgcStaticSound colision;
@@ -237,6 +237,19 @@ namespace TGC.Group.Model
             //Dev
             bool p = Input.keyDown(Key.P);
             // usar nuestra implementacion del key pressed
+            if (p)
+            {
+                p = false;
+                presionoP = true;
+            }
+            else
+            {
+                if (presionoP)
+                {
+                    p = true;
+                    presionoP = false;
+                }
+            }
             if (p) { godmode = !godmode; GodMode(godmode); }
         }
 

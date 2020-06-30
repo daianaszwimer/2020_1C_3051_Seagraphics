@@ -5,6 +5,7 @@ using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 using TGC.Core.Sound;
 using TGC.Group.Model.Sounds;
+using System.Collections.Generic;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -87,6 +88,16 @@ namespace TGC.Group.Model.Entidades
         {
             mesh.Position = nuevaPosicion;
         }
+
+        public void cambiarPosicion(TGCVector3 nuevaPosicion, List<Coral> corales, List<Metal> metales)
+        {
+            cambiarPosicion(nuevaPosicion);
+            // ver si colisiona con otros elementos y moverlo, no lo hacemos hasta que no colisione por perfomance, las chances son pocas
+            // solo lo hacemos con oro y corales
+            chequearColision(corales, metales);
+        }
+
+        protected virtual void chequearColision(List<Coral> corales, List<Metal> metales) { }
 
         /// <summary>
         /// Se cambia la posicion a una random dados unos parametros opcionales

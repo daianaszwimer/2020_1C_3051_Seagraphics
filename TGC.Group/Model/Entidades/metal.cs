@@ -1,6 +1,8 @@
 ﻿using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
+using System.Collections.Generic;
+using TGC.Core.Collision;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -39,6 +41,40 @@ namespace TGC.Group.Model.Entidades
             //mesh.BoundingBox.Render();
         }
 
+        protected override void chequearColision(List<Coral> corales, List<Metal> metales)
+        {
+            bool collided = false;
+            foreach (var coral in corales)
+            {
+                var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, coral.GetMesh().BoundingBox);
+                if (result)
+                {
+                    collided = true;
+                    break;
+                }
+            }
+            //si colisiona lo muevo
+            if (collided)
+            {
+                mesh.Position += new TGCVector3(5, 0, 5);
+                return;
+            }
+            foreach (var metal in metales)
+            {
+                var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, metal.GetMesh().BoundingBox);
+                if (result)
+                {
+                    collided = true;
+                    break;
+                }
+            }
+            //si colisiona lo muevo
+            if (collided)
+            {
+                mesh.Position += new TGCVector3(13, 0, 13);
+                return;
+            }
+        }
         protected override void DisposeEntity() { }
 
     }
