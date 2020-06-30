@@ -38,11 +38,9 @@ texture textura_mascara;
 sampler2D samplerMascara = sampler_state
 {
     Texture = (textura_mascara);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
+    MipFilter = NONE;
+    MinFilter = NONE;
+    MagFilter = NONE;
 };
 
 // variable de fogs
@@ -224,7 +222,7 @@ float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
 {
     float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
     float4 colorMascara = tex2D(samplerMascara, input.TextureCoordinates);
-    return lerp(color, colorMascara, colorMascara.a);
+    return colorMascara ? colorMascara : color;
 }
 
 

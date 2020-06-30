@@ -258,7 +258,7 @@ namespace TGC.Group.Model
             DirectSound.ListenerTracking = Player.Instance().mesh;
 
             //Mascara post process
-            maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mask.png");
+            maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mascara.png");
             effect.SetValue("textura_mascara", maskTexture.D3dTexture);
 
             // seteamos los efectos aca porque son fijos
@@ -406,7 +406,7 @@ namespace TGC.Group.Model
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
             device.BeginScene();
 
-            effect.Technique = "PostProcess";
+            bool flagFuera = true;
             if (!estaEnAlgunMenu)
             {
                 if (estaEnNave)
@@ -415,8 +415,7 @@ namespace TGC.Group.Model
                 }
                 else
                 {
-                    effect.Technique = "PostProcessMar";
-
+                    flagFuera = false;
                     oceano.Render();
                     heightmap.Render();
 
@@ -489,7 +488,7 @@ namespace TGC.Group.Model
             device.DepthStencilSurface = screenDepthSurface;
 
             effect.SetValue("renderTarget", renderTarget);
-            if (Player.Instance().IsOutsideWater())
+            if (flagFuera)
                 effect.Technique = "PostProcess";
             else
                 effect.Technique = "PostProcessMar";

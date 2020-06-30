@@ -46,9 +46,8 @@ namespace TGC.Group.Model.Entidades
         {
             this.vida = 500;
             necesitaArmaParaInteractuar = true;
-            // todo: poner otro efecto tipo arma o algo asi
             agarrarEfecto = new TgcStaticSound();
-            agarrarEfecto.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\grab.wav", SoundsManager.Instance().sound);
+            agarrarEfecto.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\stab.wav", SoundsManager.Instance().sound);
         }
 
         //Entity functions
@@ -100,13 +99,12 @@ namespace TGC.Group.Model.Entidades
 
         protected override void InteractEntity()
         {
-            if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())
-            {
+            /*if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())*/
                 sound.stop();
-                //reducirVidaEn(conQueMeAtacan.danio);
-                reducirVidaEn(10);
-                Console.WriteLine("Me ataco");
-            }
+            //reducirVidaEn(conQueMeAtacan.danio);
+            //reducirVidaEn(10);
+            //Console.WriteLine("Me ataco");
+            // player gano
         }
 
         public void setearSonido(Tgc3dSound _sound)

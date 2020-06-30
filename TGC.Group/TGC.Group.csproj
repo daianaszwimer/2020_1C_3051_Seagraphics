@@ -234,6 +234,7 @@
     <Content Include="bin\x86\Debug\TGC.Group.exe" />
     <Content Include="bin\x86\Debug\TGC.Group.pdb" />
     <Content Include="Media\coral-TgcScene.xml" />
+    <Content Include="Media\EspadaDoble-TgcScene.xml" />
     <Content Include="Media\mask.png" />
     <Content Include="Media\Oro-TgcScene.xml" />
     <Content Include="Media\ship-TgcScene.xml" />
@@ -243,6 +244,7 @@
     <Content Include="Media\Textures\12960_Shark_diff_v2.jpg" />
     <Content Include="Media\Heightmaps\heightmap_bnw.jpg" />
     <Content Include="Media\Heightmaps\heightmap_tex.jpg" />
+    <Content Include="Media\Textures\blade.jpg" />
     <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
     <Content Include="Media\Textures\Color_helice.png" />
     <Content Include="Media\Textures\difuse_enganche.png" />
