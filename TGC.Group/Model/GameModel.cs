@@ -69,6 +69,7 @@ namespace TGC.Group.Model
         Player Player;
         Nave nave;
         InteriorNave interiorNave;
+        Arma arma;
 
         //Shaders
         TgcFog fog;
@@ -240,6 +241,10 @@ namespace TGC.Group.Model
             nave = Nave.Instance();
             nave.Init(scene);
 
+            scene = loader.loadSceneFromFile(MediaDir + "EspadaDoble-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            arma = new Arma(mesh);
+
             //Cargar shaders
             fog = new TgcFog();
             fog.Color = Color.FromArgb(30, 144, 255);
@@ -322,6 +327,7 @@ namespace TGC.Group.Model
             }
             if (!estaEnAlgunMenu)
             {
+                // arma.Update() pero como no hace nada no lo llamamos
                 if (estaEnNave)
                 {
                     interiorNave.Update();
@@ -480,6 +486,11 @@ namespace TGC.Group.Model
 
 
                 Player.Render();
+                if (Player.Instance().puedoEnfrentarTiburon())
+                {
+                    // renderizo arma
+                    arma.Render();
+                }
 
             }
             device.EndScene();
@@ -557,6 +568,7 @@ namespace TGC.Group.Model
             fullScreenQuad.Dispose();
             renderTarget.Dispose();
             depthStencil.Dispose();
+            arma.Dispose();
         }
         bool IsInFrustum(TgcMesh mesh)
         {

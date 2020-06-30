@@ -96,6 +96,11 @@ namespace TGC.Group.Model
             puedoEnfretarTiburon = true;
         }
 
+        public void usarArma()
+        {
+            puedoEnfretarTiburon = false;
+        }
+
         //Tgc functions
 
         public TGCVector3 Position() { return mesh.Position; }

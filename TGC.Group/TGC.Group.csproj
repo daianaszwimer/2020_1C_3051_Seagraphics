@@ -102,6 +102,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\Arma.cs" />
     <Compile Include="Model\Camara.cs" />
     <Compile Include="Model\Crafting\Botiquin.cs" />
     <Compile Include="Model\Crafting\Crafting.cs" />
