@@ -258,6 +258,7 @@
     <Content Include="obj\x86\Debug\TGC.Group.exe" />
     <Content Include="obj\x86\Debug\TGC.Group.pdb" />
     <Content Include="Shaders\agua.fx" />
+    <Content Include="Shaders\perlin.fx" />
     <Content Include="Shaders\e_fog.fx" />
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

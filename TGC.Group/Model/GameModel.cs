@@ -73,6 +73,7 @@ namespace TGC.Group.Model
         //Shaders
         TgcFog fog;
         Microsoft.DirectX.Direct3D.Effect effect;
+        Microsoft.DirectX.Direct3D.Effect efectoDesaparecer;
 
         private TgcStaticSound sonidoUnderwater;
         Tgc3dSound sharkSound;
@@ -88,6 +89,7 @@ namespace TGC.Group.Model
         private VertexBuffer fullScreenQuad;
 
         private TgcTexture maskTexture;
+        private TgcTexture perlinTexture;
         //Optimizacion
 
         private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
@@ -198,6 +200,12 @@ namespace TGC.Group.Model
             sharkSound = new Tgc3dSound(MediaDir + "Sounds\\shark.wav", shark.GetMesh().Position, DirectSound.DsDevice);
             shark.setearSonido(sharkSound);
             shark.setearAlturaMaxima(nivelDelAgua);
+            
+            efectoDesaparecer = TGCShaders.Instance.LoadEffect(ShadersDir + "perlin.fx");
+
+            shark.setearEfectoPerlin(efectoDesaparecer);
+            perlinTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\perlin.png");
+            shark.setearPerlin(perlinTexture);
 
             scene = loader.loadSceneFromFile(MediaDir + "coral-TgcScene.xml");
             mesh = scene.Meshes[0];
@@ -317,6 +325,11 @@ namespace TGC.Group.Model
             //Que no se pueda hacer nada si estas en game over salvo dar enter
             if (Hud.GetCurrentStatus() == Hud.Status.GameOver || Hud.GetCurrentStatus() == Hud.Status.Win)
             {
+                // si gano hay que hacer update del tiburon para verlo desaparecer
+                if (Hud.GetCurrentStatus() == Hud.Status.Win)
+                {
+                    shark.Update(ElapsedTime);
+                }
                 PostUpdate();
                 return;
             }
@@ -440,8 +453,6 @@ namespace TGC.Group.Model
                     }
                     Particulas.Render(ElapsedTime);
 
-                    Oceano.Render();
-
                     //Efecto metalico
                     effect.SetValue("shininess", 30f);
                     effect.SetValue("KSpecular", 1.0f);
@@ -463,6 +474,8 @@ namespace TGC.Group.Model
                             oro.Render();
                         }
                     }
+                    Oceano.Render();
+
                 }
 
                 //Dibuja un texto por pantalla
@@ -528,6 +541,7 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             effect.Dispose();
+            efectoDesaparecer.Dispose();
             sonidoUnderwater.dispose();
             Player.Dispose();
             oceano.Dispose();
@@ -554,6 +568,7 @@ namespace TGC.Group.Model
             Oceano.Dispose();
             Hud.Dispose();
             maskTexture.dispose();
+            perlinTexture.dispose();
             fullScreenQuad.Dispose();
             renderTarget.Dispose();
             depthStencil.Dispose();

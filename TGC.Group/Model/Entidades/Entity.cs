@@ -73,7 +73,11 @@ namespace TGC.Group.Model.Entidades
                 if (!necesitaArmaParaInteractuar || (necesitaArmaParaInteractuar && Player.Instance().puedoEnfrentarTiburon()))
                 {
                     agarrarEfecto.play(false);
-                    estaOculto = true;
+                    if (!necesitaArmaParaInteractuar)
+                    {
+                        // si se mata con arma ponemos mas suspenso y aplicamos perlin noise
+                        estaOculto = true;
+                    }
                     InteractEntity();
                 }
             }

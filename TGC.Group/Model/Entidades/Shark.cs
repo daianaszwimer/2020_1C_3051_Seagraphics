@@ -5,6 +5,8 @@ using TGC.Core.Collision;
 using TGC.Core.Sound;
 using TGC.Group.Model.Sounds;
 using TGC.Group.Model.Gui;
+using Microsoft.DirectX.Direct3D;
+using TGC.Core.Textures;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -14,12 +16,14 @@ namespace TGC.Group.Model.Entidades
 
         private int vida;
         private float yMax;
-
+        private float time = 0;
         //private Crafting conQueMeAtacan = null; 
         private Tgc3dSound sound;
         private TgcStaticSound soundWin;
+        private Effect efectoDesaparecer;
+        private bool meAtaco = false;
 
-        private bool puedoSerAtacado = false;
+        private bool puedoSerAtacado;
 
         public void puedenAtarcame() // puedenAtacarme(Crafting arma)
         {
@@ -54,6 +58,15 @@ namespace TGC.Group.Model.Entidades
             soundWin.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\win.wav", SoundsManager.Instance().sound);
         }
 
+        public void setearPerlin(TgcTexture texture)
+        {
+            efectoDesaparecer.SetValue("textura_perlin", texture.D3dTexture);
+        }
+        public void setearEfectoPerlin(Effect _effect)
+        {
+            efectoDesaparecer = _effect;
+        }
+
         //Entity functions
         protected override void InitEntity()
         {
@@ -62,17 +75,27 @@ namespace TGC.Group.Model.Entidades
 
         protected override void UpdateEntity(float ElapsedTime)
         {
-            if (ArrivedGoalPos())
-                SetEscapeGoalPos();
-
-            if (canDealDamage)
-                Attack();
-            
-            Move(goalPos, speed, ElapsedTime, yMax);
-
-            sound.Position = mesh.Position;
-            if(!estaOculto)
+            time += ElapsedTime;
+            // solo setear si se esta usando el efecto?
+            if (time < 1.5)
             {
+                // si supera 1 no tiene sentido porque ningun canal tiene mas de uno (ver el if en el efecto)
+                // 1.5 es para darle un delta porque si hacemos > 1 nunca va a llegar a 1
+                efectoDesaparecer.SetValue("value", time);
+            }
+            // me fijo si se llego al tiempo y pongo estaOculto = true;
+            if (!meAtaco)
+            {
+                if (ArrivedGoalPos())
+                    SetEscapeGoalPos();
+
+                if (canDealDamage)
+                    Attack();
+            
+                Move(goalPos, speed, ElapsedTime, yMax);
+
+                sound.Position = mesh.Position;
+            
                 sound.play(true);
             }
         }
@@ -105,13 +128,20 @@ namespace TGC.Group.Model.Entidades
         protected override void InteractEntity()
         {
             /*if (Player.Instance().puedoEnfrentarTiburon() && estoyVivo())*/
-                sound.stop();
+            // muestro efecto para que "desaparezca"
+            // cuando el tiempo llega a x, ahi lo desaparezco
+            mesh.Effect = efectoDesaparecer;
+            mesh.Technique = "RenderScene";
+            time = 0;
+            meAtaco = true;
+            sound.stop();
             //reducirVidaEn(conQueMeAtacan.danio);
             //reducirVidaEn(10);
             //Console.WriteLine("Me ataco");
             // player gano
             Hud.ChangeStatus(Hud.Status.Win);
             soundWin.play();
+            
         }
 
         public void setearSonido(Tgc3dSound _sound)
