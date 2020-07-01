@@ -278,7 +278,8 @@ namespace TGC.Group.Model
                     List<TgcMesh> elementosMesa = MesaNave.Instance().meshes();
                     foreach (var elemento in elementosMesa)
                     {
-                        var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
+                        //var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
+                        var result = TgcCollisionUtils.testAABBAABB(new TgcBoundingAxisAlignBox(new TGCVector3(mesh.Position.X,elemento.Position.Y,mesh.Position.Z),mesh.Position), elemento.BoundingBox);
                         if (result)
                         {
                             collided = true;
