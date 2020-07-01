@@ -9,6 +9,8 @@ using TGC.Core.Input;
 using Microsoft.DirectX.DirectInput;
 using TGC.Group.Model.Crafting;
 using System.Windows.Forms;
+using TGC.Core.Sound;
+using TGC.Group.Model.Sounds;
 
 namespace TGC.Group.Model.Gui
 {
@@ -36,6 +38,8 @@ namespace TGC.Group.Model.Gui
                     icon.Dispose();
             }
         }
+
+        static TgcStaticSound sonido;
 
         static Player Player = Player.Instance();
 
@@ -95,6 +99,10 @@ namespace TGC.Group.Model.Gui
             InventoryItems = new List<ItemSprite>();
             CraftingItems = new List<ItemSprite>();
             SelectedItemIndex = 0;
+
+
+            sonido = new TgcStaticSound();
+            sonido.loadSound(SoundsManager.Instance().mediaDir + "Sounds\\grab.wav", SoundsManager.Instance().sound);
 
             drawer = new Drawer2D();
 
@@ -438,7 +446,6 @@ namespace TGC.Group.Model.Gui
             }
             else if (CurrentStatus == Status.MainMenu)
             {
-                ///////////////////// todo: cambiar y agregar instrucciones
                 if (up)
                 {
                     if (SelectedText == Start)
@@ -496,7 +503,10 @@ namespace TGC.Group.Model.Gui
                         SelectedItemIndex--;
                     else if (right)
                         SelectedItemIndex++;
-
+                    if (left || right)
+                    {
+                        sonido.play();
+                    }
                     SelectedItemIndex = FastMath.Clamp(SelectedItemIndex, 0, MAX_CRAFTING_ITEMS - 1);
                     CraftingItems[SelectedItemIndex].background.Color = Color.Orange;
 
@@ -509,6 +519,7 @@ namespace TGC.Group.Model.Gui
                             var SelectedItem = Inventory.Instance().GetCraftings()[SelectedItemIndex];
                             if (SelectedItem.EstoyHabilitado())
                             {
+                                sonido.play();
                                 SelectedItem.Craftear();
                                 UpdateIconSprites();
                             }
@@ -622,6 +633,7 @@ namespace TGC.Group.Model.Gui
             OverlayCraft.Dispose();
             HealthBar.Dispose();
             OxygenBar.Dispose();
+            sonido.dispose();
             foreach (var ins in instrucciones)
             {
                 ins.Dispose();
