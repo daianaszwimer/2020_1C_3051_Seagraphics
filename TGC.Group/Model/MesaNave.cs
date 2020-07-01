@@ -80,7 +80,7 @@ namespace TGC.Group.Model
                     break;
                 }
                 mesh.Render();
-                mesh.BoundingBox.Render();
+                //mesh.BoundingBox.Render();
             }
         }
 

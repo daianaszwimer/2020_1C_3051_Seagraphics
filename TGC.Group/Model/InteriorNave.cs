@@ -66,22 +66,22 @@ namespace TGC.Group.Model
             var diffuseMap = TgcTexture.createTexture(MediaDir + "Textures//Lisas.bmp");
 
             // todo: usar planos para piso y techo?
-            piso = TGCBox.fromExtremes(new TGCVector3(-200, -1, -200), new TGCVector3(200, 0, 200), diffuseMap);
+            piso = TGCBox.fromExtremes(new TGCVector3(-100, -1, -100), new TGCVector3(100, 0, 100), diffuseMap);
             piso.Transform = TGCMatrix.Translation(piso.Position);
 
-            techo = TGCBox.fromExtremes(new TGCVector3(-200, 100, -200), new TGCVector3(200, 101, 200), diffuseMap);
+            techo = TGCBox.fromExtremes(new TGCVector3(-100, 100, -100), new TGCVector3(100, 101, 100), diffuseMap);
             techo.Transform = TGCMatrix.Translation(techo.Position);
 
-            var paredSur = TGCBox.fromExtremes(new TGCVector3(-200, 0, -210), new TGCVector3(200, 100, -200), diffuseMap);
+            var paredSur = TGCBox.fromExtremes(new TGCVector3(-100, 0, -110), new TGCVector3(100, 100, -100), diffuseMap);
             paredSur.Transform = TGCMatrix.Translation(paredSur.Position);
 
-            var paredNorte = TGCBox.fromExtremes(new TGCVector3(-200, 0, 200), new TGCVector3(200, 100, 210), diffuseMap);
+            var paredNorte = TGCBox.fromExtremes(new TGCVector3(-100, 0, 100), new TGCVector3(100, 100, 110), diffuseMap);
             paredNorte.Transform = TGCMatrix.Translation(paredNorte.Position);
 
-            var paredOeste = TGCBox.fromExtremes(new TGCVector3(-210, 0, -200), new TGCVector3(-200, 100, 200), diffuseMap);
+            var paredOeste = TGCBox.fromExtremes(new TGCVector3(-110, 0, -100), new TGCVector3(-100, 100, 100), diffuseMap);
             paredOeste.Transform = TGCMatrix.Translation(paredOeste.Position);
 
-            var paredEste = TGCBox.fromExtremes(new TGCVector3(200, 0, -200), new TGCVector3(210, 100, 200), diffuseMap);
+            var paredEste = TGCBox.fromExtremes(new TGCVector3(100, 0, -100), new TGCVector3(110, 100, 100), diffuseMap);
             paredEste.Transform = TGCMatrix.Translation(paredEste.Position);
 
             paredes.Add(paredSur);

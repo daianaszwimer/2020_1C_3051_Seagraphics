@@ -74,6 +74,7 @@ namespace TGC.Group.Model
         // Interior de la nave
         MesaNave mesaNave;
         LamparaNave lamparaNave;
+        SogaInterior sogaInterior;
 
         //Shaders
         TgcFog fog;
@@ -264,6 +265,13 @@ namespace TGC.Group.Model
             mesaNave.Init(scene);
             mesaNave.Effect(efectoInterior);
             mesaNave.Technique("RenderScene");
+
+            scene = loader.loadSceneFromFile(MediaDir + "SogaEnrollada-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            sogaInterior = SogaInterior.Instance();
+            sogaInterior.Init(mesh);
+            sogaInterior.Effect(efectoInterior);
+            sogaInterior.Technique("RenderScene");
 
             scene = loader.loadSceneFromFile(MediaDir + "LamparaTecho-TgcScene.xml");
             lamparaNave = new LamparaNave(scene.Meshes[0]);
@@ -459,15 +467,21 @@ namespace TGC.Group.Model
                     interiorNave.Render();
 
                     // constantes de iluminacion de la mesa
-                    efectoInterior.SetValue("shininess", 0f);
-                    efectoInterior.SetValue("KSpecular", 0f);
+                    efectoInterior.SetValue("shininess", 1f);
+                    efectoInterior.SetValue("KSpecular", 0.1f);
                     efectoInterior.SetValue("KAmbient", 3.0f);
                     efectoInterior.SetValue("KDiffuse", 0f);
                     mesaNave.Render();
+                    // constantes de iluminacion de la soga
+                    efectoInterior.SetValue("shininess", 1f);
+                    efectoInterior.SetValue("KSpecular", 0.1f);
+                    efectoInterior.SetValue("KAmbient", 3.0f);
+                    efectoInterior.SetValue("KDiffuse", 0f);
+                    sogaInterior.Render();
 
                     efectoInterior.SetValue("shininess", 5.0f);
                     efectoInterior.SetValue("KSpecular", 2.5f);
-                    efectoInterior.SetValue("KAmbient", 1.0f);
+                    efectoInterior.SetValue("KAmbient", 5.0f);
                     efectoInterior.SetValue("KDiffuse", 0f);
                     lamparaNave.Render();
                 }
@@ -613,6 +627,7 @@ namespace TGC.Group.Model
 
             interiorNave.Dispose();
             mesaNave.Dispose();
+            sogaInterior.Dispose();
             lamparaNave.Dispose();
             Particulas.Dispose();
             Oceano.Dispose();
