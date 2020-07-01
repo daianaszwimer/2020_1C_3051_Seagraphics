@@ -129,8 +129,10 @@
     <Compile Include="Model\Oceano.cs" />
     <Compile Include="Model\Particulas.cs" />
     <Compile Include="Model\Player.cs" />
+    <Compile Include="Model\SillaInterior.cs" />
     <Compile Include="Model\SogaInterior.cs" />
     <Compile Include="Model\Sounds\SoundsManager.cs" />
+    <Compile Include="Model\TimonInterior.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -264,7 +266,9 @@
     <Content Include="Media\Textures\Lisas.bmp" />
     <Content Include="Media\Textures\oro.jpg" />
     <Content Include="Media\Textures\rope.jpg" />
+    <Content Include="Media\Textures\steerwheel.jpg" />
     <Content Include="Media\Textures\tl.jpg" />
+    <Content Include="Media\Timon-TgcScene.xml" />
     <Content Include="Media\yellow_fish-TgcScene.xml" />
     <Content Include="obj\x86\Debug\TempPE\Properties.Resources.Designer.cs.dll" />
     <Content Include="obj\x86\Debug\TGC.Group.csproj.FileListAbsolute.txt" />

@@ -75,6 +75,8 @@ namespace TGC.Group.Model
         MesaNave mesaNave;
         LamparaNave lamparaNave;
         SogaInterior sogaInterior;
+        SillaInterior sillaInterior;
+        TimonInterior timonInterior;
 
         //Shaders
         TgcFog fog;
@@ -273,6 +275,18 @@ namespace TGC.Group.Model
             sogaInterior.Effect(efectoInterior);
             sogaInterior.Technique("RenderScene");
 
+            scene = loader.loadSceneFromFile(MediaDir + "silla-TgcScene.xml");
+            sillaInterior = SillaInterior.Instance();
+            sillaInterior.Init(scene);
+            sillaInterior.Effect(efectoInterior);
+            sillaInterior.Technique("RenderScene");
+
+            scene = loader.loadSceneFromFile(MediaDir + "Timon-TgcScene.xml");
+            timonInterior = TimonInterior.Instance();
+            timonInterior.Init(scene);
+            timonInterior.Effect(efectoInterior);
+            timonInterior.Technique("RenderScene");
+
             scene = loader.loadSceneFromFile(MediaDir + "LamparaTecho-TgcScene.xml");
             lamparaNave = new LamparaNave(scene.Meshes[0]);
             lamparaNave.Effect(efectoInterior);
@@ -460,22 +474,26 @@ namespace TGC.Group.Model
             {
                 if (estaEnNave)
                 {
-                    efectoInterior.SetValue("shininess", 0f);
-                    efectoInterior.SetValue("KSpecular", 0f);
+                    efectoInterior.SetValue("shininess", 1f);
+                    efectoInterior.SetValue("KSpecular", 0.1f);
                     efectoInterior.SetValue("KAmbient", 3.0f);
                     efectoInterior.SetValue("KDiffuse", 0f);
                     interiorNave.Render();
 
                     // constantes de iluminacion de la mesa
                     efectoInterior.SetValue("shininess", 1f);
-                    efectoInterior.SetValue("KSpecular", 0.1f);
+                    efectoInterior.SetValue("KSpecular", 0.2f);
                     efectoInterior.SetValue("KAmbient", 3.0f);
-                    efectoInterior.SetValue("KDiffuse", 0f);
+                    efectoInterior.SetValue("KDiffuse", 0.1f);
                     mesaNave.Render();
+                    // es el mismo material (madera) mantengo las mismas constantes
+                    sillaInterior.Render();
+                    timonInterior.Render();
+
                     // constantes de iluminacion de la soga
                     efectoInterior.SetValue("shininess", 1f);
-                    efectoInterior.SetValue("KSpecular", 0.1f);
-                    efectoInterior.SetValue("KAmbient", 3.0f);
+                    efectoInterior.SetValue("KSpecular", 0.15f);
+                    efectoInterior.SetValue("KAmbient", 2.0f);
                     efectoInterior.SetValue("KDiffuse", 0f);
                     sogaInterior.Render();
 
@@ -629,6 +647,8 @@ namespace TGC.Group.Model
             mesaNave.Dispose();
             sogaInterior.Dispose();
             lamparaNave.Dispose();
+            sillaInterior.Dispose();
+            timonInterior.Dispose();
             Particulas.Dispose();
             Oceano.Dispose();
             Hud.Dispose();

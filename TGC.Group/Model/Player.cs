@@ -279,7 +279,34 @@ namespace TGC.Group.Model
                     foreach (var elemento in elementosMesa)
                     {
                         //var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
-                        var result = TgcCollisionUtils.testAABBAABB(new TgcBoundingAxisAlignBox(new TGCVector3(mesh.Position.X,elemento.Position.Y,mesh.Position.Z),mesh.Position), elemento.BoundingBox);
+                        var result = TgcCollisionUtils.testAABBAABB(new TgcBoundingAxisAlignBox(new TGCVector3(mesh.Position.X, elemento.Position.Y, mesh.Position.Z), mesh.Position), elemento.BoundingBox);
+                        if (result)
+                        {
+                            collided = true;
+                            break;
+                        }
+                    }
+                }
+                if (!collided)
+                {
+                    List<TgcMesh> elementosSilla = SillaInterior.Instance().meshes();
+                    foreach (var elemento in elementosSilla)
+                    {
+                        //var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
+                        var result = TgcCollisionUtils.testAABBAABB(new TgcBoundingAxisAlignBox(new TGCVector3(mesh.Position.X, elemento.Position.Y, mesh.Position.Z), mesh.Position), elemento.BoundingBox);
+                        if (result)
+                        {
+                            collided = true;
+                            break;
+                        }
+                    }
+                }
+                if (!collided)
+                {
+                    List<TgcMesh> elementosTimon = TimonInterior.Instance().meshes();
+                    foreach (var elemento in elementosTimon)
+                    {
+                        var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, elemento.BoundingBox);
                         if (result)
                         {
                             collided = true;
