@@ -654,11 +654,12 @@ namespace TGC.Group.Model
             Hud.Dispose();
             maskTexture.dispose();
             perlinTexture.dispose();
+            arma.Dispose();
+            effect.Dispose();
+
             fullScreenQuad.Dispose();
             renderTarget.Dispose();
             depthStencil.Dispose();
-            arma.Dispose();
-            effect.Dispose();
         }
         bool IsInFrustum(TgcMesh mesh)
         {
