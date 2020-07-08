@@ -32,7 +32,41 @@ sampler2D renderTargetSampler = sampler_state
     MIPFILTER = LINEAR;
 };
 
+texture sceneFrameBuffer;
+sampler SceneFrameBuffer =
+sampler_state
+{
+    Texture = <sceneFrameBuffer>;
+    ADDRESSU = CLAMP;
+    ADDRESSV = CLAMP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
 
+texture fBCoralesBrillantes;
+sampler FBCoralesBrillantes =
+sampler_state
+{
+    Texture = <fBCoralesBrillantes>;
+    ADDRESSU = CLAMP;
+    ADDRESSV = CLAMP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
+texture verticalBlurFrameBuffer;
+sampler VerticalBlurFrameBuffer =
+sampler_state
+{
+    Texture = <verticalBlurFrameBuffer>;
+    ADDRESSU = CLAMP;
+    ADDRESSV = CLAMP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
 
 texture textura_mascara;
 sampler2D samplerMascara = sampler_state
@@ -62,6 +96,13 @@ float3 diffuseColor; //Color RGB para Diffuse de la luz
 float3 specularColor; //Color RGB para Specular de la luz
 float KAmbient; // Coeficiente de Ambient
 float KDiffuse; // Coeficiente de Diffuse
+float screen_dx, screen_dy;
+static const int radius = 7;
+static const int kernelSize = 15;
+static const float kernel[kernelSize] =
+{
+    0.000489, 0.002403, 0.009246, 0.02784, 0.065602, 0.120999, 0.174697, 0.197448, 0.174697, 0.120999, 0.065602, 0.02784, 0.009246, 0.002403, 0.000489
+};
 
 //Input del Vertex Shader
 struct VS_INPUT_VERTEX
@@ -97,6 +138,27 @@ struct VS_OUTPUT_VERTEX_LIGHT
     float4 PosView : COLOR0;
 };
 
+struct VS_INPUT_BLOOM
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+};
+struct VS_OUTPUT_BLOOM
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+    float2 WorldPosition : TEXCOORD1;
+};
+struct VS_INPUT_BLUR
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+};
+struct VS_OUTPUT_BLUR
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+};
 //Vertex Shader
 VS_OUTPUT_VERTEX vs_main(VS_INPUT_VERTEX input)
 {
@@ -121,6 +183,25 @@ VS_OUTPUT_VERTEX_LIGHT vs_main_light(VS_INPUT_VERTEX_LIGHT input)
     output.WorldNormal = mul(input.Normal, matInverseTransposeWorld).xyz;
 
     output.WorldPosition = mul(input.Position, matWorld);
+
+    return output;
+}
+VS_OUTPUT_BLOOM vs_bloom(VS_INPUT_BLOOM input)
+{
+    VS_OUTPUT_BLOOM output;
+    
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texture;
+    output.WorldPosition = mul(input.Position, matWorld);
+
+    return output;
+}
+VS_OUTPUT_BLUR vs_blur(VS_INPUT_BLUR input)
+{
+    VS_OUTPUT_BLUR output;
+    
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texture;
 
     return output;
 }
@@ -158,7 +239,34 @@ float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
     return fogEffect(input.PosView.z, fvBaseColor, input.WorldPosition.y);
 
 }
-
+float4 ps_bloom(VS_OUTPUT_BLOOM input) : COLOR0
+{
+    float4 texel = tex2D(diffuseMap, input.Texture);
+    float4 colorNegro = float4(0, 0, 0, 1);
+    float4 color = float4(1, 0, 0, 1); //input.WorldPosition.y > 0 ? float4(1, 0, 0, 1) : colorNegro;
+    return color;
+}
+float4 vs_blur_vertical(VS_OUTPUT_BLUR input) : COLOR0
+{
+    float4 verticalSum = float4(0, 0, 0, 1);
+    for (int y = 0; y < kernelSize; y++)
+    {
+        float2 delta = float2(0, (y - radius + 1) / screen_dy);
+        verticalSum += tex2D(FBCoralesBrillantes, input.Texture + delta) * kernel[y];
+    }
+    
+    return verticalSum;
+}
+float4 vs_blur_horizontal(VS_OUTPUT_BLUR input) : COLOR0
+{
+    float4 horizontalSum = float4(0, 0, 0, 1);
+    for (int x = 0; x < kernelSize; x++)
+    {
+        float2 delta = float2((x - radius + 1) / screen_dx, 0);
+        horizontalSum += tex2D(FBCoralesBrillantes, input.Texture + delta) * kernel[x];
+    }
+    return horizontalSum;
+}
 //Pixel Shader
 float4 ps_main_light(VS_OUTPUT_VERTEX_LIGHT input) : COLOR0
 {
@@ -215,14 +323,18 @@ VS_OUTPUT_POSTPROCESS VSPostProcess(VS_INPUT_POSTPROCESS input)
 //Pixel Shader
 float4 PSPostProcess(VS_OUTPUT_POSTPROCESS input) : COLOR0
 {
-    float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
+    float4 color = tex2D(SceneFrameBuffer, input.TextureCoordinates);
     return color;
 }
 float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
 {
-    float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
+    float4 color = tex2D(SceneFrameBuffer, input.TextureCoordinates);
     float4 colorMascara = tex2D(samplerMascara, input.TextureCoordinates);
-    return colorMascara ? colorMascara : color;
+    float4 bloomColor = tex2D(VerticalBlurFrameBuffer, input.TextureCoordinates);
+    bloomColor *= 1.5;
+    color = colorMascara ? colorMascara : color + bloomColor;
+	
+    return color;
 }
 
 
@@ -241,6 +353,32 @@ technique RenderSceneLight
     {
         VertexShader = compile vs_3_0 vs_main_light();
         PixelShader = compile ps_3_0 ps_main_light();
+    }
+}
+
+technique Bloom
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_bloom();
+        PixelShader = compile ps_3_0 ps_bloom();
+    }
+}
+
+technique BlurVertical
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_blur();
+        PixelShader = compile ps_3_0 vs_blur_vertical();
+    }
+}
+technique BlurHorizontal
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_blur();
+        PixelShader = compile ps_3_0 vs_blur_horizontal();
     }
 }
 
