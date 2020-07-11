@@ -16,6 +16,7 @@ using TGC.Group.Model.Gui;
 using TGC.Core.Sound;
 using TGC.Core.Collision;
 using TGC.Core.Textures;
+using TGC.Core.BoundingVolumes;
 
 namespace TGC.Group.Model
 {
@@ -98,6 +99,7 @@ namespace TGC.Group.Model
         private VertexBuffer fullScreenQuad;
 
         private TgcTexture maskTexture;
+        private TgcTexture lensTexture;
         private TgcTexture perlinTexture;
         //Optimizacion
 
@@ -313,6 +315,10 @@ namespace TGC.Group.Model
             maskTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\mascara.png");
             effect.SetValue("textura_mascara", maskTexture.D3dTexture);
 
+            //Lens
+            lensTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Textures\\lensflare.png");
+            effect.SetValue("textura_lens", lensTexture.D3dTexture);
+
             // seteamos los efectos aca porque son fijos
             oceano.Effect(effect);
             oceano.Technique("RenderScene");
@@ -333,7 +339,6 @@ namespace TGC.Group.Model
             efectoInterior.SetValue("ambientColor", Color.FromArgb(255, 255, 255).ToArgb());
             efectoInterior.SetValue("diffuseColor", Color.FromArgb(255, 255, 255).ToArgb());
             efectoInterior.SetValue("specularColor", Color.FromArgb(255, 255, 255).ToArgb());
-
             // dibujo el full screen quad
             CustomVertex.PositionTextured[] vertices =
             {
@@ -353,7 +358,6 @@ namespace TGC.Group.Model
 
             renderTarget = new Texture(d3dDevice, d3dDevice.PresentationParameters.BackBufferWidth, d3dDevice.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
 
-            
         }
 
         /// <summary>
@@ -438,6 +442,9 @@ namespace TGC.Group.Model
                 Player.Update(ElapsedTime, ref estaEnNave);
 
             }
+            //Lens
+            effect.SetValue("camDir", TGCVector3.TGCVector3ToFloat3Array(FPSCamara.LookDir()));
+            effect.SetValue("renderLens", ShouldRenderLens());
 
             // esto se hace siempre
             //Lockear mouse
@@ -680,6 +687,19 @@ namespace TGC.Group.Model
                     break;
             }
             return isIn;
+        }
+
+        bool ShouldRenderLens()
+        {
+            TgcRay ray = new TgcRay(Camera.Position, FPSCamara.LookDir());
+            var naveMeshes = nave.obtenerMeshes();
+            foreach(var mesh in naveMeshes)
+            {
+                bool col = TgcCollisionUtils.intersectRayAABB(ray, mesh.BoundingBox, out _);
+                if (col)
+                    return false;
+            }
+            return true;
         }
     }
 }

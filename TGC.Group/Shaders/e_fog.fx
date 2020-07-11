@@ -43,6 +43,19 @@ sampler2D samplerMascara = sampler_state
     MagFilter = NONE;
 };
 
+texture textura_lens;
+sampler2D sampleLens = sampler_state
+{
+    Texture = (textura_lens);
+    MipFilter = NONE;
+    MinFilter = NONE;
+    MagFilter = NONE;
+};
+
+//Lens
+float3 camDir;
+bool renderLens;
+
 // variable de fogs
 float4 ColorFog;
 float4 CameraPos;
@@ -53,7 +66,7 @@ float Density;
 float nivelAgua;
 
 //Luz
-float3 lightPos = float3(10, 100, 10);
+float3 lightPos = float3(10, 150, 10);
 float3 eyePos;
 float KSpecular;
 float shininess;
@@ -221,6 +234,18 @@ float4 PSPostProcess(VS_OUTPUT_POSTPROCESS input) : COLOR0
 float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
 {
     float4 color = tex2D(renderTargetSampler, input.TextureCoordinates);
+    //Lens
+    if (renderLens)
+    {
+        float4 lens = tex2D(sampleLens, input.TextureCoordinates);
+        float3 lightDir = normalize(lightPos - CameraPos.xyz);
+        float distLight = distance(lightDir, camDir);
+        float fact = 1 - saturate(pow(distLight, 10));
+        color = lerp(color, color + lens, fact);
+    }
+    
+    
+    //Mascara
     float4 colorMascara = tex2D(samplerMascara, input.TextureCoordinates);
     return colorMascara ? colorMascara : color;
 }
