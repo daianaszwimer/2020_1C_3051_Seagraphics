@@ -20,18 +20,6 @@ sampler2D diffuseMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
-//Textura para full screen quad
-texture renderTarget;
-sampler2D renderTargetSampler = sampler_state
-{
-    Texture = (renderTarget);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
-
 texture sceneFrameBuffer;
 sampler SceneFrameBuffer =
 sampler_state

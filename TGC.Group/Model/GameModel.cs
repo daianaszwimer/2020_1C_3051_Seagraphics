@@ -424,7 +424,6 @@ namespace TGC.Group.Model
                     foreach (var coral in corales)
                     {
                         coral.Update(ElapsedTime);
-                        coral.Technique("RenderScene");
                     }
                     foreach (var oro in metalesOro)
                     {
@@ -462,7 +461,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Render()
         {
-            ClearTextures();
+            //ClearTextures();
             var device = D3DDevice.Instance.Device;
 
             // Capturamos las texturas de pantalla
@@ -474,8 +473,8 @@ namespace TGC.Group.Model
             device.DepthStencilSurface = depthStencil;
 
             // Captura de escena en render target
-            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
             device.BeginScene();
+            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
             bool flagFuera = true;
             if (!estaEnAlgunMenu)
@@ -524,10 +523,18 @@ namespace TGC.Group.Model
                             pez.Render();
                         }
                     }
+
+                    effect.SetValue("shininess", 0.5f);
+                    effect.SetValue("KSpecular", 0.5f);
+                    effect.SetValue("KAmbient", 5.0f);
+                    effect.SetValue("KDiffuse", 2.0f);
+
                     foreach (var coral in corales)
                     {
                         if (IsInFrustum(coral.GetMesh()))
                         {
+                            coral.Technique("RenderSceneLight");
+
                             coral.Render();
                         }
                     }
@@ -655,22 +662,19 @@ namespace TGC.Group.Model
             device.SetRenderTarget(0, screenRenderTarget);
             device.DepthStencilSurface = screenDepthSurface;
 
-            effect.SetValue("sceneFrameBuffer", renderTarget);
-            effect.SetValue("verticalBlurFrameBuffer", FBVerticalBloom);
+            device.BeginScene();
+            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
             if (flagFuera)
                 effect.Technique = "PostProcess";
             else
                 effect.Technique = "PostProcessMar";
 
-            device.BeginScene();
-
             device.VertexFormat = CustomVertex.PositionTextured.Format;
             device.SetStreamSource(0, fullScreenQuad, 0);
 
-            // Dibujado de textura en full screen quad
-            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-
+            effect.SetValue("sceneFrameBuffer", renderTarget);
+            effect.SetValue("verticalBlurFrameBuffer", FBVerticalBloom);
 
             // Dibujamos el full screen quad
             effect.Begin(FX.None);
@@ -729,8 +733,8 @@ namespace TGC.Group.Model
             perlinTexture.dispose();
             arma.Dispose();
             effect.Dispose();
-            fullScreenQuad.Dispose();
             renderTarget.Dispose();
+            fullScreenQuad.Dispose();
             depthStencil.Dispose();
             coralesBrillantes.Dispose();
             FBVerticalBloom.Dispose();
