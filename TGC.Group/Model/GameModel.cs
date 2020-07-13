@@ -617,6 +617,7 @@ namespace TGC.Group.Model
                 device.EndScene();
 
                 // aplico pasada de blur horizontal y vertical al FB de los corales q brillan
+                
                 device.SetRenderTarget(0, FBHorizontalBool.GetSurfaceLevel(0));
                 device.DepthStencilSurface = depthStencil;
 
@@ -636,7 +637,8 @@ namespace TGC.Group.Model
                 effect.End();
 
                 device.EndScene();
-
+                
+                
                 device.SetRenderTarget(0, FBVerticalBloom.GetSurfaceLevel(0));
                 device.DepthStencilSurface = depthStencil;
 
@@ -656,7 +658,9 @@ namespace TGC.Group.Model
                 effect.End();
 
                 device.EndScene();
+                
             }
+                
 
             // Especificamos que vamos a dibujar en pantalla
             device.SetRenderTarget(0, screenRenderTarget);

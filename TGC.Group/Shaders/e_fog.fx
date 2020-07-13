@@ -36,24 +36,20 @@ texture fBCoralesBrillantes;
 sampler FBCoralesBrillantes =
 sampler_state
 {
-    Texture = <fBCoralesBrillantes>;
-    ADDRESSU = CLAMP;
-    ADDRESSV = CLAMP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
+    Texture = (fBCoralesBrillantes);
+    MipFilter = NONE;
+    MinFilter = NONE;
+    MagFilter = NONE;
 };
 
 texture verticalBlurFrameBuffer;
 sampler VerticalBlurFrameBuffer =
 sampler_state
 {
-    Texture = <verticalBlurFrameBuffer>;
-    ADDRESSU = CLAMP;
-    ADDRESSV = CLAMP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
+    Texture = (verticalBlurFrameBuffer);
+    MipFilter = NONE;
+    MinFilter = NONE;
+    MagFilter = NONE;
 };
 
 texture textura_mascara;
@@ -188,7 +184,7 @@ VS_OUTPUT_BLUR vs_blur(VS_INPUT_BLUR input)
 {
     VS_OUTPUT_BLUR output;
     
-    output.Position = mul(input.Position, matWorldViewProj);
+    output.Position = input.Position;
     output.Texture = input.Texture;
 
     return output;
