@@ -520,6 +520,7 @@ namespace TGC.Group.Model
                     {
                         if (IsInFrustum(pez.GetMesh()))
                         {
+                            pez.Technique("RenderScene");
                             pez.Render();
                         }
                     }
@@ -534,13 +535,13 @@ namespace TGC.Group.Model
                         if (IsInFrustum(coral.GetMesh()))
                         {
                             coral.Technique("RenderSceneLight");
-
                             coral.Render();
                         }
                     }
 
                     if (IsInFrustum(shark.GetMesh()))
                     {
+                        shark.Technique("RenderScene");
                         shark.Render();
                     }
                     Particulas.Render(ElapsedTime);
@@ -552,6 +553,7 @@ namespace TGC.Group.Model
                     effect.SetValue("KDiffuse", 0.5f);
                     if (IsInFrustum(nave.obtenerMeshes()))
                     {
+                        nave.Technique("RenderSceneLight");
                         nave.Render();
                     }
 
@@ -563,6 +565,7 @@ namespace TGC.Group.Model
                     {
                         if (IsInFrustum(oro.GetMesh()))
                         {
+                            oro.Technique("RenderSceneLight");
                             oro.Render();
                         }
                     }
@@ -613,7 +616,37 @@ namespace TGC.Group.Model
                     }
                     j++;
                 }
+                
+                foreach (var pez in peces)
+                {
+                    if (IsInFrustum(pez.GetMesh()))
+                    {
+                        pez.Technique("BloomMask");
+                        pez.Render();
+                    }
+                }
 
+                if (IsInFrustum(shark.GetMesh()))
+                {
+                    shark.Technique("BloomMask");
+                    shark.Render();
+                }
+
+                if (IsInFrustum(nave.obtenerMeshes()))
+                {
+                    nave.Technique("BloomMask");
+                    nave.Render();
+                }
+
+                foreach (var oro in metalesOro)
+                {
+                    if (IsInFrustum(oro.GetMesh()))
+                    {
+                        oro.Technique("BloomMask");
+                        oro.Render();
+                    }
+                }
+                
                 device.EndScene();
 
                 // aplico pasada de blur horizontal y vertical al FB de los corales q brillan

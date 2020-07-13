@@ -130,8 +130,8 @@ struct VS_INPUT_BLOOM
 struct VS_OUTPUT_BLOOM
 {
     float4 Position : POSITION0;
+    float4 MeshPosition : POSITION1;
     float2 Texture : TEXCOORD0;
-    float2 WorldPosition : TEXCOORD1;
 };
 struct VS_INPUT_BLUR
 {
@@ -174,9 +174,9 @@ VS_OUTPUT_BLOOM vs_bloom(VS_INPUT_BLOOM input)
 {
     VS_OUTPUT_BLOOM output;
     
+    output.MeshPosition = input.Position;
     output.Position = mul(input.Position, matWorldViewProj);
     output.Texture = input.Texture;
-    output.WorldPosition = mul(input.Position, matWorld);
 
     return output;
 }
@@ -223,13 +223,23 @@ float4 ps_main(VS_OUTPUT_VERTEX input) : COLOR0
     return fogEffect(input.PosView.z, fvBaseColor, input.WorldPosition.y);
 
 }
+
 float4 ps_bloom(VS_OUTPUT_BLOOM input) : COLOR0
 {
     float4 texel = tex2D(diffuseMap, input.Texture);
     float4 colorNegro = float4(0, 0, 0, 1);
-    float4 color = float4(1, 0, 0, 1); //input.WorldPosition.y > 0 ? float4(1, 0, 0, 1) : colorNegro;
+    
+    float distanciaCentro = distance(input.MeshPosition.xyz, float3(0, -20, 0));
+    float fact = saturate(distanciaCentro / 120);
+    float4 color = lerp(colorNegro, texel, fact);
     return color;
 }
+
+float4 ps_mask(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    return 0;
+}
+
 float4 vs_blur_vertical(VS_OUTPUT_BLUR input) : COLOR0
 {
     float4 verticalSum = float4(0, 0, 0, 1);
@@ -315,7 +325,7 @@ float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
     float4 color = tex2D(SceneFrameBuffer, input.TextureCoordinates);
     float4 colorMascara = tex2D(samplerMascara, input.TextureCoordinates);
     float4 bloomColor = tex2D(VerticalBlurFrameBuffer, input.TextureCoordinates);
-    bloomColor *= 1.5;
+    bloomColor *= 2;
     color = colorMascara ? colorMascara : color + bloomColor;
 	
     return color;
@@ -363,6 +373,15 @@ technique BlurHorizontal
     {
         VertexShader = compile vs_3_0 vs_blur();
         PixelShader = compile ps_3_0 vs_blur_horizontal();
+    }
+}
+
+technique BloomMask
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main();
+        PixelShader = compile ps_3_0 ps_mask();
     }
 }
 
