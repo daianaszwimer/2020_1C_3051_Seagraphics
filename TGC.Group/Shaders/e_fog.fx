@@ -327,7 +327,7 @@ float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
     float4 bloomColor = tex2D(VerticalBlurFrameBuffer, input.TextureCoordinates);
     bloomColor *= 2;
     color = colorMascara ? colorMascara : color + bloomColor;
-	
+    
     return color;
 }
 

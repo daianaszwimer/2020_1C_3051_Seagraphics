@@ -89,7 +89,7 @@ namespace TGC.Group.Model.Entidades
             if (!meAtaco)
             {
                 if (ArrivedGoalPos())
-                    SetEscapeGoalPos();
+                    SetRandomGoalPos();
 
                 if (canDealDamage)
                     Attack();
@@ -126,14 +126,26 @@ namespace TGC.Group.Model.Entidades
             //Position shark
             Random r = new Random();
             var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
-            var x = (float)r.NextDouble() * sign;
-            var z = (float)r.NextDouble() * sign;
+            var x = FastMath.Max(0.3f,(float)r.NextDouble() * sign);
+            var z = FastMath.Max(0.3f,(float)r.NextDouble() * sign);
             var y = FastMath.Min(yMax, Player.Instance().Position().Y);
+
 
             TGCVector3 playerPos = Player.Instance().Position();
             playerPos.Y = y;
 
             mesh.Position = playerPos + new TGCVector3(x, 0, z) * 250f;
+
+            //Check for collisions
+            foreach (var naveMesh in Nave.Instance().obtenerMeshes())
+            {
+                bool col = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, naveMesh.BoundingBox);
+                if (col)
+                {
+                    mesh.Position = TGCVector3.Empty;
+                    break;
+                }
+            }
         }
 
         protected override void InteractEntity()
@@ -171,10 +183,10 @@ namespace TGC.Group.Model.Entidades
             Random r = new Random(seed);
             var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
             var x = (float)r.NextDouble() * sign;
-            var y = (float)r.NextDouble();
+            sign = r.Next(-1, 1) >= 0 ? 1 : -1;
+            var y = (float)r.NextDouble() * sign;
+            sign = r.Next(-1, 1) >= 0 ? 1 : -1;
             var z = (float)r.NextDouble() * sign;
-
-            y = FastMath.Min(y, 0.25f);
 
             goalPos = new TGCVector3(x, -y, z) * distanceToEscape;
             goalPos.Y = FastMath.Min(FastMath.Max(goalPos.Y, 10), 61f); //para que nade por debajo del suelo ni por encima del agua

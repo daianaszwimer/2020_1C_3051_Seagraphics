@@ -145,7 +145,7 @@ namespace TGC.Group.Model.Entidades
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
             //Check out for collisions
-            foreach(var naveMesh in Nave.Instance().obtenerMeshes())
+            foreach (var naveMesh in Nave.Instance().obtenerMeshes())
             {
                 bool col = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, naveMesh.BoundingBox);
                 if (col)
