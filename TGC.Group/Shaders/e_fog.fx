@@ -130,7 +130,7 @@ struct VS_INPUT_BLOOM
 struct VS_OUTPUT_BLOOM
 {
     float4 Position : POSITION0;
-    float4 MeshPosition : POSITION1;
+    float4 MeshPosition : TEXCOORD1;
     float2 Texture : TEXCOORD0;
 };
 struct VS_INPUT_BLUR
