@@ -6,6 +6,7 @@ using TGC.Group.Model.Crafting;
 using TGC.Core.Sound;
 using TGC.Group.Model.Sounds;
 using System.Collections.Generic;
+using TGC.Core.Collision;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -127,6 +128,7 @@ namespace TGC.Group.Model.Entidades
         protected virtual void RenderEntity() { }
         protected virtual void DisposeEntity() { }
         protected virtual void InteractEntity() { }
+        protected virtual void ResetMove() { }
 
         //Getters
         public TgcMesh GetMesh() { return mesh; }
@@ -135,19 +137,25 @@ namespace TGC.Group.Model.Entidades
         //Common functinos
         /// <param name="goalPos">Posicion en el mundo a la que se quiere llegar</param>
         /// <param name="speed">Velocidad a la que la entidad se mueve</param>
-        protected void Move(TGCVector3 goalPos, float speed, float ElapsedTime, float limiteY = -1f)
+        protected void Move(TGCVector3 goalPos, float speed, float ElapsedTime)
         {
             TGCVector3 dir = TGCVector3.Normalize(goalPos - mesh.Position);
             LookAt(dir);
 
             TGCVector3 movement = dir * speed * ElapsedTime;
             mesh.Position += movement;
-
-            if (limiteY != -1 && mesh.Position.Y >= (limiteY - 30f))
+            //Check out for collisions
+            foreach(var naveMesh in Nave.Instance().obtenerMeshes())
             {
-                // si hay limite lo pongo ahi, un poco mas abajo
-                mesh.Position = new TGCVector3(mesh.Position.X, limiteY - 30f, mesh.Position.Z);
+                bool col = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, naveMesh.BoundingBox);
+                if (col)
+                {
+                    mesh.Position -= movement;
+                    ResetMove();
+                    break;
+                }
             }
+
             mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.RotationTGCQuaternion(rotation) * TGCMatrix.Translation(mesh.Position);
         }
 

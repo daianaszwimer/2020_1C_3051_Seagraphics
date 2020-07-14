@@ -11,7 +11,9 @@ namespace TGC.Group.Model.Entidades
         static TGCVector3 meshLookDir = new TGCVector3(-1, 0, 0);
 
         //Config
-        const float speed = 7.5f;
+        const float NORMAL_SPEED = 7.5f;
+        const float ESCAPE_SPEED = NORMAL_SPEED * 1.2f;
+        float speed = NORMAL_SPEED;
         const float distanceToMove = 100f;
 
         //Internal vars
@@ -54,7 +56,10 @@ namespace TGC.Group.Model.Entidades
 
         protected override void DisposeEntity() { }
 
-
+        protected override void ResetMove()
+        {
+            SetRandomGoalPos();
+        }
         //Internal functions
 
         private void SetRandomGoalPos()
@@ -69,7 +74,7 @@ namespace TGC.Group.Model.Entidades
             y = FastMath.Min(y, 0.25f);
 
             goalPos = new TGCVector3(x, y, z) * distanceToMove;
-            goalPos.Y = FastMath.Max(goalPos.Y, 10); //para que nade por encima del suelo
+            goalPos.Y = FastMath.Min(FastMath.Max(goalPos.Y, 10), 61f); //para que nade por debajo del suelo ni por encima del agua
         }
 
         private void SetEscapeGoalPos()

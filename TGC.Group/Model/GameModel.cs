@@ -210,7 +210,7 @@ namespace TGC.Group.Model
             shark.Init();
             sharkSound = new Tgc3dSound(MediaDir + "Sounds\\shark.wav", shark.GetMesh().Position, DirectSound.DsDevice);
             shark.setearSonido(sharkSound);
-            shark.setearAlturaMaxima(nivelDelAgua);
+            shark.setearAlturaMaxima(nivelDelAgua-19f);
             
             efectoDesaparecer = TGCShaders.Instance.LoadEffect(ShadersDir + "perlin.fx");
 
@@ -573,6 +573,7 @@ namespace TGC.Group.Model
 
                 }
 
+
                 //Dibuja un texto por pantalla
                 /*
                 DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
@@ -591,6 +592,8 @@ namespace TGC.Group.Model
                 if (Player.Instance().puedoEnfrentarTiburon())
                 {
                     // renderizo arma
+                    arma.Effect(effect);
+                    arma.Technique("RenderScene");
                     arma.Render();
                 }
             }
@@ -616,7 +619,7 @@ namespace TGC.Group.Model
                     }
                     j++;
                 }
-                
+
                 foreach (var pez in peces)
                 {
                     if (IsInFrustum(pez.GetMesh()))
@@ -625,13 +628,13 @@ namespace TGC.Group.Model
                         pez.Render();
                     }
                 }
-
-                if (IsInFrustum(shark.GetMesh()))
+                
+                if (shark.estoyVivo() && IsInFrustum(shark.GetMesh()))
                 {
                     shark.Technique("BloomMask");
                     shark.Render();
                 }
-
+                
                 if (IsInFrustum(nave.obtenerMeshes()))
                 {
                     nave.Technique("BloomMask");
@@ -646,7 +649,15 @@ namespace TGC.Group.Model
                         oro.Render();
                     }
                 }
-                
+
+                if (Player.Instance().puedoEnfrentarTiburon())
+                {
+                    // renderizo arma
+                    arma.Effect(effect);
+                    arma.Technique("BloomMask");
+                    arma.Render();
+                }
+
                 device.EndScene();
 
                 // aplico pasada de blur horizontal y vertical al FB de los corales q brillan
@@ -689,7 +700,7 @@ namespace TGC.Group.Model
                 device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
                 effect.EndPass();
                 effect.End();
-
+                
                 device.EndScene();
                 
             }

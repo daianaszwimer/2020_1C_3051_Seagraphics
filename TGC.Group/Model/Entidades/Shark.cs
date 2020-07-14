@@ -36,11 +36,13 @@ namespace TGC.Group.Model.Entidades
             this.vida -= cantidad;
         }
 
-        public bool estoyVivo() { return this.vida > 0; }
+        public bool estoyVivo() { return !meAtaco; }
 
         //Config
+        const float NORMAL_SPEED = 20f;
+        const float ESCAPE_SPEED = NORMAL_SPEED * 1.4f;
         const float DAMAGE = 30f;
-        const float speed = 10f;
+        float speed = NORMAL_SPEED;
         const float distanceToEscape = 300f;
 
         //Internal vars
@@ -92,7 +94,7 @@ namespace TGC.Group.Model.Entidades
                 if (canDealDamage)
                     Attack();
             
-                Move(goalPos, speed, ElapsedTime, yMax);
+                Move(goalPos, speed, ElapsedTime);
 
                 sound.Position = mesh.Position;
             
@@ -109,6 +111,11 @@ namespace TGC.Group.Model.Entidades
             soundWin.dispose();
         }
 
+        protected override void ResetMove()
+        {
+            SetRandomGoalPos();
+        }
+
         //Gamemodel functions
         public void Spawn()
         {
@@ -121,8 +128,12 @@ namespace TGC.Group.Model.Entidades
             var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
             var x = (float)r.NextDouble() * sign;
             var z = (float)r.NextDouble() * sign;
-            
-            mesh.Position = Player.Instance().Position() + new TGCVector3(x, 0, z) * 100f;
+            var y = FastMath.Min(yMax, Player.Instance().Position().Y);
+
+            TGCVector3 playerPos = Player.Instance().Position();
+            playerPos.Y = y;
+
+            mesh.Position = playerPos + new TGCVector3(x, 0, z) * 250f;
         }
 
         protected override void InteractEntity()
@@ -151,24 +162,44 @@ namespace TGC.Group.Model.Entidades
             sound.MinDistance = 20f;
         }
 
-        public void setearAlturaMaxima(float yMax_)
-        {
-            yMax = yMax_;
-        }
-
+        public void setearAlturaMaxima(float nivelDelAgua) { yMax = nivelDelAgua; }
         //Internal functions
 
-        private void SetPlayerGoalPos() { goalPos = Player.Instance().Position(); }
+        private void SetRandomGoalPos()
+        {
+            int seed = DateTime.Now.Millisecond;
+            Random r = new Random(seed);
+            var sign = r.Next(-1, 1) >= 0 ? 1 : -1;
+            var x = (float)r.NextDouble() * sign;
+            var y = (float)r.NextDouble();
+            var z = (float)r.NextDouble() * sign;
+
+            y = FastMath.Min(y, 0.25f);
+
+            goalPos = new TGCVector3(x, -y, z) * distanceToEscape;
+            goalPos.Y = FastMath.Min(FastMath.Max(goalPos.Y, 10), 61f); //para que nade por debajo del suelo ni por encima del agua
+        }
+
+        private void SetPlayerGoalPos() { 
+            TGCVector3 newGoal = Player.Instance().Position();
+            newGoal.Y = FastMath.Min(FastMath.Max(Player.Instance().Position().Y, 10), 61f);
+            goalPos = newGoal;
+
+            speed = NORMAL_SPEED;
+        }
 
         private void SetEscapeGoalPos()
         {
             TGCVector3 dir = mesh.Position - Player.Instance().Position();
             dir = TGCVector3.Normalize(dir);
-            dir.Y = 0;
             goalPos = dir * distanceToEscape;
+
+            goalPos.Y = FastMath.Min(FastMath.Max(goalPos.Y, 10), 61f);
+
+            speed = ESCAPE_SPEED;
       }
 
-        private bool ArrivedGoalPos() { return Math.Abs((goalPos - mesh.Position).Length()) < 0.1f; }
+        private bool ArrivedGoalPos() { return Math.Abs((goalPos - mesh.Position).Length()) < 0.5f; }
 
         private void Attack()
         {

@@ -18,6 +18,9 @@ namespace TGC.Group.Model
             cam = Player.Instance().GetCamara();
         }
 
+        public void Technique(string tec) { mesh.Technique = tec; }
+        public void Effect(Effect effect) { mesh.Effect = effect; }
+
         public void Update()
         {
             TGCQuaternion camRot = cam.GetRotation();
