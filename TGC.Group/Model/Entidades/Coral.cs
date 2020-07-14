@@ -41,7 +41,6 @@ namespace TGC.Group.Model.Entidades
 
         protected override void chequearColision(List<Coral> corales, List<Metal> metales)
         {
-
             bool collided = false;
             foreach (var coral in corales)
             {
@@ -53,10 +52,20 @@ namespace TGC.Group.Model.Entidades
                 }
             }
             //si colisiona lo muevo
-            if (collided)
+            while (collided)
             {
+                collided = false;
                 mesh.Position += new TGCVector3(5, 0, 5);
-                return;
+                // por las dudas chequeo que con la nueva posicion no colisione
+                foreach (var coral in corales)
+                {
+                    var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, coral.GetMesh().BoundingBox);
+                    if (result)
+                    {
+                        collided = true;
+                        break;
+                    }
+                }
             }
             foreach (var metal in metales)
             {
@@ -68,10 +77,20 @@ namespace TGC.Group.Model.Entidades
                 }
             }
             //si colisiona lo muevo
-            if (collided)
+            while (collided)
             {
+                collided = false;
                 mesh.Position += new TGCVector3(13, 0, 13);
-                return;
+                // por las dudas chequeo que con la nueva posicion no colisione
+                foreach (var metal in metales)
+                {
+                    var result = TgcCollisionUtils.testAABBAABB(mesh.BoundingBox, metal.GetMesh().BoundingBox);
+                    if (result)
+                    {
+                        collided = true;
+                        break;
+                    }
+                }
             }
         }
         protected override void DisposeEntity() { }
