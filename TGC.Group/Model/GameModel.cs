@@ -527,9 +527,16 @@ namespace TGC.Group.Model
                     }
                 }
 
-                effect.SetValue("shininess", 0.5f);
-                effect.SetValue("KSpecular", 0.5f);
-                effect.SetValue("KAmbient", 5.0f);
+                if (IsInFrustum(shark.GetMesh()))
+                {
+                    shark.Technique("RenderScene");
+                    shark.Render();
+                }
+                Particulas.Render(ElapsedTime);
+
+                effect.SetValue("shininess", 0.3f);
+                effect.SetValue("KSpecular", 0.3f);
+                effect.SetValue("KAmbient", 2.0f);
                 effect.SetValue("KDiffuse", 2.0f);
 
                 foreach (var coral in corales)
@@ -540,13 +547,6 @@ namespace TGC.Group.Model
                         coral.Render();
                     }
                 }
-
-                if (IsInFrustum(shark.GetMesh()))
-                {
-                    shark.Technique("RenderScene");
-                    shark.Render();
-                }
-                Particulas.Render(ElapsedTime);
 
                 //Efecto metalico
                 effect.SetValue("shininess", 30f);
@@ -742,48 +742,52 @@ namespace TGC.Group.Model
                 device.EndScene();
 
                 // aplico pasada de blur horizontal y vertical al FB de los corales q brillan
-                
-                device.SetRenderTarget(0, FBHorizontalBool.GetSurfaceLevel(0));
-                device.DepthStencilSurface = depthStencil;
+                var bufferPasada = coralesBrillantes;
+                for (int index = 0; index < 4; index++)
+                {
+                    device.SetRenderTarget(0, FBHorizontalBool.GetSurfaceLevel(0));
+                    device.DepthStencilSurface = depthStencil;
 
-                device.BeginScene();
+                    device.BeginScene();
 
-                device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+                    device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
-                effect.Technique = "BlurHorizontal";
-                device.VertexFormat = CustomVertex.PositionTextured.Format;
-                device.SetStreamSource(0, fullScreenQuad, 0);
-                effect.SetValue("fBCoralesBrillantes", coralesBrillantes);
+                    effect.Technique = "BlurHorizontal";
+                    device.VertexFormat = CustomVertex.PositionTextured.Format;
+                    device.SetStreamSource(0, fullScreenQuad, 0);
+                    effect.SetValue("fBCoralesBrillantes", bufferPasada);
 
-                effect.Begin(FX.None);
-                effect.BeginPass(0);
-                device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-                effect.EndPass();
-                effect.End();
+                    effect.Begin(FX.None);
+                    effect.BeginPass(0);
+                    device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+                    effect.EndPass();
+                    effect.End();
 
-                device.EndScene();
-                
-                
-                device.SetRenderTarget(0, FBVerticalBloom.GetSurfaceLevel(0));
-                device.DepthStencilSurface = depthStencil;
+                    device.EndScene();
 
-                device.BeginScene();
 
-                device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+                    device.SetRenderTarget(0, FBVerticalBloom.GetSurfaceLevel(0));
+                    device.DepthStencilSurface = depthStencil;
 
-                effect.Technique = "BlurVertical";
-                device.VertexFormat = CustomVertex.PositionTextured.Format;
-                device.SetStreamSource(0, fullScreenQuad, 0);
-                effect.SetValue("fBCoralesBrillantes", FBHorizontalBool);
+                    device.BeginScene();
 
-                effect.Begin(FX.None);
-                effect.BeginPass(0);
-                device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-                effect.EndPass();
-                effect.End();
-                
-                device.EndScene();
-                
+                    device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+
+                    effect.Technique = "BlurVertical";
+                    device.VertexFormat = CustomVertex.PositionTextured.Format;
+                    device.SetStreamSource(0, fullScreenQuad, 0);
+                    effect.SetValue("fBCoralesBrillantes", FBHorizontalBool);
+
+                    effect.Begin(FX.None);
+                    effect.BeginPass(0);
+                    device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+                    effect.EndPass();
+                    effect.End();
+
+                    device.EndScene();
+
+                    bufferPasada = FBVerticalBloom;
+                }
             }
                 
 
