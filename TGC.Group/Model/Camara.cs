@@ -3,7 +3,6 @@ using TGC.Core.Camara;
 using TGC.Core.Collision;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
 using TGC.Group.Model.Entidades;
 
 namespace TGC.Group.Model

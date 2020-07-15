@@ -330,7 +330,14 @@ float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
     
     return color;
 }
+float4 PSPostProcessMenu(VS_OUTPUT_POSTPROCESS input) : COLOR0
+{
+    float4 color = tex2D(SceneFrameBuffer, input.TextureCoordinates);
+    float4 bloomColor = tex2D(VerticalBlurFrameBuffer, input.TextureCoordinates);
+    bloomColor *= 2;
+    return color + bloomColor;
 
+}
 
 // ------------------------------------------------------------------
 technique RenderScene
@@ -400,5 +407,13 @@ technique PostProcessMar
     {
         VertexShader = compile vs_3_0 VSPostProcess();
         PixelShader = compile ps_3_0 PSPostProcessMar();
+    }
+}
+technique PostProcessMenu
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 VSPostProcess();
+        PixelShader = compile ps_3_0 PSPostProcessMenu();
     }
 }

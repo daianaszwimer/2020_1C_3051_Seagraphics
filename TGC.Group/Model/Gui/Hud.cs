@@ -65,7 +65,6 @@ namespace TGC.Group.Model.Gui
         static CustomSprite Logo;
         static CustomSprite OverlayInv; //Overlay de inventario
         static CustomSprite OverlayCraft;
-        static CustomSprite Background;
         static CustomSprite HealthBar;
         static CustomSprite OxygenBar;
 
@@ -111,12 +110,6 @@ namespace TGC.Group.Model.Gui
             Logo.Bitmap = new CustomBitmap(MediaDir + "logo_subnautica.png", D3DDevice.Instance.Device);
             var spriteSize = Logo.Bitmap.Size;
             Logo.Position = new TGCVector2(WIDTH / 2 - spriteSize.Width / 2, Round(HEIGHT * 0.2f) - spriteSize.Height / 2);
-
-            Background = new CustomSprite();
-            Background.Bitmap = new CustomBitmap(MediaDir + "background_subnautica.jpg", D3DDevice.Instance.Device);
-            spriteSize = Background.Bitmap.Size;
-            Background.Position = new TGCVector2(0, 0);
-
 
             Start = new TgcText2D();
             Start.Text = "Start";
@@ -550,17 +543,14 @@ namespace TGC.Group.Model.Gui
             else if(CurrentStatus == Status.MainMenu)
             {
                 drawer.BeginDrawSprite();
-                drawer.DrawSprite(Background);
                 drawer.DrawSprite(Logo);
                 drawer.EndDrawSprite();
-
                 SelectedText.Color = Color.Orange;
                 Start.render();
                 Instruccion.render();
                 Exit.render();
             } else if (CurrentStatus == Status.Instructions){
                 drawer.BeginDrawSprite();
-                drawer.DrawSprite(Background);
                 drawer.DrawSprite(Logo);
                 drawer.EndDrawSprite();
                 foreach (var ins in instrucciones)
@@ -628,7 +618,6 @@ namespace TGC.Group.Model.Gui
             YouWin.Dispose();
             YouWinSubtitle.Dispose();
             Logo.Dispose();
-            Background.Dispose();
             OverlayInv.Dispose();
             OverlayCraft.Dispose();
             HealthBar.Dispose();

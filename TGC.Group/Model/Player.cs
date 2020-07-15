@@ -47,6 +47,7 @@ namespace TGC.Group.Model
         private TGCVector3 size = new TGCVector3(2, 5, 2);
         private TGCVector3 posicionInteriorNave = new TGCVector3(0, 40, 0);
         private TGCVector3 posicionMar = new TGCVector3(60, WATER_LEVEL + 15, 0);
+        private TGCVector3 posicionMenu = new TGCVector3(60, -100, 0);
 
         //Config vars
         private float speed = 25f; //foward and horizontal speed
@@ -108,15 +109,20 @@ namespace TGC.Group.Model
 
         public void Init(FPSCamara Camara) {
             mesh = TGCBox.fromSize(size, null);
-            mesh.Position = posicionInteriorNave;
+            mesh.Position = posicionMenu;
             this.Camara = Camara;
+            mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position);
         }
 
         /// <summary>
         /// Update del jugador cuando esta FUERA de la nave.
         /// </summary>
-        public void Update(float ElapsedTime, ref bool _estaEnNave) {
+        public void Update(float ElapsedTime, ref bool _estaEnNave, bool posicionar = false) {
             estaEnNave = _estaEnNave;
+            if (posicionar)
+            {
+                mesh.Position = posicionInteriorNave;
+            }
             CheckInputs(ElapsedTime, ref _estaEnNave);
             GameplayUpdate(ElapsedTime);
             UpdateTransform();

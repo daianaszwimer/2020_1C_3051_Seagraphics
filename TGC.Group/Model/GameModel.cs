@@ -49,8 +49,9 @@ namespace TGC.Group.Model
 
         float time;
 
-        bool estaEnNave = true;
+        bool estaEnNave = false;
         bool estaEnAlgunMenu = true;
+        Hud.Status estadoAnterior = Hud.Status.MainMenu;
 
         float nivelDelAgua = 80f;
 
@@ -389,6 +390,41 @@ namespace TGC.Group.Model
                 PostUpdate();
                 return;
             }
+            if ((estadoAnterior == Hud.Status.MainMenu || estadoAnterior == Hud.Status.Instructions) && !estaEnAlgunMenu) {
+                // me meto en la nave cuando paso del menu
+                estaEnNave = true;
+                Player.Update(ElapsedTime, ref estaEnNave, true);
+            }
+            estadoAnterior = Hud.GetCurrentStatus();
+            if (estaEnAlgunMenu)
+            {
+                sonidoUnderwater.play(true);
+                // update de elementos de agua
+                nave.Update();
+                Oceano.Update(time);
+                oceano.Update();
+                Particulas.Update(time);
+                foreach (var pez in peces)
+                {
+                    pez.Update(ElapsedTime);
+                }
+                foreach (var coral in corales)
+                {
+                    coral.Update(ElapsedTime);
+                }
+                foreach (var oro in metalesOro)
+                {
+                    oro.Update(ElapsedTime);
+                }
+
+                fog.updateValues();
+                effect.SetValue("ColorFog", fog.Color.ToArgb());
+                effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+                effect.SetValue("StartFogDistance", fog.StartDistance);
+                effect.SetValue("EndFogDistance", fog.EndDistance);
+                effect.SetValue("Density", fog.Density);
+                effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
+            }
             if (!estaEnAlgunMenu)
             {
                 arma.Update();
@@ -477,6 +513,67 @@ namespace TGC.Group.Model
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
 
             bool flagFuera = true;
+            if (estaEnAlgunMenu)
+            {
+                oceano.Render();
+                heightmap.Render();
+
+                foreach (var pez in peces)
+                {
+                    if (IsInFrustum(pez.GetMesh()))
+                    {
+                        pez.Technique("RenderScene");
+                        pez.Render();
+                    }
+                }
+
+                effect.SetValue("shininess", 0.5f);
+                effect.SetValue("KSpecular", 0.5f);
+                effect.SetValue("KAmbient", 5.0f);
+                effect.SetValue("KDiffuse", 2.0f);
+
+                foreach (var coral in corales)
+                {
+                    if (IsInFrustum(coral.GetMesh()))
+                    {
+                        coral.Technique("RenderSceneLight");
+                        coral.Render();
+                    }
+                }
+
+                if (IsInFrustum(shark.GetMesh()))
+                {
+                    shark.Technique("RenderScene");
+                    shark.Render();
+                }
+                Particulas.Render(ElapsedTime);
+
+                //Efecto metalico
+                effect.SetValue("shininess", 30f);
+                effect.SetValue("KSpecular", 1.0f);
+                effect.SetValue("KAmbient", 1.0f);
+                effect.SetValue("KDiffuse", 0.5f);
+                if (IsInFrustum(nave.obtenerMeshes()))
+                {
+                    nave.Technique("RenderSceneLight");
+                    nave.Render();
+                }
+
+                effect.SetValue("shininess", 10f);
+                effect.SetValue("KSpecular", 1.1f);
+                effect.SetValue("KAmbient", 1.2f);
+                effect.SetValue("KDiffuse", 0.25f);
+                foreach (var oro in metalesOro)
+                {
+                    if (IsInFrustum(oro.GetMesh()))
+                    {
+                        oro.Technique("RenderSceneLight");
+                        oro.Render();
+                    }
+                }
+                Oceano.Render();
+                Player.Render();
+            }
             if (!estaEnAlgunMenu)
             {
                 if (estaEnNave)
@@ -572,22 +669,6 @@ namespace TGC.Group.Model
                     Oceano.Render();
 
                 }
-
-
-                //Dibuja un texto por pantalla
-                /*
-                DrawText.drawText("Con la tecla P se activa el GodMode", 5, 20, Color.DarkKhaki);
-                DrawText.drawText("A,S,D,W para moverse, Ctrl y Espacio para subir o bajar.", 5, 35, Color.DarkKhaki);
-                DrawText.drawText("Player Ypos: " + Player.Position().Y, 5, 50, Color.DarkRed);
-                DrawText.drawText("Health: " + Player.Health(), 5, 70, Color.DarkSalmon);
-                DrawText.drawText("Oxygen: " + Player.Oxygen(), 5, 80, Color.DarkSalmon);
-                DrawText.drawText("Camera: \n" + FPSCamara.cam_angles, 5, 100, Color.DarkSalmon);
-                DrawText.drawText("Con la tecla O entra o sale de la nave", 5, 145, Color.DarkKhaki);
-                DrawText.drawText("Inventario: \n" + inventory.inventoryMostrarItemsRecolectados(), 5, 160, Color.DarkRed);
-                DrawText.drawText("Crafteos disponibles: \n" + inventory.inventoryMostrarCrafteos(), 200, 160, Color.DarkRed);
-                */
-
-
                 Player.Render();
                 if (Player.Instance().puedoEnfrentarTiburon())
                 {
@@ -600,7 +681,7 @@ namespace TGC.Group.Model
             
             device.EndScene();
 
-            if (!flagFuera)
+            if (!flagFuera || estaEnAlgunMenu)
             {
                 device.SetRenderTarget(0, coralesBrillantes.GetSurfaceLevel(0));
                 device.DepthStencilSurface = depthStencil;
@@ -712,11 +793,19 @@ namespace TGC.Group.Model
 
             device.BeginScene();
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-
-            if (flagFuera)
+          
+            if (estaEnAlgunMenu)
+            {
+                effect.Technique = "PostProcessMenu";
+            }
+            else if (flagFuera)
+            {
                 effect.Technique = "PostProcess";
+            }
             else
+            {
                 effect.Technique = "PostProcessMar";
+            }
 
             device.VertexFormat = CustomVertex.PositionTextured.Format;
             device.SetStreamSource(0, fullScreenQuad, 0);

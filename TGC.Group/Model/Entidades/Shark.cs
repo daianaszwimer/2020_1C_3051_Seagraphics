@@ -73,6 +73,8 @@ namespace TGC.Group.Model.Entidades
         protected override void InitEntity()
         {
             mesh.Scale = new TGCVector3(0.2f, 0.2f, 0.2f);
+            mesh.Position = new TGCVector3(100, 0, 20);
+            mesh.Transform = TGCMatrix.Scaling(mesh.Scale) * TGCMatrix.Translation(mesh.Position);
         }
 
         protected override void UpdateEntity(float ElapsedTime)
