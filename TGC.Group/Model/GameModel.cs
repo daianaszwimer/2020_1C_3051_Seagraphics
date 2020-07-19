@@ -16,6 +16,7 @@ using TGC.Group.Model.Gui;
 using TGC.Core.Sound;
 using TGC.Core.Collision;
 using TGC.Core.Textures;
+using System.Linq;
 
 namespace TGC.Group.Model
 {
@@ -62,7 +63,8 @@ namespace TGC.Group.Model
 
         //Entidades
         Shark shark;
-        List<Metal> metalesOro;
+        List<Metal> maderas;
+        List<Metal> metales;
         List<Coral> corales;
         List<Fish> peces;
 
@@ -111,7 +113,7 @@ namespace TGC.Group.Model
             Random random = new Random(seed);
             float y = posicionY == 0 ? i / 10 : posicionY;
             TGCVector3 posicion = new TGCVector3((i * (random.Next(0, 5) * (float)Math.Sin(i)) * 2), y, i * 2 * (float)Math.Cos(i) * random.Next(0, 5));
-            elemento.cambiarPosicion(posicion, corales, metalesOro);
+            elemento.cambiarPosicion(posicion, corales, metales.Concat(maderas).ToList());
             return elemento;
         }
 
@@ -156,6 +158,8 @@ namespace TGC.Group.Model
             Player.SetInput(Input);
             Player.Init(FPSCamara);
 
+
+
             //Inicializar camara
             var cameraPosition = new TGCVector3(0, 100, 150);
             var lookAt = TGCVector3.Empty;
@@ -188,7 +192,8 @@ namespace TGC.Group.Model
 
             peces = new List<Fish>();
             corales = new List<Coral>();
-            metalesOro = new List<Metal>();
+            metales = new List<Metal>();
+            maderas = new List<Metal>();
 
             int i = 0;
             while (i < 20)
@@ -240,17 +245,51 @@ namespace TGC.Group.Model
             scene = loader.loadSceneFromFile(MediaDir + "Oro-TgcScene.xml");
             mesh = scene.Meshes[0];
             i = 0;
-            while (i < 10)
+            while (i < 15)
             {
                 Metal oro;
                 string meshName = i.ToString();
                 oro = new Metal(mesh.createMeshInstance(meshName));
                 oro = (Metal)setearMeshParaLista(oro, i * 8, -17);
                 oro.Tipo = ElementoRecolectable.oro;
-                metalesOro.Add(oro);
+                metales.Add(oro);
 
                 oro.Effect(effect);
                 oro.Technique("RenderSceneLight");
+                i++;
+            }
+
+            scene = loader.loadSceneFromFile(MediaDir + "Hierro-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            i = 0;
+            while (i < 15)
+            {
+                Metal hierro;
+                string meshName = i.ToString()+i.ToString();
+                hierro = new Metal(mesh.createMeshInstance(meshName));
+                hierro = (Metal)setearMeshParaLista(hierro, (i+10) * 8, -17);
+                hierro.Tipo = ElementoRecolectable.hierro;
+                metales.Add(hierro);
+
+                hierro.Effect(effect);
+                hierro.Technique("RenderSceneLight");
+                i++;
+            }
+
+            scene = loader.loadSceneFromFile(MediaDir + "Madera-TgcScene.xml");
+            mesh = scene.Meshes[0];
+            i = 0;
+            while (i < 15)
+            {
+                Metal madera;
+                string meshName = i.ToString() + i.ToString() + i.ToString();
+                madera = new Metal(mesh.createMeshInstance(meshName));
+                madera = (Metal)setearMeshParaLista(madera, (i + 10) * 8, -17);
+                madera.Tipo = ElementoRecolectable.madera;
+                maderas.Add(madera);
+
+                madera.Effect(effect);
+                madera.Technique("RenderSceneLight");
                 i++;
             }
 
@@ -412,9 +451,13 @@ namespace TGC.Group.Model
                 {
                     coral.Update(ElapsedTime);
                 }
-                foreach (var oro in metalesOro)
+                foreach (var metal in metales)
                 {
-                    oro.Update(ElapsedTime);
+                    metal.Update(ElapsedTime);
+                }
+                foreach (var madera in maderas)
+                {
+                    madera.Update(ElapsedTime);
                 }
 
                 fog.updateValues();
@@ -461,10 +504,15 @@ namespace TGC.Group.Model
                     {
                         coral.Update(ElapsedTime);
                     }
-                    foreach (var oro in metalesOro)
+                    foreach (var metal in metales)
                     {
-                        oro.Update(ElapsedTime);
+                        metal.Update(ElapsedTime);
                     }
+                    foreach (var madera in maderas)
+                    {
+                        madera.Update(ElapsedTime);
+                    }
+
 
                     fog.updateValues();
                     effect.SetValue("ColorFog", fog.Color.ToArgb());
@@ -548,6 +596,15 @@ namespace TGC.Group.Model
                     }
                 }
 
+                foreach (var madera in maderas)
+                {
+                    if (IsInFrustum(madera.GetMesh()))
+                    {
+                        madera.Technique("RenderScene");
+                        madera.Render();
+                    }
+                }
+
                 //Efecto metalico
                 effect.SetValue("shininess", 30f);
                 effect.SetValue("KSpecular", 1.0f);
@@ -563,14 +620,15 @@ namespace TGC.Group.Model
                 effect.SetValue("KSpecular", 1.1f);
                 effect.SetValue("KAmbient", 1.2f);
                 effect.SetValue("KDiffuse", 0.25f);
-                foreach (var oro in metalesOro)
+                foreach (var metal in metales)
                 {
-                    if (IsInFrustum(oro.GetMesh()))
+                    if (IsInFrustum(metal.GetMesh()))
                     {
-                        oro.Technique("RenderSceneLight");
-                        oro.Render();
+                        metal.Technique("RenderSceneLight");
+                        metal.Render();
                     }
                 }
+
                 Oceano.Render();
                 Player.Render();
             }
@@ -636,6 +694,15 @@ namespace TGC.Group.Model
                         }
                     }
 
+                    foreach (var madera in maderas)
+                    {
+                        if (IsInFrustum(madera.GetMesh()))
+                        {
+                            madera.Technique("RenderScene");
+                            madera.Render();
+                        }
+                    }
+
                     if (IsInFrustum(shark.GetMesh()))
                     {
                         shark.Technique("RenderScene");
@@ -658,12 +725,12 @@ namespace TGC.Group.Model
                     effect.SetValue("KSpecular", 1.1f);
                     effect.SetValue("KAmbient", 1.2f);
                     effect.SetValue("KDiffuse", 0.25f);
-                    foreach (var oro in metalesOro)
+                    foreach (var metal in metales)
                     {
-                        if (IsInFrustum(oro.GetMesh()))
+                        if (IsInFrustum(metal.GetMesh()))
                         {
-                            oro.Technique("RenderSceneLight");
-                            oro.Render();
+                            metal.Technique("RenderSceneLight");
+                            metal.Render();
                         }
                     }
                     Oceano.Render();
@@ -722,12 +789,21 @@ namespace TGC.Group.Model
                     nave.Render();
                 }
 
-                foreach (var oro in metalesOro)
+                foreach (var metal in metales)
                 {
-                    if (IsInFrustum(oro.GetMesh()))
+                    if (IsInFrustum(metal.GetMesh()))
                     {
-                        oro.Technique("BloomMask");
-                        oro.Render();
+                        metal.Technique("BloomMask");
+                        metal.Render();
+                    }
+                }
+
+                foreach (var madera in maderas)
+                {
+                    if (IsInFrustum(madera.GetMesh()))
+                    {
+                        madera.Technique("BloomMask");
+                        madera.Render();
                     }
                 }
 
@@ -855,10 +931,15 @@ namespace TGC.Group.Model
             {
                 coral.Dispose();
             }
-            foreach (var oro in metalesOro)
+            foreach (var metal in metales)
             {
-                oro.Dispose();
+                metal.Dispose();
             }
+            foreach (var madera in maderas)
+            {
+                madera.Dispose();
+            }
+
             nave.Dispose();
 
             interiorNave.Dispose();

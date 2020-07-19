@@ -18,8 +18,9 @@ namespace TGC.Group.Model.Crafting
         {
             this.path = "\\Items\\cuchillo_bnw.png";
             this.Composicion = new Dictionary<ElementoRecolectable, int>();
-            this.Composicion.Add(ElementoRecolectable.coral, 3);
+            this.Composicion.Add(ElementoRecolectable.hierro, 3);
             this.Composicion.Add(ElementoRecolectable.oro, 2);
+            this.Composicion.Add(ElementoRecolectable.madera, 3);
             this.danio = 10;
             this.reutilizable = false;
             this.estoyHabilitado = false;
@@ -52,8 +53,9 @@ namespace TGC.Group.Model.Crafting
             if (!estoyCrafteado && estoyHabilitado)
             {
                 estoyCrafteado = true;
-                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.coral, 3);
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.madera, 3);
                 Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.oro, 2);
+                Inventory.Instance().DisminuirUnidadesItem(ElementoRecolectable.hierro, 3);
                 Inventory.Instance().UsarCrafteo(this);
             }
         }

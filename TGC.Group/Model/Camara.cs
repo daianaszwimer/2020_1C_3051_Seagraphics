@@ -18,7 +18,7 @@ namespace TGC.Group.Model
         private TgcPickingRay ray;
         TGCVector3 collisionPoint;
 
-        TGCQuaternion rotation;
+        TGCQuaternion rotation = TGCQuaternion.Identity;
 
         //Configuration
         private const float CAMERA_MAX_X_ANGLE = 1.5f;
