@@ -19,9 +19,9 @@ Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técn
 * Szwimer, Daiana Kalanit
 
 
-Szwimer, Daiana Kalanit  |  Apellido, Nombre
+Szwimer, Daiana Kalanit  |  Gonzalez Martín, Ivan
 ------------ | -------------
-<img src="https://avatars3.githubusercontent.com/u/32345857?s=400&u=2e218a8e8b7dca8deecd219439feec069206784c&v=4" height="500"> | <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="500">
+<img src="https://avatars3.githubusercontent.com/u/32345857?s=400&u=2e218a8e8b7dca8deecd219439feec069206784c&v=4" height="500"> | <img src="https://drive.google.com/uc?export=view&id=1o6GUfarc42-yuz_njrV3raK8wX4ul2AK" width="500" height="500">
 
 ## ScreenShot ##
 ![screenshot1](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
