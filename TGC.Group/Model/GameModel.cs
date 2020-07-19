@@ -161,8 +161,8 @@ namespace TGC.Group.Model
 
 
             //Inicializar camara
-            var cameraPosition = new TGCVector3(0, 100, 150);
-            var lookAt = TGCVector3.Empty;
+            var cameraPosition = new TGCVector3(0, 100, -250);
+            var lookAt = new TGCVector3(0,nivelDelAgua,0);
             Camera.SetCamera(cameraPosition, lookAt);
 
             sonidoUnderwater = new TgcStaticSound();
