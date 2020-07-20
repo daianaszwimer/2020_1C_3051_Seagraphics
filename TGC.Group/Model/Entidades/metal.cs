@@ -18,6 +18,7 @@ namespace TGC.Group.Model.Entidades
         public void escalar(TGCVector3 escala)
         {
             escalaBase = TGCMatrix.Scaling(escala);
+            mesh.Scale = escala;
         }
         protected override void InitEntity()
         {

@@ -25,12 +25,12 @@ namespace TGC.Group.Model
         private float health = 100f;
         private bool estaEnNave;
 
-        private const float OXYGEN_LOSS_SPEED = 10f;
+        private const float OXYGEN_LOSS_SPEED = 7;
         private const float OXYGEN_RECOVER_SPEED = OXYGEN_LOSS_SPEED * 3.2f;
         private const float OXYGEN_MAX = 100f;
-        private const float OXYGEN_DAMAGE = 5f;
+        private const float OXYGEN_DAMAGE = 7f;
         private const float HEALTH_MAX = 100f;
-        private const float WATER_LEVEL = 65f; //When players reaches a position above this level, then recovers oxygen.
+        private const float WATER_LEVEL = 70f; //When players reaches a position above this level, then recovers oxygen.
         private const float WATER_LEVEL_OFFSET = 15f; //Extra range that the player can move over the water level
 
         private const float MIN_Y_POS = -10f; //nivel del piso
@@ -406,7 +406,7 @@ namespace TGC.Group.Model
 
         private void LoseOxygen(float ElapsedTime) { 
             oxygen = Math.Max(0, oxygen - OXYGEN_LOSS_SPEED * ElapsedTime);
-            if (oxygen == 0) GetDamage(OXYGEN_DAMAGE * ElapsedTime);
+            if (oxygen == 0) GetDamage(OXYGEN_DAMAGE * ElapsedTime * 0.5f);
         }
 
         
