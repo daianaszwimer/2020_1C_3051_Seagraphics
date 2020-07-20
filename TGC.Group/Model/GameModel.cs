@@ -63,7 +63,7 @@ namespace TGC.Group.Model
 
         //Entidades
         Shark shark;
-        List<Metal> maderas;
+        List<Metal> piedras;
         List<Metal> metales;
         List<Coral> corales;
         List<Fish> peces;
@@ -104,6 +104,9 @@ namespace TGC.Group.Model
         private TgcTexture perlinTexture;
         //Optimizacion
 
+        // hack horrible
+        private bool disposing = false;
+
         private Entity setearMeshParaLista(Entity elemento, int i, float posicionY = 0)
         {
             elemento.Init();
@@ -113,7 +116,7 @@ namespace TGC.Group.Model
             Random random = new Random(seed);
             float y = posicionY == 0 ? i / 10 : posicionY;
             TGCVector3 posicion = new TGCVector3((i * (random.Next(0, 5) * (float)Math.Sin(i)) * 2), y, i * 2 * (float)Math.Cos(i) * random.Next(0, 5));
-            elemento.cambiarPosicion(posicion, corales, metales.Concat(maderas).ToList());
+            elemento.cambiarPosicion(posicion, corales, metales.Concat(piedras).ToList());
             return elemento;
         }
 
@@ -193,7 +196,7 @@ namespace TGC.Group.Model
             peces = new List<Fish>();
             corales = new List<Coral>();
             metales = new List<Metal>();
-            maderas = new List<Metal>();
+            piedras = new List<Metal>();
 
             int i = 0;
             while (i < 20)
@@ -272,24 +275,25 @@ namespace TGC.Group.Model
                 metales.Add(hierro);
 
                 hierro.Effect(effect);
-                hierro.Technique("RenderSceneLight");
+                hierro.Technique("RenderScene");
                 i++;
             }
 
-            scene = loader.loadSceneFromFile(MediaDir + "Madera-TgcScene.xml");
+            scene = loader.loadSceneFromFile(MediaDir + "Roca-TgcScene.xml");
             mesh = scene.Meshes[0];
             i = 0;
             while (i < 15)
             {
-                Metal madera;
+                Metal roca;
                 string meshName = i.ToString() + i.ToString() + i.ToString();
-                madera = new Metal(mesh.createMeshInstance(meshName));
-                madera = (Metal)setearMeshParaLista(madera, (i + 10) * 8, -17);
-                madera.Tipo = ElementoRecolectable.madera;
-                maderas.Add(madera);
+                roca = new Metal(mesh.createMeshInstance(meshName));
+                roca = (Metal)setearMeshParaLista(roca, (i + 10) * 8, -17);
+                roca.Tipo = ElementoRecolectable.madera;
+                roca.escalar(new TGCVector3(0.3f, 0.3f, 0.3f));
+                piedras.Add(roca);
 
-                madera.Effect(effect);
-                madera.Technique("RenderSceneLight");
+                roca.Effect(effect);
+                roca.Technique("RenderScene");
                 i++;
             }
 
@@ -412,7 +416,11 @@ namespace TGC.Group.Model
         public override void Update()
         {
             PreUpdate();
-
+            if (disposing)
+            {
+                PostUpdate();
+                return;
+            }
             time += ElapsedTime;
             effect.SetValue("health", Player.Health());
 
@@ -436,7 +444,7 @@ namespace TGC.Group.Model
                 Player.Update(ElapsedTime, ref estaEnNave, true);
             }
             estadoAnterior = Hud.GetCurrentStatus();
-            if (estaEnAlgunMenu)
+            if (estaEnAlgunMenu && !disposing)
             {
                 sonidoUnderwater.play(true);
                 // update de elementos de agua
@@ -456,9 +464,9 @@ namespace TGC.Group.Model
                 {
                     metal.Update(ElapsedTime);
                 }
-                foreach (var madera in maderas)
+                foreach (var piedra in piedras)
                 {
-                    madera.Update(ElapsedTime);
+                    piedra.Update(ElapsedTime);
                 }
 
                 fog.updateValues();
@@ -509,11 +517,10 @@ namespace TGC.Group.Model
                     {
                         metal.Update(ElapsedTime);
                     }
-                    foreach (var madera in maderas)
+                    foreach (var piedra in piedras)
                     {
-                        madera.Update(ElapsedTime);
+                        piedra.Update(ElapsedTime);
                     }
-
 
                     fog.updateValues();
                     effect.SetValue("ColorFog", fog.Color.ToArgb());
@@ -523,7 +530,6 @@ namespace TGC.Group.Model
                     effect.SetValue("Density", fog.Density);
                     effect.SetValue("eyePos", TGCVector3.TGCVector3ToFloat3Array(Camera.Position));
                 }
-
 
                 //Camara y jugador
                 FPSCamara.Update(ElapsedTime);
@@ -546,6 +552,10 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Render()
         {
+            if (disposing)
+            {
+                return;
+            }
             //ClearTextures();
             var device = D3DDevice.Instance.Device;
 
@@ -581,28 +591,23 @@ namespace TGC.Group.Model
                     shark.Technique("RenderScene");
                     shark.Render();
                 }
-                Particulas.Render(ElapsedTime);
-
-                effect.SetValue("shininess", 0.3f);
-                effect.SetValue("KSpecular", 0.3f);
-                effect.SetValue("KAmbient", 2.0f);
-                effect.SetValue("KDiffuse", 2.0f);
 
                 foreach (var coral in corales)
                 {
                     if (IsInFrustum(coral.GetMesh()))
                     {
-                        coral.Technique("RenderSceneLight");
+                        coral.Technique("RenderScene");
                         coral.Render();
                     }
                 }
 
-                foreach (var madera in maderas)
+                Particulas.Render(ElapsedTime);
+
+                foreach (var piedra in piedras)
                 {
-                    if (IsInFrustum(madera.GetMesh()))
+                    if (IsInFrustum(piedra.GetMesh()))
                     {
-                        madera.Technique("RenderScene");
-                        madera.Render();
+                        piedra.Render();
                     }
                 }
 
@@ -681,26 +686,21 @@ namespace TGC.Group.Model
                         }
                     }
 
-                    effect.SetValue("shininess", 0.5f);
-                    effect.SetValue("KSpecular", 0.5f);
-                    effect.SetValue("KAmbient", 5.0f);
-                    effect.SetValue("KDiffuse", 2.0f);
-
                     foreach (var coral in corales)
                     {
                         if (IsInFrustum(coral.GetMesh()))
                         {
-                            coral.Technique("RenderSceneLight");
+                            coral.Technique("RenderScene");
                             coral.Render();
                         }
                     }
 
-                    foreach (var madera in maderas)
+                    foreach (var piedra in piedras)
                     {
-                        if (IsInFrustum(madera.GetMesh()))
+                        if (IsInFrustum(piedra.GetMesh()))
                         {
-                            madera.Technique("RenderScene");
-                            madera.Render();
+                            piedra.Technique("RenderScene");
+                            piedra.Render();
                         }
                     }
 
@@ -799,12 +799,12 @@ namespace TGC.Group.Model
                     }
                 }
 
-                foreach (var madera in maderas)
+                foreach (var piedra in piedras)
                 {
-                    if (IsInFrustum(madera.GetMesh()))
+                    if (IsInFrustum(piedra.GetMesh()))
                     {
-                        madera.Technique("BloomMask");
-                        madera.Render();
+                        piedra.Technique("BloomMask");
+                        piedra.Render();
                     }
                 }
 
@@ -917,6 +917,7 @@ namespace TGC.Group.Model
         /// </summary>
         public override void Dispose()
         {
+            disposing = true;
             shark.Dispose();
             efectoDesaparecer.Dispose();
             sonidoUnderwater.dispose();
@@ -936,9 +937,9 @@ namespace TGC.Group.Model
             {
                 metal.Dispose();
             }
-            foreach (var madera in maderas)
+            foreach (var piedra in piedras)
             {
-                madera.Dispose();
+                piedra.Dispose();
             }
 
             nave.Dispose();

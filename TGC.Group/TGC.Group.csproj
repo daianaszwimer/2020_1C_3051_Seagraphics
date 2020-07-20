@@ -240,6 +240,7 @@
     <Content Include="bin\x86\Debug\TGC.Group.exe" />
     <Content Include="bin\x86\Debug\TGC.Group.pdb" />
     <Content Include="Media\coral-TgcScene.xml" />
+    <Content Include="Media\Items\1.png" />
     <Content Include="Media\LamparaTecho-TgcScene.xml" />
     <Content Include="Media\mask.png" />
     <Content Include="Media\Mesa-TgcScene.xml" />
@@ -265,6 +266,7 @@
     <Content Include="Media\Textures\LAMP_UVS.png" />
     <Content Include="Media\Textures\Lisas.bmp" />
     <Content Include="Media\Textures\oro.jpg" />
+    <Content Include="Media\Textures\rock_moss4_512.JPG" />
     <Content Include="Media\Textures\rope.jpg" />
     <Content Include="Media\Textures\steerwheel.jpg" />
     <Content Include="Media\Textures\tl.jpg" />

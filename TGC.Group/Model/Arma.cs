@@ -1,5 +1,4 @@
 ﻿using Microsoft.DirectX.Direct3D;
-using System;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 

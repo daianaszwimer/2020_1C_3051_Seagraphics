@@ -3,6 +3,7 @@ using TGC.Core.SceneLoader;
 using TGC.Group.Model.Crafting;
 using System.Collections.Generic;
 using TGC.Core.Collision;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model.Entidades
 {
@@ -14,7 +15,10 @@ namespace TGC.Group.Model.Entidades
         public ElementoRecolectable Tipo { get; set; }
 
         public Metal(TgcMesh mesh) : base(mesh, meshLookDir) { }
-
+        public void escalar(TGCVector3 escala)
+        {
+            escalaBase = TGCMatrix.Scaling(escala);
+        }
         protected override void InitEntity()
         {
             escalaBase = TGCMatrix.Scaling(new TGCVector3(0.2f, 0.2f, 0.2f));
