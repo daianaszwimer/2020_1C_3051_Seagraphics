@@ -69,6 +69,7 @@ float EndFogDistance;
 float Density;
 
 float nivelAgua;
+float health;
 
 //Luz
 float3 lightPos = float3(10, 100, 10);
@@ -211,8 +212,7 @@ float4 fogEffect(float positionViewZ, float4 fvBaseColor, float yPos)
         float1 r = lerp(fvBaseColor.r, ColorFog.r, proporcion);
         float1 g = lerp(fvBaseColor.g, ColorFog.g, proporcion);
         float1 b = lerp(fvBaseColor.b, ColorFog.b, proporcion);
-        float1 a = 1;
-        return float4(r, g, b, a);
+        return float4(r, g, b, 1);
     }
 }
 
@@ -326,6 +326,12 @@ float4 PSPostProcessMar(VS_OUTPUT_POSTPROCESS input) : COLOR0
     float4 colorMascara = tex2D(samplerMascara, input.TextureCoordinates);
     float4 bloomColor = tex2D(VerticalBlurFrameBuffer, input.TextureCoordinates);
     bloomColor *= 2;
+    
+    //Escala de gris si tiene poca vida
+    float fact = clamp(health * 1.5 / 100,0.35,1);
+    color.rgb = lerp(color.r, color.rgb, fact);
+    
+    //Bloom + mascara
     color = colorMascara ? colorMascara : color + bloomColor;
     
     return color;

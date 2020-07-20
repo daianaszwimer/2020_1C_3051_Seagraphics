@@ -414,6 +414,7 @@ namespace TGC.Group.Model
             PreUpdate();
 
             time += ElapsedTime;
+            effect.SetValue("health", Player.Health());
 
             Hud.Update(Input);
             estaEnAlgunMenu = Hud.GetCurrentStatus() == Hud.Status.MainMenu || Hud.GetCurrentStatus() == Hud.Status.Instructions;
