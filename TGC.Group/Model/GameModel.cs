@@ -670,6 +670,13 @@ namespace TGC.Group.Model
                     efectoInterior.SetValue("KAmbient", 5.0f);
                     efectoInterior.SetValue("KDiffuse", 0f);
                     lamparaNave.Render();
+                    if (Player.Instance().puedoEnfrentarTiburon())
+                    {
+                        // renderizo arma
+                        arma.Effect(effect);
+                        arma.Technique("RenderScene");
+                        arma.Render();
+                    }
                 }
                 else
                 {
@@ -734,17 +741,17 @@ namespace TGC.Group.Model
                             metal.Render();
                         }
                     }
+                    if (Player.Instance().puedoEnfrentarTiburon())
+                    {
+                        // renderizo arma
+                        arma.Effect(effect);
+                        arma.Technique("RenderScene");
+                        arma.Render();
+                    }
                     Oceano.Render();
 
                 }
                 Player.Render();
-                if (Player.Instance().puedoEnfrentarTiburon())
-                {
-                    // renderizo arma
-                    arma.Effect(effect);
-                    arma.Technique("RenderScene");
-                    arma.Render();
-                }
             }
             
             device.EndScene();
