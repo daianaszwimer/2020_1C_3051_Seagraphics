@@ -24,11 +24,9 @@ Szwimer, Daiana Kalanit  |  Gonzalez Martín, Ivan
 <img src="https://avatars3.githubusercontent.com/u/32345857?s=400&u=2e218a8e8b7dca8deecd219439feec069206784c&v=4" height="500"> | <img src="https://drive.google.com/uc?export=view&id=1o6GUfarc42-yuz_njrV3raK8wX4ul2AK" width="515" height="500">
 
 ## ScreenShot ##
-![screenshot1](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot2](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot3](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot4](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot5](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
+![screenshot1](https://github.com/daianaszwimer/2020_1C_3051_Seagraphics/blob/master/screenshots/Captura%20de%20pantalla%20(330).png)
+![screenshot2](https://github.com/daianaszwimer/2020_1C_3051_Seagraphics/blob/master/screenshots/Captura%20de%20pantalla%20(340).png)
+![screenshot3](https://github.com/daianaszwimer/2020_1C_3051_Seagraphics/blob/master/screenshots/Captura%20de%20pantalla%20(341).png)
 
 ## Game Play ##
-[![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/watch?v=DRMt0SOtRj4)
+[![Watch the video](https://github.com/daianaszwimer/2020_1C_3051_Seagraphics/blob/master/screenshots/Captura%20de%20pantalla%20(343).png)](https://www.youtube.com/watch?v=DRMt0SOtRj4)
