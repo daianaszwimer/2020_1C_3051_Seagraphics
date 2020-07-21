@@ -31,4 +31,4 @@ Szwimer, Daiana Kalanit  |  Gonzalez Martín, Ivan
 ![screenshot5](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
 
 ## Game Play ##
-[![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
+[![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/watch?v=DRMt0SOtRj4)
